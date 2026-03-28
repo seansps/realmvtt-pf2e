@@ -1,0 +1,5657 @@
+{
+  "name": "Pathfinder Second Edition",
+  "description": "The Second Edition of the Pathfinder Roleplaying Game.",
+  "version": 1,
+  "published": true,
+  "records": [
+    {
+      "name": "Characters",
+      "type": "characters",
+      "minX": 600,
+      "minY": 760,
+      "tabs": [
+        {
+          "name": "Main",
+          "file": "characters-main.html"
+        },
+        {
+          "name": "Skills",
+          "file": "characters-skills.html"
+        },
+        {
+          "name": "Actions",
+          "file": "characters-actions.html"
+        },
+        {
+          "name": "Crafting",
+          "file": "characters-crafting.html"
+        },
+        {
+          "name": "Inventory",
+          "file": "characters-inventory.html",
+          "fields": [
+            {
+              "name": "notes",
+              "type": "string",
+              "key": "string_5c3144ac-890f-46b1-b282-08d9bd008374",
+              "isList": false,
+              "label": "Notes",
+              "defaultValue": "",
+              "horizontalAlign": "left",
+              "verticalAlign": "top",
+              "color": "primary",
+              "hidden": false,
+              "variant": "outlined"
+            }
+          ]
+        },
+        {
+          "name": "Feats",
+          "file": "characters-features.html"
+        },
+        {
+          "name": "Notes",
+          "file": "characters-notes.html"
+        }
+      ],
+      "isList": false,
+      "showAddButton": false,
+      "showDeleteButton": false,
+      "addButtonText": "",
+      "allowedListTypes": [],
+      "icon": "",
+      "newItemName": "",
+      "newItemUnidentifiedName": "",
+      "stackDuplicates": false,
+      "countFieldName": "",
+      "emptyListText": "",
+      "singleRow": false,
+      "filters": {
+        "size": "tiny,small,medium,large,huge,gargantuan"
+      },
+      "disableDrop": false,
+      "wizard": {
+        "enabled": false,
+        "steps": []
+      },
+      "hideFromCompendium": false
+    },
+    {
+      "name": "NPCs",
+      "type": "npcs",
+      "minX": 615,
+      "minY": 600,
+      "tabs": [
+        {
+          "name": "Main",
+          "file": "npcs-main.html"
+        },
+        {
+          "name": "Inventory",
+          "file": "npcs-inventory.html"
+        },
+        {
+          "name": "Spells",
+          "file": "npcs-spells.html"
+        },
+        {
+          "name": "Description",
+          "file": "npcs-description.html"
+        }
+      ],
+      "isList": false,
+      "icon": "",
+      "showAddButton": false,
+      "showDeleteButton": false,
+      "addButtonText": "",
+      "allowedListTypes": [],
+      "newItemName": "",
+      "newItemUnidentifiedName": "",
+      "stackDuplicates": false,
+      "countFieldName": "",
+      "emptyListText": "",
+      "singleRow": false,
+      "filters": {
+        "type": "dynamic",
+        "level": "dynamic",
+        "traits": "dynamic"
+      },
+      "disableDrop": false,
+      "hideFromCompendium": false
+    },
+    {
+      "name": "Actions",
+      "type": "actions",
+      "isList": false,
+      "minX": 500,
+      "minY": 500,
+      "tabs": [
+        {
+          "name": "Main",
+          "file": "actions-main.html",
+          "fields": []
+        },
+        {
+          "name": "Rules",
+          "file": "actions-rules.html"
+        }
+      ],
+      "icon": "IconRun",
+      "showAddButton": false,
+      "showDeleteButton": false,
+      "addButtonText": "",
+      "allowedListTypes": [],
+      "newItemName": "",
+      "newItemUnidentifiedName": "",
+      "stackDuplicates": false,
+      "countFieldName": "",
+      "emptyListText": "",
+      "singleRow": false,
+      "filters": {
+        "traits": "dynamic",
+        "actionType": "dynamic",
+        "actionCategory": "dynamic"
+      },
+      "disableDrop": false,
+      "hideFromCompendium": false
+    },
+    {
+      "name": "Ancestries",
+      "type": "ancestry",
+      "isList": false,
+      "minX": 500,
+      "minY": 500,
+      "tabs": [
+        {
+          "name": "Main",
+          "file": "ancestry-main.html",
+          "fields": []
+        },
+        {
+          "name": "Features",
+          "file": "ancestry-features.html"
+        }
+      ],
+      "icon": "IconMan",
+      "showAddButton": false,
+      "showDeleteButton": false,
+      "addButtonText": "",
+      "allowedListTypes": [],
+      "newItemName": "",
+      "newItemUnidentifiedName": "",
+      "stackDuplicates": false,
+      "disableDrop": false,
+      "countFieldName": "",
+      "emptyListText": "",
+      "singleRow": false,
+      "filters": {
+        "traits": "dynamic"
+      },
+      "hideFromCompendium": false
+    },
+    {
+      "name": "Backgrounds",
+      "type": "backgrounds",
+      "isList": false,
+      "minX": 500,
+      "minY": 500,
+      "tabs": [
+        {
+          "name": "Main",
+          "file": "backgrounds-main.html",
+          "fields": []
+        }
+      ],
+      "icon": "IconMilitaryAward",
+      "showAddButton": false,
+      "showDeleteButton": false,
+      "addButtonText": "",
+      "allowedListTypes": [],
+      "newItemName": "",
+      "newItemUnidentifiedName": "",
+      "stackDuplicates": false,
+      "disableDrop": false,
+      "countFieldName": "",
+      "emptyListText": "",
+      "singleRow": false,
+      "filters": {
+        "traits": "dynamic"
+      },
+      "hideFromCompendium": false
+    },
+    {
+      "name": "Class",
+      "type": "class",
+      "isList": false,
+      "minX": 540,
+      "minY": 500,
+      "tabs": [
+        {
+          "name": "Main",
+          "file": "class-main.html",
+          "fields": []
+        },
+        {
+          "name": "Rules",
+          "file": "class-rules.html"
+        },
+        {
+          "name": "Features",
+          "file": "class-features.html"
+        }
+      ],
+      "icon": "IconBadge",
+      "showAddButton": false,
+      "showDeleteButton": false,
+      "addButtonText": "",
+      "allowedListTypes": [],
+      "newItemName": "",
+      "newItemUnidentifiedName": "",
+      "stackDuplicates": false,
+      "countFieldName": "",
+      "emptyListText": "",
+      "singleRow": false,
+      "filters": {
+        "traits": "dynamic"
+      },
+      "disableDrop": false,
+      "hideFromCompendium": false
+    },
+    {
+      "name": "Feats",
+      "type": "feats",
+      "isList": false,
+      "minX": 500,
+      "minY": 500,
+      "tabs": [
+        {
+          "name": "Main",
+          "file": "feats-main.html",
+          "fields": []
+        },
+        {
+          "name": "Rules",
+          "file": "feats-rules.html"
+        }
+      ],
+      "icon": "IconRosetteDiscountCheck",
+      "showAddButton": false,
+      "showDeleteButton": false,
+      "addButtonText": "",
+      "allowedListTypes": [],
+      "newItemName": "",
+      "newItemUnidentifiedName": "",
+      "stackDuplicates": false,
+      "disableDrop": false,
+      "countFieldName": "",
+      "emptyListText": "",
+      "singleRow": false,
+      "filters": {
+        "level": "dynamic",
+        "type": "dynamic",
+        "actions": "dynamic",
+        "traits": "dynamic"
+      },
+      "hideFromCompendium": false
+    },
+    {
+      "name": "Features",
+      "type": "features",
+      "isList": false,
+      "minX": 500,
+      "minY": 500,
+      "tabs": [
+        {
+          "name": "Main",
+          "file": "features-main.html"
+        },
+        {
+          "name": "Rules",
+          "file": "features-rules.html"
+        }
+      ],
+      "icon": "IconFlare",
+      "showAddButton": false,
+      "showDeleteButton": false,
+      "addButtonText": "",
+      "allowedListTypes": [],
+      "newItemName": "",
+      "newItemUnidentifiedName": "",
+      "stackDuplicates": false,
+      "disableDrop": false,
+      "countFieldName": "",
+      "emptyListText": "",
+      "singleRow": false,
+      "filters": {
+        "level": "dynamic",
+        "type": "dynamic",
+        "actions": "dynamic",
+        "traits": "dynamic"
+      },
+      "hideFromCompendium": false
+    },
+    {
+      "name": "Heritage",
+      "type": "heritage",
+      "isList": false,
+      "minX": 500,
+      "minY": 500,
+      "tabs": [
+        {
+          "name": "Main",
+          "file": "heritage-main.html",
+          "fields": []
+        },
+        {
+          "name": "Features",
+          "file": "heritage-features.html"
+        }
+      ],
+      "icon": "IconFriends",
+      "showAddButton": false,
+      "showDeleteButton": false,
+      "addButtonText": "",
+      "allowedListTypes": [],
+      "newItemName": "",
+      "newItemUnidentifiedName": "",
+      "stackDuplicates": false,
+      "disableDrop": false,
+      "countFieldName": "",
+      "emptyListText": "",
+      "singleRow": false,
+      "filters": {
+        "ancestry": "dynamic",
+        "versatile": "dynamic",
+        "traits": "dynamic"
+      }
+    },
+    {
+      "name": "Items",
+      "type": "items",
+      "minX": 500,
+      "minY": 500,
+      "tabs": [
+        {
+          "name": "Main",
+          "file": "items-main.html",
+          "fields": [
+            {
+              "name": "description",
+              "type": "string",
+              "key": "string_ad7f9d6b-e2d0-4740-a2bf-8a6861b233f1",
+              "label": "Description",
+              "defaultValue": ""
+            },
+            {
+              "name": "portraitfield",
+              "type": "portrait",
+              "key": "portrait_2001d18e-70c0-469b-aa04-d9fa211c671a",
+              "label": "",
+              "defaultValue": "",
+              "horizontalAlign": "left",
+              "verticalAlign": "top",
+              "hidden": false
+            }
+          ]
+        },
+        {
+          "name": "Rules",
+          "file": "items-rules.html"
+        }
+      ],
+      "isList": false,
+      "showAddButton": false,
+      "showDeleteButton": false,
+      "addButtonText": "",
+      "allowedListTypes": [],
+      "icon": "IconMoneybag",
+      "newItemName": "",
+      "newItemUnidentifiedName": "",
+      "stackDuplicates": false,
+      "countFieldName": "",
+      "emptyListText": "",
+      "singleRow": false,
+      "filters": {
+        "traits": "dynamic",
+        "level": "dynamic",
+        "type": "dynamic",
+        "itemCategory": "dynamic"
+      },
+      "disableDrop": false,
+      "hideFromCompendium": false
+    },
+    {
+      "name": "NPC Attacks",
+      "type": "npc_attacks",
+      "isList": false,
+      "minX": 500,
+      "minY": 500,
+      "tabs": [
+        {
+          "name": "Main",
+          "file": "npc-attacks-main.html",
+          "fields": []
+        },
+        {
+          "name": "FX",
+          "file": "npc-attacks-fx.html"
+        }
+      ],
+      "hideFromCompendium": true,
+      "icon": "GiBarbedNails",
+      "showAddButton": false,
+      "showDeleteButton": false,
+      "addButtonText": "",
+      "allowedListTypes": [],
+      "newItemName": "",
+      "newItemUnidentifiedName": "",
+      "stackDuplicates": false,
+      "disableDrop": false,
+      "countFieldName": "",
+      "emptyListText": "",
+      "singleRow": false,
+      "filters": {}
+    },
+    {
+      "name": "Spells",
+      "type": "spells",
+      "isList": false,
+      "minX": 500,
+      "minY": 500,
+      "tabs": [
+        {
+          "name": "Main",
+          "file": "spells-main.html",
+          "fields": []
+        },
+        {
+          "name": "Rules",
+          "file": "spells-rules.html"
+        }
+      ],
+      "icon": "IconWand",
+      "showAddButton": false,
+      "showDeleteButton": false,
+      "addButtonText": "",
+      "allowedListTypes": [],
+      "newItemName": "",
+      "newItemUnidentifiedName": "",
+      "stackDuplicates": false,
+      "countFieldName": "",
+      "emptyListText": "",
+      "singleRow": false,
+      "filters": {
+        "level": "dynamic",
+        "traditions": "dynamic",
+        "traits": "dynamic",
+        "type": "dynamic"
+      },
+      "disableDrop": false,
+      "hideFromCompendium": false
+    },
+    {
+      "name": "Advanced Alchemy List",
+      "type": "advanced_alchemy_list",
+      "isList": true,
+      "minX": 500,
+      "minY": 60,
+      "tabs": [
+        {
+          "name": "Main",
+          "file": "advanced-alchemy-list.html",
+          "fields": []
+        }
+      ],
+      "icon": "",
+      "showAddButton": false,
+      "showDeleteButton": true,
+      "addButtonText": "",
+      "allowedListTypes": [
+        "items"
+      ],
+      "newItemName": "",
+      "newItemUnidentifiedName": "",
+      "stackDuplicates": false,
+      "disableDrop": false,
+      "countFieldName": "",
+      "emptyListText": "Drag Items Here to Prepare",
+      "orderCriteria": [],
+      "maxLength": 0,
+      "filterCriteria": [],
+      "singleRow": false
+    },
+    {
+      "name": "Ancestry Feature List",
+      "type": "ancestry_feature_list",
+      "isList": true,
+      "minX": 500,
+      "minY": 300,
+      "tabs": [
+        {
+          "name": "Main",
+          "file": "ancestry-feature-list.html",
+          "fields": []
+        }
+      ],
+      "icon": "",
+      "showAddButton": true,
+      "showDeleteButton": true,
+      "addButtonText": "Add Feature",
+      "allowedListTypes": [
+        "features"
+      ],
+      "newItemName": "New Feature",
+      "newItemUnidentifiedName": "Feature",
+      "stackDuplicates": false,
+      "disableDrop": false,
+      "countFieldName": "",
+      "emptyListText": "",
+      "orderCriteria": [],
+      "maxLength": 0,
+      "filterCriteria": [],
+      "singleRow": false,
+      "hideFromCompendium": false
+    },
+    {
+      "name": "Attached Item List",
+      "type": "attached_item_list",
+      "isList": true,
+      "minX": 500,
+      "minY": 60,
+      "tabs": [
+        {
+          "name": "Main",
+          "file": "attached-item-list.html",
+          "fields": []
+        }
+      ],
+      "icon": "",
+      "showAddButton": true,
+      "showDeleteButton": true,
+      "addButtonText": "Add Item",
+      "allowedListTypes": [
+        "items"
+      ],
+      "newItemName": "New Item",
+      "newItemUnidentifiedName": "Unidentified Item",
+      "stackDuplicates": false,
+      "disableDrop": false,
+      "countFieldName": "",
+      "emptyListText": "No Item",
+      "orderCriteria": [],
+      "maxLength": 0,
+      "filterCriteria": [],
+      "singleRow": false
+    },
+    {
+      "name": "Attack Dropped List",
+      "type": "attack_dropped_list",
+      "isList": true,
+      "minX": 500,
+      "minY": 60,
+      "tabs": [
+        {
+          "name": "Main",
+          "file": "attack-dropped-list.html",
+          "fields": []
+        }
+      ],
+      "icon": "",
+      "showAddButton": false,
+      "showDeleteButton": false,
+      "addButtonText": "",
+      "allowedListTypes": [],
+      "newItemName": "",
+      "newItemUnidentifiedName": "",
+      "stackDuplicates": false,
+      "disableDrop": false,
+      "countFieldName": "",
+      "emptyListText": " ",
+      "orderCriteria": [
+        {
+          "field": "namefield",
+          "descending": false
+        }
+      ],
+      "maxLength": 0,
+      "filterCriteria": [
+        {
+          "field": "type",
+          "operator": "equals",
+          "value": "weapon",
+          "isOr": false
+        },
+        {
+          "field": "carried",
+          "operator": "equals",
+          "value": "dropped",
+          "isOr": false
+        }
+      ],
+      "singleRow": false
+    },
+    {
+      "name": "Attack List",
+      "type": "attack_list",
+      "isList": true,
+      "minX": 500,
+      "minY": 250,
+      "tabs": [
+        {
+          "name": "Main",
+          "file": "attack-list.html",
+          "fields": []
+        }
+      ],
+      "icon": "",
+      "showAddButton": false,
+      "showDeleteButton": false,
+      "addButtonText": "",
+      "allowedListTypes": [],
+      "newItemName": "",
+      "newItemUnidentifiedName": "",
+      "stackDuplicates": false,
+      "countFieldName": "",
+      "emptyListText": " ",
+      "orderCriteria": [
+        {
+          "field": "hideFromList",
+          "descending": false
+        },
+        {
+          "field": "namefield",
+          "descending": false
+        }
+      ],
+      "maxLength": 0,
+      "singleRow": false,
+      "filterCriteria": [
+        {
+          "field": "type",
+          "operator": "includes",
+          "value": "weapon"
+        },
+        {
+          "field": "carried",
+          "operator": "equals",
+          "value": "equipped",
+          "isOr": false
+        }
+      ],
+      "disableDrop": false,
+      "hideFromCompendium": false
+    },
+    {
+      "name": "Attack Stowed List",
+      "type": "attack_stowed_list",
+      "isList": true,
+      "minX": 500,
+      "minY": 60,
+      "tabs": [
+        {
+          "name": "Main",
+          "file": "attack-stowed-list.html",
+          "fields": []
+        }
+      ],
+      "icon": "",
+      "showAddButton": false,
+      "showDeleteButton": false,
+      "addButtonText": "",
+      "allowedListTypes": [],
+      "newItemName": "",
+      "newItemUnidentifiedName": "",
+      "stackDuplicates": false,
+      "disableDrop": false,
+      "countFieldName": "",
+      "emptyListText": " ",
+      "orderCriteria": [
+        {
+          "field": "namefield",
+          "descending": false
+        }
+      ],
+      "maxLength": 0,
+      "filterCriteria": [
+        {
+          "field": "type",
+          "operator": "equals",
+          "value": "weapon",
+          "isOr": false
+        },
+        {
+          "field": "carried",
+          "operator": "equals",
+          "value": "carried",
+          "isOr": false
+        }
+      ],
+      "singleRow": false
+    },
+    {
+      "name": "Bonus Feats List",
+      "type": "bonus_feats_list",
+      "isList": true,
+      "minX": 500,
+      "minY": 60,
+      "tabs": [
+        {
+          "name": "Main",
+          "file": "bonus-feats-list.html",
+          "fields": []
+        }
+      ],
+      "icon": "",
+      "showAddButton": false,
+      "showDeleteButton": true,
+      "addButtonText": "",
+      "allowedListTypes": [
+        "feats"
+      ],
+      "newItemName": "",
+      "newItemUnidentifiedName": "",
+      "stackDuplicates": false,
+      "disableDrop": false,
+      "countFieldName": "",
+      "emptyListText": "Drag Additional Feats Here",
+      "orderCriteria": [
+        {
+          "field": "level",
+          "descending": false
+        }
+      ],
+      "maxLength": 0,
+      "filterCriteria": [],
+      "singleRow": false,
+      "hideFromCompendium": false
+    },
+    {
+      "name": "Character Action List",
+      "type": "character_action_list",
+      "isList": true,
+      "minX": 500,
+      "minY": 400,
+      "tabs": [
+        {
+          "name": "Main",
+          "file": "character-action-list.html",
+          "fields": []
+        }
+      ],
+      "icon": "",
+      "showAddButton": true,
+      "showDeleteButton": true,
+      "addButtonText": "Add Action",
+      "allowedListTypes": [
+        "actions"
+      ],
+      "newItemName": "New Action",
+      "newItemUnidentifiedName": "Action",
+      "stackDuplicates": false,
+      "disableDrop": false,
+      "countFieldName": "",
+      "emptyListText": "Drag Actions Here",
+      "orderCriteria": [],
+      "maxLength": 0,
+      "filterCriteria": [],
+      "singleRow": false,
+      "hideFromCompendium": false
+    },
+    {
+      "name": "Character Feature List",
+      "type": "character_feature_list",
+      "isList": true,
+      "minX": 500,
+      "minY": 500,
+      "tabs": [
+        {
+          "name": "Main",
+          "file": "character-feature-list.html",
+          "fields": []
+        }
+      ],
+      "icon": "",
+      "showAddButton": false,
+      "showDeleteButton": false,
+      "addButtonText": "Add Feature",
+      "allowedListTypes": [],
+      "newItemName": "New Feature",
+      "newItemUnidentifiedName": "New Feature",
+      "stackDuplicates": false,
+      "countFieldName": "",
+      "emptyListText": "No Features",
+      "orderCriteria": [],
+      "maxLength": 0,
+      "filterCriteria": [],
+      "singleRow": false,
+      "disableDrop": false,
+      "hideFromCompendium": false
+    },
+    {
+      "name": "Class Feature List",
+      "type": "class_feature_list",
+      "isList": true,
+      "minX": 500,
+      "minY": 60,
+      "tabs": [
+        {
+          "name": "Main",
+          "file": "class-feature-list.html",
+          "fields": []
+        }
+      ],
+      "icon": "",
+      "showAddButton": true,
+      "showDeleteButton": true,
+      "addButtonText": "Add Feature",
+      "allowedListTypes": [
+        "features"
+      ],
+      "newItemName": "New Feature",
+      "newItemUnidentifiedName": "Feature",
+      "stackDuplicates": false,
+      "disableDrop": false,
+      "countFieldName": "",
+      "emptyListText": "",
+      "orderCriteria": [
+        {
+          "field": "level",
+          "descending": false
+        }
+      ],
+      "maxLength": 0,
+      "filterCriteria": [],
+      "singleRow": false,
+      "hideFromCompendium": false
+    },
+    {
+      "name": "Conditional Grant List",
+      "type": "conditional_grant_list",
+      "isList": true,
+      "minX": 500,
+      "minY": 60,
+      "tabs": [
+        {
+          "name": "Main",
+          "file": "conditional-grant-list.html",
+          "fields": []
+        }
+      ],
+      "hideFromCompendium": false,
+      "icon": "",
+      "showAddButton": true,
+      "showDeleteButton": true,
+      "addButtonText": "Add Conditional Grant",
+      "allowedListTypes": [],
+      "newItemName": "Conditional Grant",
+      "newItemUnidentifiedName": "Conditional Grant",
+      "stackDuplicates": false,
+      "disableDrop": false,
+      "countFieldName": "",
+      "emptyListText": "None",
+      "orderCriteria": [],
+      "maxLength": 0,
+      "filterCriteria": [],
+      "singleRow": false
+    },
+    {
+      "name": "Crafting List",
+      "type": "crafting_list",
+      "isList": true,
+      "minX": 500,
+      "minY": 60,
+      "tabs": [
+        {
+          "name": "Main",
+          "file": "crafting-list.html",
+          "fields": []
+        }
+      ],
+      "icon": "",
+      "showAddButton": false,
+      "showDeleteButton": true,
+      "addButtonText": "",
+      "allowedListTypes": [
+        "items"
+      ],
+      "newItemName": "",
+      "newItemUnidentifiedName": "",
+      "stackDuplicates": false,
+      "disableDrop": true,
+      "countFieldName": "",
+      "emptyListText": "Drag Items to Add",
+      "orderCriteria": [],
+      "maxLength": 0,
+      "filterCriteria": [],
+      "singleRow": false
+    },
+    {
+      "name": "Feats List",
+      "type": "feats_list",
+      "isList": true,
+      "minX": 500,
+      "minY": 300,
+      "tabs": [
+        {
+          "name": "Main",
+          "file": "feats-list.html",
+          "fields": []
+        }
+      ],
+      "icon": "",
+      "showAddButton": false,
+      "showDeleteButton": false,
+      "addButtonText": "",
+      "allowedListTypes": [],
+      "newItemName": "",
+      "newItemUnidentifiedName": "",
+      "stackDuplicates": false,
+      "disableDrop": false,
+      "countFieldName": "",
+      "emptyListText": "",
+      "orderCriteria": [
+        {
+          "field": "level",
+          "descending": false
+        },
+        {
+          "field": "slotOrder",
+          "descending": false
+        }
+      ],
+      "maxLength": 0,
+      "filterCriteria": [],
+      "singleRow": false,
+      "hideFromCompendium": false
+    },
+    {
+      "name": "Feature Choice List",
+      "type": "feature_choice_list",
+      "isList": true,
+      "minX": 500,
+      "minY": 200,
+      "tabs": [
+        {
+          "name": "Main",
+          "file": "feature-choice-list.html",
+          "fields": []
+        }
+      ],
+      "icon": "",
+      "showAddButton": true,
+      "showDeleteButton": true,
+      "addButtonText": "Add Feature Choice",
+      "allowedListTypes": [],
+      "newItemName": "New Choice Set",
+      "newItemUnidentifiedName": "Choice Set",
+      "stackDuplicates": false,
+      "disableDrop": false,
+      "countFieldName": "",
+      "emptyListText": "No Choices",
+      "orderCriteria": [],
+      "maxLength": 0,
+      "filterCriteria": [],
+      "singleRow": false,
+      "hideFromCompendium": false
+    },
+    {
+      "name": "Feature Choice Option List",
+      "type": "feature_choice_option_list",
+      "isList": true,
+      "minX": 500,
+      "minY": 500,
+      "tabs": [
+        {
+          "name": "Main",
+          "file": "feature-choice-option-list.html",
+          "fields": []
+        }
+      ],
+      "hideFromCompendium": false,
+      "icon": "",
+      "showAddButton": true,
+      "showDeleteButton": true,
+      "addButtonText": "Add Option",
+      "allowedListTypes": [],
+      "newItemName": "New Option",
+      "newItemUnidentifiedName": "Option",
+      "stackDuplicates": false,
+      "disableDrop": false,
+      "countFieldName": "",
+      "emptyListText": "No Options",
+      "orderCriteria": [],
+      "maxLength": 0,
+      "filterCriteria": [],
+      "singleRow": false
+    },
+    {
+      "name": "Feature Flag List",
+      "type": "feature_flag_list",
+      "isList": true,
+      "minX": 500,
+      "minY": 60,
+      "tabs": [
+        {
+          "name": "Main",
+          "file": "feature-flag-list.html",
+          "fields": []
+        }
+      ],
+      "hideFromCompendium": false,
+      "icon": "",
+      "showAddButton": true,
+      "showDeleteButton": true,
+      "addButtonText": "Add Flag",
+      "allowedListTypes": [],
+      "newItemName": "Feature Flag",
+      "newItemUnidentifiedName": "Feature Flag",
+      "stackDuplicates": false,
+      "disableDrop": false,
+      "countFieldName": "",
+      "emptyListText": "None",
+      "orderCriteria": [],
+      "maxLength": 0,
+      "filterCriteria": [],
+      "singleRow": false
+    },
+    {
+      "name": "Feature List",
+      "type": "feature_list",
+      "isList": true,
+      "minX": 500,
+      "minY": 60,
+      "tabs": [
+        {
+          "name": "Main",
+          "file": "feature-list.html",
+          "fields": []
+        }
+      ],
+      "hideFromCompendium": false,
+      "icon": "",
+      "showAddButton": false,
+      "showDeleteButton": false,
+      "addButtonText": "",
+      "allowedListTypes": [],
+      "newItemName": "",
+      "newItemUnidentifiedName": "",
+      "stackDuplicates": false,
+      "disableDrop": false,
+      "countFieldName": "",
+      "emptyListText": "No Features",
+      "orderCriteria": [
+        {
+          "field": "level",
+          "descending": false
+        }
+      ],
+      "maxLength": 0,
+      "filterCriteria": [],
+      "singleRow": false
+    },
+    {
+      "name": "Feature Proficiency List",
+      "type": "feature_proficiency_list",
+      "isList": true,
+      "minX": 500,
+      "minY": 60,
+      "tabs": [
+        {
+          "name": "Main",
+          "file": "feature-proficiency-list.html",
+          "fields": []
+        }
+      ],
+      "icon": "",
+      "showAddButton": true,
+      "showDeleteButton": true,
+      "addButtonText": "Add Proficiency",
+      "allowedListTypes": [],
+      "newItemName": "Proficiency",
+      "newItemUnidentifiedName": "Proficiency",
+      "stackDuplicates": false,
+      "disableDrop": false,
+      "countFieldName": "",
+      "emptyListText": "No Proficiencies",
+      "orderCriteria": [],
+      "maxLength": 0,
+      "filterCriteria": [],
+      "singleRow": false
+    },
+    {
+      "name": "Inventory Backpack List",
+      "type": "inventory_backpack_list",
+      "isList": true,
+      "minX": 500,
+      "minY": 60,
+      "tabs": [
+        {
+          "name": "Main",
+          "file": "inventory-backpack-list.html",
+          "fields": []
+        }
+      ],
+      "icon": "",
+      "showAddButton": false,
+      "showDeleteButton": true,
+      "addButtonText": "",
+      "allowedListTypes": [
+        "items"
+      ],
+      "newItemName": "",
+      "newItemUnidentifiedName": "",
+      "stackDuplicates": true,
+      "disableDrop": false,
+      "countFieldName": "count",
+      "emptyListText": "Drag Items to this Container",
+      "orderCriteria": [
+        {
+          "field": "namefield",
+          "descending": false
+        },
+        {
+          "field": "count",
+          "descending": true
+        }
+      ],
+      "maxLength": 0,
+      "filterCriteria": [
+        {
+          "field": "type",
+          "operator": "equals",
+          "value": "{data.filterByType}",
+          "isOr": false
+        }
+      ],
+      "singleRow": false
+    },
+    {
+      "name": "Inventory Container List",
+      "type": "inventory_container_list",
+      "isList": true,
+      "minX": 500,
+      "minY": 60,
+      "tabs": [
+        {
+          "name": "Main",
+          "file": "inventory-container-list.html",
+          "fields": []
+        }
+      ],
+      "icon": "",
+      "showAddButton": false,
+      "showDeleteButton": true,
+      "addButtonText": "Add Container",
+      "allowedListTypes": [
+        "items"
+      ],
+      "newItemName": "New Container",
+      "newItemUnidentifiedName": "Container",
+      "stackDuplicates": true,
+      "disableDrop": true,
+      "countFieldName": "count",
+      "emptyListText": " ",
+      "orderCriteria": [
+        {
+          "field": "namefield",
+          "descending": false
+        }
+      ],
+      "maxLength": 0,
+      "filterCriteria": [
+        {
+          "field": "type",
+          "operator": "equals",
+          "value": "backpack",
+          "isOr": false
+        }
+      ],
+      "singleRow": false,
+      "hideFromCompendium": false
+    },
+    {
+      "name": "Inventory List",
+      "type": "inventory_list",
+      "isList": true,
+      "minX": 500,
+      "minY": 100,
+      "tabs": [
+        {
+          "name": "Main",
+          "file": "inventory-list.html",
+          "fields": [
+            {
+              "name": "portraitfield",
+              "type": "portrait",
+              "key": "portrait_29559cec-2ee3-4288-b23e-953322e3af2b",
+              "label": "",
+              "defaultValue": "",
+              "horizontalAlign": "left",
+              "verticalAlign": "top",
+              "hidden": false
+            },
+            {
+              "name": "count",
+              "type": "number",
+              "key": "number_e48a9a2b-e35c-48ae-ba19-61c89ad26491",
+              "isList": false,
+              "label": "Count",
+              "defaultValue": "0",
+              "horizontalAlign": "left",
+              "verticalAlign": "top",
+              "minValue": 0,
+              "showSign": false,
+              "color": "primary",
+              "hidden": false,
+              "variant": "outlined"
+            },
+            {
+              "name": "namefield",
+              "type": "name",
+              "key": "name_84b41f7a-262a-4973-ae18-1159c1503186",
+              "isList": false,
+              "label": "Name",
+              "defaultValue": "",
+              "horizontalAlign": "left",
+              "verticalAlign": "top",
+              "hidden": false,
+              "variant": "standard"
+            }
+          ]
+        }
+      ],
+      "allowedListTypes": [
+        "items"
+      ],
+      "showAddButton": true,
+      "showDeleteButton": true,
+      "addButtonText": "Add Item",
+      "newItemName": "New Item",
+      "newItemUnidentifiedName": "Unidentified Item",
+      "stackDuplicates": true,
+      "countFieldName": "count",
+      "emptyListText": "Drag Items on the Inventory Tab",
+      "icon": "",
+      "orderCriteria": [
+        {
+          "field": "namefield",
+          "descending": false
+        },
+        {
+          "field": "count",
+          "descending": true
+        }
+      ],
+      "canGrow": false,
+      "maxLength": 0,
+      "singleRow": false,
+      "filterCriteria": [
+        {
+          "field": "type",
+          "operator": "not_equals",
+          "value": "backpack",
+          "isOr": false
+        },
+        {
+          "field": "type",
+          "operator": "equals",
+          "value": "{data.filterByType}",
+          "isOr": false
+        },
+        {
+          "field": "hideFromList",
+          "operator": "not_equals",
+          "value": "true",
+          "isOr": false
+        }
+      ],
+      "disableDrop": true,
+      "hideFromCompendium": false
+    },
+    {
+      "name": "Item List",
+      "type": "item_list",
+      "isList": true,
+      "minX": 500,
+      "minY": 60,
+      "tabs": [
+        {
+          "name": "Main",
+          "file": "item-list.html",
+          "fields": []
+        }
+      ],
+      "icon": "",
+      "showAddButton": true,
+      "showDeleteButton": true,
+      "addButtonText": "Add Item",
+      "allowedListTypes": [
+        "items"
+      ],
+      "newItemName": "New Item",
+      "newItemUnidentifiedName": "Unidentified Item",
+      "stackDuplicates": true,
+      "disableDrop": false,
+      "countFieldName": "count",
+      "emptyListText": "Drag Items Here",
+      "orderCriteria": [
+        {
+          "field": "namefield",
+          "descending": false
+        },
+        {
+          "field": "count",
+          "descending": true
+        }
+      ],
+      "maxLength": 0,
+      "filterCriteria": [],
+      "singleRow": false
+    },
+    {
+      "name": "IWR List",
+      "type": "iwr_list",
+      "isList": true,
+      "minX": 500,
+      "minY": 60,
+      "tabs": [
+        {
+          "name": "Main",
+          "file": "iwr-list.html",
+          "fields": []
+        }
+      ],
+      "icon": "",
+      "showAddButton": true,
+      "showDeleteButton": true,
+      "addButtonText": "Add",
+      "allowedListTypes": [],
+      "newItemName": "New IWR",
+      "newItemUnidentifiedName": "IWR",
+      "stackDuplicates": false,
+      "disableDrop": false,
+      "countFieldName": "",
+      "emptyListText": "None",
+      "orderCriteria": [],
+      "maxLength": 0,
+      "filterCriteria": [],
+      "singleRow": false,
+      "hideFromCompendium": false
+    },
+    {
+      "name": "Known Spell List",
+      "type": "known_spell_list",
+      "isList": true,
+      "minX": 500,
+      "minY": 60,
+      "tabs": [
+        {
+          "name": "Main",
+          "file": "known-spell-list.html",
+          "fields": []
+        }
+      ],
+      "hideFromCompendium": false,
+      "icon": "",
+      "showAddButton": false,
+      "showDeleteButton": true,
+      "addButtonText": "",
+      "allowedListTypes": [
+        "spells"
+      ],
+      "newItemName": "",
+      "newItemUnidentifiedName": "",
+      "stackDuplicates": false,
+      "disableDrop": false,
+      "countFieldName": "",
+      "emptyListText": "Drag Spells Here",
+      "orderCriteria": [
+        {
+          "field": "levelLabel",
+          "descending": false
+        },
+        {
+          "field": "namefield",
+          "descending": false
+        }
+      ],
+      "maxLength": 0,
+      "filterCriteria": [],
+      "singleRow": false
+    },
+    {
+      "name": "Language List",
+      "type": "language_list",
+      "isList": true,
+      "minX": 500,
+      "minY": 60,
+      "tabs": [
+        {
+          "name": "Main",
+          "file": "language-list.html",
+          "fields": []
+        }
+      ],
+      "icon": "",
+      "showAddButton": false,
+      "showDeleteButton": false,
+      "addButtonText": "",
+      "allowedListTypes": [],
+      "newItemName": "",
+      "newItemUnidentifiedName": "",
+      "stackDuplicates": false,
+      "disableDrop": false,
+      "countFieldName": "",
+      "emptyListText": "None",
+      "orderCriteria": [],
+      "maxLength": 0,
+      "filterCriteria": [],
+      "singleRow": true
+    },
+    {
+      "name": "Lore Skills List",
+      "type": "lore_skills_list",
+      "isList": true,
+      "minX": 500,
+      "minY": 60,
+      "tabs": [
+        {
+          "name": "Main",
+          "file": "lore-skill-list.html",
+          "fields": []
+        }
+      ],
+      "icon": "",
+      "showAddButton": true,
+      "showDeleteButton": true,
+      "addButtonText": "Add Skill",
+      "allowedListTypes": [],
+      "newItemName": "New Skill",
+      "newItemUnidentifiedName": "New Skill",
+      "stackDuplicates": false,
+      "disableDrop": false,
+      "countFieldName": "",
+      "emptyListText": "None",
+      "orderCriteria": [],
+      "maxLength": 0,
+      "filterCriteria": [],
+      "singleRow": false
+    },
+    {
+      "name": "Modifier List",
+      "type": "modifier_list",
+      "isList": true,
+      "minX": 500,
+      "minY": 250,
+      "tabs": [
+        {
+          "name": "Main",
+          "file": "modifier-list.html",
+          "fields": []
+        }
+      ],
+      "icon": "",
+      "showAddButton": true,
+      "showDeleteButton": true,
+      "addButtonText": "Add Modifier",
+      "allowedListTypes": [],
+      "newItemName": "New Modifier",
+      "newItemUnidentifiedName": "Modifier",
+      "stackDuplicates": false,
+      "disableDrop": false,
+      "countFieldName": "",
+      "emptyListText": "No Modifiers",
+      "orderCriteria": [],
+      "maxLength": 0,
+      "filterCriteria": [],
+      "singleRow": false,
+      "hideFromCompendium": false
+    },
+    {
+      "name": "NPC Actions List",
+      "type": "npc_actions_list",
+      "isList": true,
+      "minX": 500,
+      "minY": 600,
+      "tabs": [
+        {
+          "name": "Main",
+          "file": "npc-actions-list.html",
+          "fields": []
+        }
+      ],
+      "icon": "",
+      "showAddButton": false,
+      "showDeleteButton": true,
+      "addButtonText": "Add Action",
+      "allowedListTypes": [
+        "actions"
+      ],
+      "newItemName": "New Action",
+      "newItemUnidentifiedName": "Action",
+      "stackDuplicates": false,
+      "disableDrop": false,
+      "countFieldName": "",
+      "emptyListText": "None",
+      "orderCriteria": [],
+      "maxLength": 0,
+      "filterCriteria": [],
+      "singleRow": false,
+      "hideFromCompendium": false
+    },
+    {
+      "name": "NPC Attack Damage List",
+      "type": "npc_attack_damage_list",
+      "isList": true,
+      "minX": 500,
+      "minY": 200,
+      "tabs": [
+        {
+          "name": "Main",
+          "file": "npc-attack-damage-list.html",
+          "fields": []
+        }
+      ],
+      "hideFromCompendium": false,
+      "icon": "",
+      "showAddButton": true,
+      "showDeleteButton": true,
+      "addButtonText": "Add Damage",
+      "allowedListTypes": [],
+      "newItemName": "Damage",
+      "newItemUnidentifiedName": "Damage",
+      "stackDuplicates": false,
+      "disableDrop": false,
+      "countFieldName": "",
+      "emptyListText": "",
+      "orderCriteria": [],
+      "maxLength": 0,
+      "filterCriteria": [],
+      "singleRow": false
+    },
+    {
+      "name": "NPC Attack List",
+      "type": "npc_attack_list",
+      "isList": true,
+      "minX": 500,
+      "minY": 200,
+      "tabs": [
+        {
+          "name": "Main",
+          "file": "polymorph-actions-list.html",
+          "fields": []
+        }
+      ],
+      "icon": "",
+      "showAddButton": true,
+      "showDeleteButton": true,
+      "addButtonText": "Add Attack",
+      "allowedListTypes": [
+        "npc_attacks"
+      ],
+      "newItemName": "New Attack",
+      "newItemUnidentifiedName": "Attack",
+      "stackDuplicates": false,
+      "disableDrop": false,
+      "countFieldName": "",
+      "emptyListText": "None",
+      "orderCriteria": [],
+      "maxLength": 0,
+      "filterCriteria": [],
+      "singleRow": false,
+      "hideFromCompendium": false
+    },
+    {
+      "name": "NPC Inventory List",
+      "type": "npc_inventory_list",
+      "isList": true,
+      "minX": 500,
+      "minY": 45,
+      "tabs": [
+        {
+          "name": "Main",
+          "file": "npc-inventory-list.html",
+          "fields": []
+        }
+      ],
+      "icon": "",
+      "showAddButton": true,
+      "showDeleteButton": true,
+      "addButtonText": "Add Item",
+      "allowedListTypes": [
+        "items"
+      ],
+      "newItemName": "New Item",
+      "newItemUnidentifiedName": "Unidentified Item",
+      "stackDuplicates": true,
+      "disableDrop": true,
+      "countFieldName": "count",
+      "emptyListText": "Drag Items on the Inventory Tab",
+      "orderCriteria": [
+        {
+          "field": "namefield",
+          "descending": false
+        },
+        {
+          "field": "count",
+          "descending": true
+        }
+      ],
+      "maxLength": 0,
+      "filterCriteria": [],
+      "singleRow": false,
+      "hideFromCompendium": false
+    },
+    {
+      "name": "NPC Skill Edit List",
+      "type": "npc_skill_edit_list",
+      "isList": true,
+      "minX": 500,
+      "minY": 50,
+      "tabs": [
+        {
+          "name": "Main",
+          "file": "npc-skill-edit-list.html",
+          "fields": []
+        }
+      ],
+      "icon": "",
+      "showAddButton": false,
+      "showDeleteButton": true,
+      "addButtonText": "Add Skill",
+      "allowedListTypes": [],
+      "newItemName": "New Skill",
+      "newItemUnidentifiedName": "Skill",
+      "stackDuplicates": false,
+      "disableDrop": false,
+      "countFieldName": "",
+      "emptyListText": "",
+      "orderCriteria": [],
+      "maxLength": 0,
+      "filterCriteria": [],
+      "singleRow": false
+    },
+    {
+      "name": "NPC Skill List",
+      "type": "npc_skill_list",
+      "isList": true,
+      "minX": 500,
+      "minY": 60,
+      "tabs": [
+        {
+          "name": "Main",
+          "file": "npc-skill-list.html",
+          "fields": []
+        }
+      ],
+      "icon": "",
+      "showAddButton": false,
+      "showDeleteButton": false,
+      "addButtonText": "",
+      "allowedListTypes": [],
+      "newItemName": "",
+      "newItemUnidentifiedName": "",
+      "stackDuplicates": false,
+      "disableDrop": false,
+      "countFieldName": "",
+      "emptyListText": "",
+      "orderCriteria": [],
+      "maxLength": 0,
+      "filterCriteria": [],
+      "singleRow": true
+    },
+    {
+      "name": "NPC Speeds Edit List",
+      "type": "npc_speeds_edit_list",
+      "isList": true,
+      "minX": 500,
+      "minY": 400,
+      "tabs": [
+        {
+          "name": "Main",
+          "file": "npc-speeds-edit-list.html",
+          "fields": []
+        }
+      ],
+      "icon": "",
+      "showAddButton": true,
+      "showDeleteButton": true,
+      "addButtonText": "Add Speed",
+      "allowedListTypes": [],
+      "newItemName": "Speed",
+      "newItemUnidentifiedName": "Speed",
+      "stackDuplicates": false,
+      "disableDrop": false,
+      "countFieldName": "",
+      "emptyListText": "None",
+      "orderCriteria": [],
+      "maxLength": 0,
+      "filterCriteria": [],
+      "singleRow": false,
+      "hideFromCompendium": false
+    },
+    {
+      "name": "NPC Speeds List",
+      "type": "npc_speeds_list",
+      "isList": true,
+      "minX": 500,
+      "minY": 300,
+      "tabs": [
+        {
+          "name": "Main",
+          "file": "npc-speeds-list.html",
+          "fields": []
+        }
+      ],
+      "icon": "",
+      "showAddButton": false,
+      "showDeleteButton": false,
+      "addButtonText": "Add Spell",
+      "allowedListTypes": [],
+      "newItemName": "New Spell",
+      "newItemUnidentifiedName": "Spell",
+      "stackDuplicates": false,
+      "disableDrop": false,
+      "countFieldName": "",
+      "emptyListText": " ",
+      "orderCriteria": [],
+      "maxLength": 0,
+      "filterCriteria": [],
+      "singleRow": false,
+      "hideFromCompendium": false
+    },
+    {
+      "name": "NPC Spellcasting Entry List",
+      "type": "npc_spellcasting_entry_list",
+      "isList": true,
+      "minX": 500,
+      "minY": 250,
+      "tabs": [
+        {
+          "name": "Main",
+          "file": "npc-spellcasting-entry-list.html",
+          "fields": []
+        }
+      ],
+      "hideFromCompendium": false,
+      "icon": "",
+      "showAddButton": false,
+      "showDeleteButton": false,
+      "addButtonText": "",
+      "allowedListTypes": [],
+      "newItemName": "",
+      "newItemUnidentifiedName": "",
+      "stackDuplicates": false,
+      "disableDrop": false,
+      "countFieldName": "",
+      "emptyListText": "None",
+      "orderCriteria": [],
+      "maxLength": 0,
+      "filterCriteria": [],
+      "singleRow": false
+    },
+    {
+      "name": "Polymorph Actions List",
+      "type": "polymorph_actions_list",
+      "isList": true,
+      "minX": 500,
+      "minY": 35,
+      "tabs": [
+        {
+          "name": "Main",
+          "file": "polymorph-actions-list.html",
+          "fields": []
+        }
+      ],
+      "icon": "",
+      "showAddButton": false,
+      "showDeleteButton": false,
+      "addButtonText": "",
+      "allowedListTypes": [],
+      "newItemName": "",
+      "newItemUnidentifiedName": "",
+      "stackDuplicates": false,
+      "disableDrop": false,
+      "countFieldName": "",
+      "emptyListText": " ",
+      "orderCriteria": [],
+      "maxLength": 0,
+      "filterCriteria": [],
+      "singleRow": false,
+      "hideFromCompendium": false
+    },
+    {
+      "name": "Provides Item List",
+      "type": "provides_item_list",
+      "isList": true,
+      "minX": 500,
+      "minY": 60,
+      "tabs": [
+        {
+          "name": "Main",
+          "file": "provides-item-list.html",
+          "fields": []
+        }
+      ],
+      "hideFromCompendium": false,
+      "icon": "",
+      "showAddButton": false,
+      "showDeleteButton": true,
+      "addButtonText": "",
+      "allowedListTypes": [
+        "feats",
+        "features",
+        "items",
+        "actions"
+      ],
+      "newItemName": "",
+      "newItemUnidentifiedName": "",
+      "stackDuplicates": false,
+      "disableDrop": false,
+      "countFieldName": "",
+      "emptyListText": "Drag Actions, Feats, Features, or Items Here",
+      "orderCriteria": [],
+      "maxLength": 0,
+      "filterCriteria": [],
+      "singleRow": false
+    },
+    {
+      "name": "Record Link List",
+      "type": "record_link_list",
+      "isList": true,
+      "minX": 500,
+      "minY": 60,
+      "tabs": [
+        {
+          "name": "Main",
+          "file": "record-link-list.html",
+          "fields": []
+        }
+      ],
+      "icon": "",
+      "showAddButton": false,
+      "showDeleteButton": true,
+      "addButtonText": "",
+      "allowedListTypes": [],
+      "newItemName": "",
+      "newItemUnidentifiedName": "",
+      "stackDuplicates": false,
+      "disableDrop": false,
+      "countFieldName": "",
+      "emptyListText": "None",
+      "orderCriteria": [],
+      "maxLength": 1,
+      "filterCriteria": [],
+      "singleRow": true
+    },
+    {
+      "name": "Spell Damage List",
+      "type": "spell_damage_list",
+      "isList": true,
+      "minX": 500,
+      "minY": 300,
+      "tabs": [
+        {
+          "name": "Main",
+          "file": "spell-damage-list.html",
+          "fields": []
+        }
+      ],
+      "icon": "",
+      "showAddButton": true,
+      "showDeleteButton": true,
+      "addButtonText": "Add Damage Entry",
+      "allowedListTypes": [],
+      "newItemName": "Damage",
+      "newItemUnidentifiedName": "Damage",
+      "stackDuplicates": false,
+      "disableDrop": false,
+      "countFieldName": "",
+      "emptyListText": "No Damage",
+      "orderCriteria": [],
+      "maxLength": 0,
+      "filterCriteria": [],
+      "singleRow": false
+    },
+    {
+      "name": "Spell Heightening Damage List",
+      "type": "spell_heightening_damage_list",
+      "isList": true,
+      "minX": 500,
+      "minY": 60,
+      "tabs": [
+        {
+          "name": "Main",
+          "file": "spell-heightening-damage-list.html",
+          "fields": []
+        }
+      ],
+      "icon": "",
+      "showAddButton": true,
+      "showDeleteButton": true,
+      "addButtonText": "Add Damage Increase",
+      "allowedListTypes": [],
+      "newItemName": "Damage",
+      "newItemUnidentifiedName": "Damage",
+      "stackDuplicates": false,
+      "disableDrop": false,
+      "countFieldName": "",
+      "emptyListText": "No Damage Increases",
+      "orderCriteria": [],
+      "maxLength": 0,
+      "filterCriteria": [],
+      "singleRow": false
+    },
+    {
+      "name": "Spell Heightening Level List",
+      "type": "spell_heightening_level_list",
+      "isList": true,
+      "minX": 500,
+      "minY": 500,
+      "tabs": [
+        {
+          "name": "Main",
+          "file": "spell-heightening-level-list.html",
+          "fields": []
+        }
+      ],
+      "icon": "",
+      "showAddButton": true,
+      "showDeleteButton": true,
+      "addButtonText": "Add Rank",
+      "allowedListTypes": [],
+      "newItemName": "Rank",
+      "newItemUnidentifiedName": "Rank",
+      "stackDuplicates": false,
+      "disableDrop": false,
+      "countFieldName": "",
+      "emptyListText": "No Ranks",
+      "orderCriteria": [],
+      "maxLength": 0,
+      "filterCriteria": [],
+      "singleRow": false
+    },
+    {
+      "name": "Spell Heightening List",
+      "type": "spell_heightening_list",
+      "isList": true,
+      "minX": 500,
+      "minY": 60,
+      "tabs": [
+        {
+          "name": "Main",
+          "file": "spell-heightening-list.html",
+          "fields": []
+        }
+      ],
+      "icon": "",
+      "showAddButton": true,
+      "showDeleteButton": true,
+      "addButtonText": "Add Heightening Entry",
+      "allowedListTypes": [],
+      "newItemName": "Heightening",
+      "newItemUnidentifiedName": "Heightening",
+      "stackDuplicates": false,
+      "disableDrop": false,
+      "countFieldName": "",
+      "emptyListText": "No Heightening",
+      "orderCriteria": [],
+      "maxLength": 0,
+      "filterCriteria": [],
+      "singleRow": false
+    },
+    {
+      "name": "Spell List",
+      "type": "spell_list",
+      "isList": true,
+      "minX": 500,
+      "minY": 500,
+      "tabs": [
+        {
+          "name": "Main",
+          "file": "spell-list.html",
+          "fields": []
+        }
+      ],
+      "icon": "",
+      "showAddButton": false,
+      "showDeleteButton": false,
+      "addButtonText": "Add Spell",
+      "allowedListTypes": [
+        "spells"
+      ],
+      "newItemName": "New Spell",
+      "newItemUnidentifiedName": "New Spell",
+      "stackDuplicates": false,
+      "countFieldName": "",
+      "emptyListText": "No Spells",
+      "orderCriteria": [],
+      "maxLength": 0,
+      "filterCriteria": [],
+      "singleRow": false,
+      "disableDrop": true,
+      "hideFromCompendium": false
+    },
+    {
+      "name": "Spell Overlays List",
+      "type": "spell_overlays_list",
+      "isList": true,
+      "minX": 500,
+      "minY": 60,
+      "tabs": [
+        {
+          "name": "Main",
+          "file": "spell-overlays-list.html",
+          "fields": []
+        }
+      ],
+      "icon": "",
+      "showAddButton": true,
+      "showDeleteButton": true,
+      "addButtonText": "Add Alternate Cast",
+      "allowedListTypes": [
+        "spells"
+      ],
+      "newItemName": "New Alternate Casting Method",
+      "newItemUnidentifiedName": "Overlay",
+      "stackDuplicates": false,
+      "disableDrop": false,
+      "countFieldName": "",
+      "emptyListText": "No Alternate Cast Methods",
+      "orderCriteria": [],
+      "maxLength": 0,
+      "filterCriteria": [],
+      "singleRow": false
+    },
+    {
+      "name": "Spellcasting Entry List",
+      "type": "spellcasting_entry_list",
+      "isList": true,
+      "minX": 500,
+      "minY": 500,
+      "tabs": [
+        {
+          "name": "Main",
+          "file": "spellcasting-entry-list.html",
+          "fields": []
+        }
+      ],
+      "icon": "",
+      "showAddButton": false,
+      "showDeleteButton": false,
+      "addButtonText": "",
+      "allowedListTypes": [],
+      "newItemName": "",
+      "newItemUnidentifiedName": "",
+      "stackDuplicates": false,
+      "disableDrop": false,
+      "countFieldName": "",
+      "emptyListText": "None",
+      "orderCriteria": [],
+      "maxLength": 0,
+      "filterCriteria": [],
+      "singleRow": false,
+      "hideFromCompendium": false
+    },
+    {
+      "name": "Toggle List",
+      "type": "toggle_list",
+      "isList": true,
+      "minX": 500,
+      "minY": 60,
+      "tabs": [
+        {
+          "name": "Main",
+          "file": "toggle-list.html",
+          "fields": []
+        }
+      ],
+      "hideFromCompendium": false,
+      "icon": "",
+      "showAddButton": false,
+      "showDeleteButton": false,
+      "addButtonText": "",
+      "allowedListTypes": [],
+      "newItemName": "",
+      "newItemUnidentifiedName": "",
+      "stackDuplicates": false,
+      "disableDrop": false,
+      "countFieldName": "",
+      "emptyListText": "",
+      "orderCriteria": [
+        {
+          "field": "namefield",
+          "descending": false
+        }
+      ],
+      "maxLength": 0,
+      "filterCriteria": [],
+      "singleRow": false
+    },
+    {
+      "name": "Traits List",
+      "type": "traits_list",
+      "isList": true,
+      "minX": 500,
+      "minY": 60,
+      "tabs": [
+        {
+          "name": "Main",
+          "file": "traits-list.html",
+          "fields": []
+        }
+      ],
+      "icon": "",
+      "showAddButton": false,
+      "showDeleteButton": false,
+      "addButtonText": "",
+      "allowedListTypes": [
+        "traits"
+      ],
+      "newItemName": "",
+      "newItemUnidentifiedName": "",
+      "stackDuplicates": false,
+      "disableDrop": true,
+      "countFieldName": "",
+      "emptyListText": " ",
+      "orderCriteria": [],
+      "maxLength": 0,
+      "filterCriteria": [],
+      "singleRow": true
+    }
+  ],
+  "settings": {
+    "healthIndicator": {
+      "disabled": false,
+      "maxHealthField": "hitpoints",
+      "currentHealthField": "curhp",
+      "color": [
+        {
+          "percentage": 0,
+          "color": "#ff0000",
+          "label": "Dying"
+        },
+        {
+          "percentage": 10,
+          "color": "#ff0000",
+          "label": "Near Death"
+        },
+        {
+          "percentage": 30,
+          "color": "#ff4d00",
+          "label": "Seriously Wounded"
+        },
+        {
+          "percentage": 50,
+          "color": "#ffd600",
+          "label": "Badly Wounded"
+        },
+        {
+          "percentage": 70,
+          "color": "#dbff00",
+          "label": "Moderately Wounded"
+        },
+        {
+          "percentage": 90,
+          "color": "#87c91b",
+          "label": "Lightly Wounded"
+        },
+        {
+          "percentage": 99,
+          "color": "#1bc91b",
+          "label": "Barely Wounded"
+        },
+        {
+          "percentage": 100,
+          "color": "#00FF00",
+          "label": "Healthy"
+        }
+      ]
+    },
+    "damage": {
+      "enableDamage": true,
+      "enableHealing": true,
+      "damageScript": {
+        "file": "rollhandlers/damageScript.js"
+      },
+      "healingScript": {
+        "file": "rollhandlers/healingScript.js"
+      },
+      "damageTypes": {
+        "acid": {
+          "icon": "icon-acid",
+          "color": "lime"
+        },
+        "fire": {
+          "icon": "icon-fire",
+          "color": "orange"
+        },
+        "cold": {
+          "icon": "icon-cold",
+          "color": "blue"
+        },
+        "force": {
+          "icon": "icon-force",
+          "color": "violet"
+        },
+        "poison": {
+          "icon": "icon-poison",
+          "color": "green"
+        },
+        "healing": {
+          "icon": "icon-healing",
+          "color": "teal"
+        },
+        "bludgeoning": {
+          "icon": "icon-bludgeoning",
+          "color": "default"
+        },
+        "slashing": {
+          "icon": "icon-slashing",
+          "color": "default"
+        },
+        "piercing": {
+          "icon": "icon-piercing",
+          "color": "default"
+        },
+        "electricity": {
+          "icon": "icon-lightning",
+          "color": "yellow"
+        },
+        "sonic": {
+          "icon": "icon-sonic",
+          "color": "cyan"
+        },
+        "void": {
+          "icon": "icon-void",
+          "color": "grape"
+        },
+        "vitality": {
+          "icon": "icon-vitality",
+          "color": "yellow"
+        },
+        "bleed": {
+          "icon": "icon-bleed",
+          "color": "red"
+        },
+        "mental": {
+          "icon": "icon-mental",
+          "color": "violet"
+        },
+        "precision": {
+          "icon": "icon-precision",
+          "color": "default"
+        },
+        "spirit": {
+          "icon": "icon-spirit",
+          "color": "teal"
+        }
+      }
+    },
+    "combatTracker": {
+      "initiative": "initiative",
+      "slotBased": false,
+      "clearSlotsPerRound": false,
+      "order": "desc",
+      "additionalFields": [
+        {
+          "field": "curhp",
+          "label": "HP",
+          "type": "number",
+          "width": 60,
+          "editable": true,
+          "onChange": ""
+        },
+        {
+          "field": "hitpoints",
+          "label": "Max",
+          "type": "number",
+          "width": 60,
+          "editable": false,
+          "onChange": ""
+        },
+        {
+          "field": "tempHp",
+          "label": "Temp HP",
+          "type": "number",
+          "width": 60,
+          "editable": true,
+          "onChange": ""
+        }
+      ],
+      "onTokenAdd": "",
+      "onEncounterStart": "",
+      "onEncounterEnd": {
+        "file": "rollhandlers/onEncounterEnd.js"
+      },
+      "onTurnStart": {
+        "file": "rollhandlers/onTurnStart.js"
+      },
+      "onTurnEnd": {
+        "file": "rollhandlers/onTurnEnd.js"
+      },
+      "onRoundStart": "",
+      "onRoundEnd": "",
+      "onRollInitiative": {
+        "file": "rollhandlers/onRollInitiative.js"
+      },
+      "onRollInitiativeGroup": {
+        "file": "rollhandlers/onRollInitiativeGroup.js"
+      }
+    },
+    "rollTypes": [
+      {
+        "name": "initiative",
+        "file": "rollhandlers/initiative.js"
+      },
+      {
+        "name": "attack",
+        "file": "rollhandlers/attack.js"
+      },
+      {
+        "name": "damage",
+        "file": "rollhandlers/damage.js"
+      },
+      {
+        "name": "skill",
+        "file": "rollhandlers/skill.js"
+      },
+      {
+        "name": "save",
+        "file": "rollhandlers/save.js"
+      },
+      {
+        "name": "healing",
+        "file": "rollhandlers/healing.js"
+      },
+      {
+        "name": "recovery",
+        "file": "rollhandlers/recovery.js"
+      },
+      {
+        "name": "perception",
+        "file": "rollhandlers/perception.js"
+      },
+      {
+        "name": "flatCheck",
+        "file": "rollhandlers/flatCheck.js"
+      }
+    ],
+    "partySheet": {
+      "additionalFields": [
+        {
+          "field": "curhp",
+          "label": "Hit Points",
+          "type": "healthbar",
+          "width": 80,
+          "maxField": "hitpoints"
+        },
+        {
+          "field": "tempHp",
+          "label": "Temp HP",
+          "type": "number",
+          "width": 70
+        },
+        {
+          "field": "level",
+          "label": "Level",
+          "type": "number",
+          "width": 50
+        },
+        {
+          "field": "className",
+          "label": "Class",
+          "type": "string",
+          "width": 100,
+          "maxField": ""
+        },
+        {
+          "field": "ancestryName",
+          "label": "Ancestry",
+          "type": "string",
+          "width": 100
+        },
+        {
+          "field": "heritageName",
+          "label": "Heritage",
+          "type": "string",
+          "width": 100,
+          "maxField": ""
+        },
+        {
+          "field": "backgroundName",
+          "label": "Background",
+          "type": "string",
+          "width": 100,
+          "maxField": ""
+        },
+        {
+          "field": "senses",
+          "label": "Senses",
+          "type": "string",
+          "width": 100,
+          "editable": false,
+          "onChange": ""
+        },
+        {
+          "field": "heroPoints",
+          "label": "Hero Pts.",
+          "type": "number",
+          "width": 80,
+          "editable": true,
+          "onChange": ""
+        },
+        {
+          "field": "str",
+          "label": "STR",
+          "type": "number",
+          "width": 50,
+          "editable": false,
+          "onChange": ""
+        },
+        {
+          "field": "dex",
+          "label": "DEX",
+          "type": "number",
+          "width": 50,
+          "editable": false,
+          "onChange": ""
+        },
+        {
+          "field": "con",
+          "label": "CON",
+          "type": "string",
+          "width": 50,
+          "editable": false,
+          "onChange": ""
+        },
+        {
+          "field": "int",
+          "label": "INT",
+          "type": "string",
+          "width": 50,
+          "editable": false,
+          "onChange": ""
+        },
+        {
+          "field": "wis",
+          "label": "WIS",
+          "type": "string",
+          "width": 50,
+          "editable": false,
+          "onChange": ""
+        },
+        {
+          "field": "cha",
+          "label": "CHA",
+          "type": "string",
+          "width": 50,
+          "editable": false,
+          "onChange": ""
+        },
+        {
+          "field": "fortMod",
+          "label": "Fort",
+          "type": "string",
+          "width": 50,
+          "editable": false,
+          "onChange": ""
+        },
+        {
+          "field": "refMod",
+          "label": "Ref",
+          "type": "string",
+          "width": 50,
+          "editable": false,
+          "onChange": ""
+        },
+        {
+          "field": "willMod",
+          "label": "Will",
+          "type": "string",
+          "width": 50,
+          "editable": false,
+          "onChange": ""
+        }
+      ],
+      "inventory": {
+        "enabled": true,
+        "recordType": "items",
+        "additionalFields": [
+          {
+            "field": "bulk.value",
+            "label": "Bulk",
+            "type": "number",
+            "width": 80
+          },
+          {
+            "field": "price.value.pp",
+            "label": "PP",
+            "type": "number",
+            "width": 40
+          },
+          {
+            "field": "price.value.gp",
+            "label": "GP",
+            "type": "number",
+            "width": 40
+          },
+          {
+            "field": "price.value.sp",
+            "label": "SP",
+            "type": "number",
+            "width": 40
+          },
+          {
+            "field": "price.value.cp",
+            "label": "CP",
+            "type": "number",
+            "width": 40
+          }
+        ]
+      },
+      "awards": {
+        "enabled": true,
+        "xpName": "XP",
+        "xpField": "xp",
+        "xpMethod": "award_equally",
+        "currencyFields": [
+          {
+            "field": "cp",
+            "label": "CP"
+          },
+          {
+            "field": "sp",
+            "label": "SP"
+          },
+          {
+            "field": "gp",
+            "label": "GP"
+          },
+          {
+            "field": "pp",
+            "label": "PP"
+          }
+        ]
+      },
+      "stats": {
+        "enabled": true,
+        "tabName": "Skills",
+        "fields": [
+          {
+            "field": "acrobaticsMod",
+            "label": "Acrobatics",
+            "showPlus": true
+          },
+          {
+            "field": "arcanaMod",
+            "label": "Arcana",
+            "showPlus": true
+          },
+          {
+            "field": "athleticsMod",
+            "label": "Athletics",
+            "showPlus": true
+          },
+          {
+            "field": "craftingMod",
+            "label": "Crafting",
+            "showPlus": true
+          },
+          {
+            "field": "deceptionMod",
+            "label": "Deception",
+            "showPlus": true
+          },
+          {
+            "field": "diplomacyMod",
+            "label": "Diplomacy",
+            "showPlus": true
+          },
+          {
+            "field": "intimidationMod",
+            "label": "Intimidation",
+            "showPlus": true
+          },
+          {
+            "field": "medicineMod",
+            "label": "Medicine",
+            "showPlus": true
+          },
+          {
+            "field": "natureMod",
+            "label": "Nature",
+            "showPlus": true
+          },
+          {
+            "field": "occultismMod",
+            "label": "Occultism",
+            "showPlus": true
+          },
+          {
+            "field": "performanceMod",
+            "label": "Performance",
+            "showPlus": true
+          },
+          {
+            "field": "religionMod",
+            "label": "Religion",
+            "showPlus": true
+          },
+          {
+            "field": "societyMod",
+            "label": "Society",
+            "showPlus": true
+          },
+          {
+            "field": "stealthMod",
+            "label": "Stealth",
+            "showPlus": true
+          },
+          {
+            "field": "survivalMod",
+            "label": "Survival",
+            "showPlus": true
+          },
+          {
+            "field": "thieveryMod",
+            "label": "Thievery",
+            "showPlus": true
+          }
+        ]
+      }
+    },
+    "tokenSize": [
+      {
+        "label": "Tiny",
+        "size": 0.5
+      },
+      {
+        "label": "Small",
+        "size": 0.75
+      },
+      {
+        "label": "Medium",
+        "size": 1
+      },
+      {
+        "label": "Large",
+        "size": 2
+      },
+      {
+        "label": "Huge",
+        "size": 3
+      },
+      {
+        "label": "Gargantuan",
+        "size": 4
+      }
+    ],
+    "calendars": [
+      {
+        "default": false,
+        "name": "Calendar of Harptos (Faerun)",
+        "months": [
+          {
+            "name": "Hammer",
+            "days": 30
+          },
+          {
+            "name": "Midwinter",
+            "days": 1
+          },
+          {
+            "name": "Alturiak",
+            "days": 30
+          },
+          {
+            "name": "Ches",
+            "days": 30
+          },
+          {
+            "name": "Tarsakh",
+            "days": 30
+          },
+          {
+            "name": "Greengrass",
+            "days": 1
+          },
+          {
+            "name": "Mirtul",
+            "days": 30
+          },
+          {
+            "name": "Kythorn",
+            "days": 30
+          },
+          {
+            "name": "Flamerule",
+            "days": 30
+          },
+          {
+            "name": "Midsummer",
+            "days": 1
+          },
+          {
+            "name": "Eleasis",
+            "days": 30
+          },
+          {
+            "name": "Eleint",
+            "days": 30
+          },
+          {
+            "name": "Highharvestide",
+            "days": 1
+          },
+          {
+            "name": "Marpenoth",
+            "days": 30
+          },
+          {
+            "name": "Uktar",
+            "days": 30
+          },
+          {
+            "name": "Feast of the Moon",
+            "days": 1
+          },
+          {
+            "name": "Nightal",
+            "days": 30
+          }
+        ],
+        "days": [
+          {
+            "name": "",
+            "shortName": ""
+          },
+          {
+            "name": "",
+            "shortName": ""
+          },
+          {
+            "name": "",
+            "shortName": ""
+          },
+          {
+            "name": "",
+            "shortName": ""
+          },
+          {
+            "name": "",
+            "shortName": ""
+          },
+          {
+            "name": "",
+            "shortName": ""
+          },
+          {
+            "name": "",
+            "shortName": ""
+          },
+          {
+            "name": "",
+            "shortName": ""
+          },
+          {
+            "name": "",
+            "shortName": ""
+          },
+          {
+            "name": "",
+            "shortName": ""
+          }
+        ],
+        "startYear": 1491,
+        "leapYear": 4,
+        "leapMonth": 10,
+        "leapDayName": "Shieldmeet",
+        "repeatDays": true,
+        "eraName": "DR"
+      },
+      {
+        "default": true,
+        "name": "Calendar of Golarion",
+        "months": [
+          {
+            "name": "Abadius",
+            "days": 31
+          },
+          {
+            "name": "Calistril",
+            "days": 28
+          },
+          {
+            "name": "Pharast",
+            "days": 31
+          },
+          {
+            "name": "Gozran",
+            "days": 30
+          },
+          {
+            "name": "Desnus",
+            "days": 31
+          },
+          {
+            "name": "Sarenith",
+            "days": 30
+          },
+          {
+            "name": "Erastus",
+            "days": 31
+          },
+          {
+            "name": "Arodus",
+            "days": 31
+          },
+          {
+            "name": "Rova",
+            "days": 30
+          },
+          {
+            "name": "Lamashan",
+            "days": 31
+          },
+          {
+            "name": "Neth",
+            "days": 30
+          },
+          {
+            "name": "Kuthona",
+            "days": 31
+          }
+        ],
+        "days": [
+          {
+            "name": "Moonday",
+            "shortName": "M"
+          },
+          {
+            "name": "Toilday",
+            "shortName": "T"
+          },
+          {
+            "name": "Wealday",
+            "shortName": "W"
+          },
+          {
+            "name": "Oathday",
+            "shortName": "O"
+          },
+          {
+            "name": "Fireday",
+            "shortName": "F"
+          },
+          {
+            "name": "Starday",
+            "shortName": "St"
+          },
+          {
+            "name": "Sunday",
+            "shortName": "Su"
+          }
+        ],
+        "eraName": "AR",
+        "startYear": 4719,
+        "leapYear": 8,
+        "leapMonth": 2,
+        "leapDayName": "",
+        "repeatDays": false
+      }
+    ],
+    "effects": [
+      {
+        "label": "Add Immunity",
+        "type": "immunity",
+        "fields": []
+      },
+      {
+        "label": "Add Resistance",
+        "type": "resistance",
+        "fields": []
+      },
+      {
+        "label": "Add Weakness",
+        "type": "weakness",
+        "fields": []
+      },
+      {
+        "label": "All Checks and DCs Bonus (Untyped)",
+        "type": "allBonus",
+        "fields": [
+          {
+            "label": "All Checks",
+            "field": "all"
+          },
+          {
+            "label": "Strength-based",
+            "field": "str"
+          },
+          {
+            "label": "Dexterity-based",
+            "field": "dex"
+          },
+          {
+            "label": "Constitution-based",
+            "field": "con"
+          },
+          {
+            "label": "Intelligence-based",
+            "field": "int"
+          },
+          {
+            "label": "Wisdom-based",
+            "field": "wis"
+          },
+          {
+            "label": "Charisma-based",
+            "field": "cha"
+          }
+        ]
+      },
+      {
+        "label": "All Checks and DCs Circumstance Bonus",
+        "type": "allBonus-circumstance",
+        "fields": [
+          {
+            "label": "All Checks",
+            "field": "all"
+          },
+          {
+            "label": "Strength-based",
+            "field": "str"
+          },
+          {
+            "label": "Dexterity-based",
+            "field": "dex"
+          },
+          {
+            "label": "Constitution-based",
+            "field": "con"
+          },
+          {
+            "label": "Intelligence-based",
+            "field": "int"
+          },
+          {
+            "label": "Wisdom-based",
+            "field": "wis"
+          },
+          {
+            "label": "Charisma-based",
+            "field": "cha"
+          }
+        ]
+      },
+      {
+        "label": "All Checks and DCs Circumstance Penalty",
+        "type": "allPenalty-circumstance",
+        "fields": [
+          {
+            "label": "All Checks",
+            "field": "all"
+          },
+          {
+            "label": "Strength-based",
+            "field": "str"
+          },
+          {
+            "label": "Dexterity-based",
+            "field": "dex"
+          },
+          {
+            "label": "Constitution-based",
+            "field": "con"
+          },
+          {
+            "label": "Intelligence-based",
+            "field": "int"
+          },
+          {
+            "label": "Wisdom-based",
+            "field": "wis"
+          },
+          {
+            "label": "Charisma-based",
+            "field": "cha"
+          }
+        ]
+      },
+      {
+        "label": "All Checks and DCs Item Bonus",
+        "type": "allBonus-item",
+        "fields": [
+          {
+            "label": "All Checks",
+            "field": "all"
+          },
+          {
+            "label": "Strength-based",
+            "field": "str"
+          },
+          {
+            "label": "Dexterity-based",
+            "field": "dex"
+          },
+          {
+            "label": "Constitution-based",
+            "field": "con"
+          },
+          {
+            "label": "Intelligence-based",
+            "field": "int"
+          },
+          {
+            "label": "Wisdom-based",
+            "field": "wis"
+          },
+          {
+            "label": "Charisma-based",
+            "field": "cha"
+          }
+        ]
+      },
+      {
+        "label": "All Checks and DCs Item Penalty",
+        "type": "allPenalty-item",
+        "fields": [
+          {
+            "label": "All Checks",
+            "field": "all"
+          },
+          {
+            "label": "Strength-based",
+            "field": "str"
+          },
+          {
+            "label": "Dexterity-based",
+            "field": "dex"
+          },
+          {
+            "label": "Constitution-based",
+            "field": "con"
+          },
+          {
+            "label": "Intelligence-based",
+            "field": "int"
+          },
+          {
+            "label": "Wisdom-based",
+            "field": "wis"
+          },
+          {
+            "label": "Charisma-based",
+            "field": "cha"
+          }
+        ]
+      },
+      {
+        "label": "All Checks and DCs Penalty (Untyped)",
+        "type": "allPenalty",
+        "fields": [
+          {
+            "label": "All Checks",
+            "field": "all"
+          },
+          {
+            "label": "Strength-based",
+            "field": "str"
+          },
+          {
+            "label": "Dexterity-based",
+            "field": "dex"
+          },
+          {
+            "label": "Constitution-based",
+            "field": "con"
+          },
+          {
+            "label": "Intelligence-based",
+            "field": "int"
+          },
+          {
+            "label": "Wisdom-based",
+            "field": "wis"
+          },
+          {
+            "label": "Charisma-based",
+            "field": "cha"
+          }
+        ]
+      },
+      {
+        "label": "All Checks and DCs Status Bonus",
+        "type": "allBonus-status",
+        "fields": [
+          {
+            "label": "All Checks",
+            "field": "all"
+          },
+          {
+            "label": "Strength-based",
+            "field": "str"
+          },
+          {
+            "label": "Dexterity-based",
+            "field": "dex"
+          },
+          {
+            "label": "Constitution-based",
+            "field": "con"
+          },
+          {
+            "label": "Intelligence-based",
+            "field": "int"
+          },
+          {
+            "label": "Wisdom-based",
+            "field": "wis"
+          },
+          {
+            "label": "Charisma-based",
+            "field": "cha"
+          }
+        ]
+      },
+      {
+        "label": "All Checks and DCs Status Penalty",
+        "type": "allPenalty-status",
+        "fields": [
+          {
+            "label": "All Checks",
+            "field": "all"
+          },
+          {
+            "label": "Strength-based",
+            "field": "str"
+          },
+          {
+            "label": "Dexterity-based",
+            "field": "dex"
+          },
+          {
+            "label": "Constitution-based",
+            "field": "con"
+          },
+          {
+            "label": "Intelligence-based",
+            "field": "int"
+          },
+          {
+            "label": "Wisdom-based",
+            "field": "wis"
+          },
+          {
+            "label": "Charisma-based",
+            "field": "cha"
+          }
+        ]
+      },
+      {
+        "label": "Armor Class Circumstance Bonus",
+        "type": "armorClassBonus-circumstance",
+        "fields": []
+      },
+      {
+        "label": "Armor Class Circumstance Penalty",
+        "type": "armorClassPenalty-circumstance",
+        "fields": []
+      },
+      {
+        "label": "Armor Class Item Bonus",
+        "type": "armorClassBonus-item",
+        "fields": []
+      },
+      {
+        "label": "Armor Class Item Penalty",
+        "type": "armorClassPenalty-item",
+        "fields": [],
+        "freeTextField": false
+      },
+      {
+        "label": "Armor Class Penalty (Untyped)",
+        "type": "armorClassPenalty",
+        "fields": []
+      },
+      {
+        "label": "Armor Class Status Bonus",
+        "type": "armorClassBonus-status",
+        "fields": []
+      },
+      {
+        "label": "Armor Class Status Penalty",
+        "type": "armorClassPenalty-status",
+        "fields": [],
+        "freeTextField": false
+      },
+      {
+        "label": "Attack Bonus (Untyped)",
+        "type": "attackBonus",
+        "fields": [
+          {
+            "label": "All Attacks",
+            "field": "all"
+          },
+          {
+            "label": "Melee Attacks",
+            "field": "melee"
+          },
+          {
+            "label": "Ranged Attacks",
+            "field": "ranged"
+          },
+          {
+            "label": "Strength-Based",
+            "field": "str"
+          },
+          {
+            "label": "Dexterity-Based",
+            "field": "dex"
+          },
+          {
+            "label": "Unarmed",
+            "field": "unarmed"
+          }
+        ]
+      },
+      {
+        "label": "Attack Calculation",
+        "type": "attackCalculation",
+        "fields": [
+          {
+            "label": "Strength",
+            "field": "str"
+          },
+          {
+            "label": "Dexterity",
+            "field": "dex"
+          },
+          {
+            "label": "Constitution",
+            "field": "con"
+          },
+          {
+            "label": "Intelligence",
+            "field": "int"
+          },
+          {
+            "label": "Wisdom",
+            "field": "wis"
+          },
+          {
+            "label": "Charisma",
+            "field": "cha"
+          }
+        ]
+      },
+      {
+        "label": "Attack Circumstance Bonus",
+        "type": "attackBonus-circumstance",
+        "fields": [
+          {
+            "label": "All Attacks",
+            "field": "all"
+          },
+          {
+            "label": "Melee Attacks",
+            "field": "melee"
+          },
+          {
+            "label": "Ranged Attacks",
+            "field": "ranged"
+          },
+          {
+            "label": "Strength-Based",
+            "field": "str"
+          },
+          {
+            "label": "Dexterity-Based",
+            "field": "dex"
+          },
+          {
+            "label": "Unarmed",
+            "field": "unarmed"
+          }
+        ]
+      },
+      {
+        "label": "Attack Circumstance Penalty",
+        "type": "attackPenalty-circumstance",
+        "fields": [
+          {
+            "label": "All Attacks",
+            "field": "all"
+          },
+          {
+            "label": "Melee Attacks",
+            "field": "melee"
+          },
+          {
+            "label": "Ranged Attacks",
+            "field": "ranged"
+          },
+          {
+            "label": "Strength-Based",
+            "field": "str"
+          },
+          {
+            "label": "Dexterity-Based",
+            "field": "dex"
+          },
+          {
+            "label": "Unarmed",
+            "field": "unarmed"
+          }
+        ]
+      },
+      {
+        "label": "Attack Item Bonus",
+        "type": "attackBonus-item",
+        "fields": [
+          {
+            "label": "All Attacks",
+            "field": "all"
+          },
+          {
+            "label": "Melee Attacks",
+            "field": "melee"
+          },
+          {
+            "label": "Ranged Attacks",
+            "field": "ranged"
+          },
+          {
+            "label": "Strength-Based",
+            "field": "str"
+          },
+          {
+            "label": "Dexterity-Based",
+            "field": "dex"
+          },
+          {
+            "label": "Unarmed",
+            "field": "unarmed"
+          }
+        ]
+      },
+      {
+        "label": "Attack Item Penalty",
+        "type": "attackPenalty-item",
+        "fields": [
+          {
+            "label": "All Attacks",
+            "field": "all"
+          },
+          {
+            "label": "Melee Attacks",
+            "field": "melee"
+          },
+          {
+            "label": "Ranged Attacks",
+            "field": "ranged"
+          },
+          {
+            "label": "Strength-Based",
+            "field": "str"
+          },
+          {
+            "label": "Dexterity-Based",
+            "field": "dex"
+          },
+          {
+            "label": "Unarmed",
+            "field": "unarmed"
+          }
+        ]
+      },
+      {
+        "label": "Attack Penalty (Untyped)",
+        "type": "attackPenalty",
+        "fields": [
+          {
+            "label": "All Attacks",
+            "field": "all"
+          },
+          {
+            "label": "Melee Attacks",
+            "field": "melee"
+          },
+          {
+            "label": "Ranged Attacks",
+            "field": "ranged"
+          },
+          {
+            "label": "Strength-Based",
+            "field": "str"
+          },
+          {
+            "label": "Dexterity-Based",
+            "field": "dex"
+          },
+          {
+            "label": "Unarmed",
+            "field": "unarmed"
+          }
+        ]
+      },
+      {
+        "label": "Attack Status Bonus",
+        "type": "attackBonus-status",
+        "fields": [
+          {
+            "label": "All Attacks",
+            "field": "all"
+          },
+          {
+            "label": "Melee Attacks",
+            "field": "melee"
+          },
+          {
+            "label": "Ranged Attacks",
+            "field": "ranged"
+          },
+          {
+            "label": "Strength-Based",
+            "field": "str"
+          },
+          {
+            "label": "Dexterity-Based",
+            "field": "dex"
+          },
+          {
+            "label": "Unarmed",
+            "field": "unarmed"
+          }
+        ]
+      },
+      {
+        "label": "Attack Status Penalty",
+        "type": "attackPenalty-status",
+        "fields": [
+          {
+            "label": "All Attacks",
+            "field": "all"
+          },
+          {
+            "label": "Melee Attacks",
+            "field": "melee"
+          },
+          {
+            "label": "Ranged Attacks",
+            "field": "ranged"
+          },
+          {
+            "label": "Strength-Based",
+            "field": "str"
+          },
+          {
+            "label": "Dexterity-Based",
+            "field": "dex"
+          },
+          {
+            "label": "Unarmed",
+            "field": "unarmed"
+          }
+        ]
+      },
+      {
+        "label": "Attacks Targeting You",
+        "type": "attackTargeting",
+        "fields": []
+      },
+      {
+        "label": "Attacks Targeting You Greater Than 5 Feet",
+        "type": "attackTargetingGreaterFive",
+        "fields": []
+      },
+      {
+        "label": "Attacks Targeting You Within 5 Feet",
+        "type": "attackTargetingFive",
+        "fields": []
+      },
+      {
+        "label": "Cantrip Damage Bonus (Untyped)",
+        "type": "cantripDamageBonus",
+        "fields": [
+          {
+            "label": "All Cantrips",
+            "field": "all"
+          },
+          {
+            "label": "Cantrip Attacks Only",
+            "field": "attack"
+          }
+        ]
+      },
+      {
+        "label": "Cantrip Damage Circumstance Bonus",
+        "type": "cantripDamageBonus-circumstance",
+        "fields": [
+          {
+            "label": "All Cantrips",
+            "field": "all"
+          },
+          {
+            "label": "Cantrip Attacks Only",
+            "field": "attack"
+          }
+        ]
+      },
+      {
+        "label": "Cantrip Damage Circumstance Penalty",
+        "type": "cantripDamagePenalty-circumstance",
+        "fields": [
+          {
+            "label": "All Cantrips",
+            "field": "all"
+          },
+          {
+            "label": "Cantrip Attacks Only",
+            "field": "attack"
+          }
+        ]
+      },
+      {
+        "label": "Cantrip Damage Item Bonus",
+        "type": "cantripDamageBonus-item",
+        "fields": [
+          {
+            "label": "All Cantrips",
+            "field": "all"
+          },
+          {
+            "label": "Cantrip Attacks Only",
+            "field": "attack"
+          }
+        ]
+      },
+      {
+        "label": "Cantrip Damage Item Penalty",
+        "type": "cantripDamagePenalty-item",
+        "fields": [
+          {
+            "label": "All Cantrips",
+            "field": "all"
+          },
+          {
+            "label": "Cantrip Attacks Only",
+            "field": "attack"
+          }
+        ]
+      },
+      {
+        "label": "Cantrip Damage Penalty (Untyped)",
+        "type": "cantripDamagePenalty",
+        "fields": [
+          {
+            "label": "All Cantrips",
+            "field": "all"
+          },
+          {
+            "label": "Cantrip Attacks Only",
+            "field": "attack"
+          }
+        ]
+      },
+      {
+        "label": "Cantrip Damage Status Bonus",
+        "type": "cantripDamageBonus-status",
+        "fields": [
+          {
+            "label": "All Cantrips",
+            "field": "all"
+          },
+          {
+            "label": "Cantrip Attacks Only",
+            "field": "attack"
+          }
+        ]
+      },
+      {
+        "label": "Cantrip Damage Status Penalty",
+        "type": "cantripDamagePenalty-status",
+        "fields": [
+          {
+            "label": "All Cantrips",
+            "field": "all"
+          },
+          {
+            "label": "Cantrip Attacks Only",
+            "field": "attack"
+          }
+        ]
+      },
+      {
+        "label": "Damage Bonus (Untyped)",
+        "type": "damageBonus",
+        "fields": [],
+        "freeTextField": true
+      },
+      {
+        "label": "Damage Calculation",
+        "type": "damageCalculation",
+        "fields": [
+          {
+            "label": "Strength",
+            "field": "str"
+          },
+          {
+            "label": "Dexterity",
+            "field": "dex"
+          },
+          {
+            "label": "Constitution",
+            "field": "con"
+          },
+          {
+            "label": "Intelligence",
+            "field": "int"
+          },
+          {
+            "label": "Wisdom",
+            "field": "wis"
+          },
+          {
+            "label": "Charisma",
+            "field": "cha"
+          }
+        ]
+      },
+      {
+        "label": "Damage Circumstance Bonus",
+        "type": "damageBonus-circumstance",
+        "fields": [],
+        "freeTextField": true
+      },
+      {
+        "label": "Damage Circumstance Penalty",
+        "type": "damagePenalty-circumstance",
+        "fields": [],
+        "freeTextField": true
+      },
+      {
+        "label": "Damage Item Bonus",
+        "type": "damageBonus-item",
+        "fields": [],
+        "freeTextField": true
+      },
+      {
+        "label": "Damage Item Penalty",
+        "type": "damagePenalty-item",
+        "fields": [],
+        "freeTextField": true
+      },
+      {
+        "label": "Damage Penalty (Untyped)",
+        "type": "damagePenalty",
+        "fields": [],
+        "freeTextField": true
+      },
+      {
+        "label": "Damage Status Bonus",
+        "type": "damageBonus-status",
+        "fields": [],
+        "freeTextField": true
+      },
+      {
+        "label": "Damage Status Penalty",
+        "type": "damagePenalty-status",
+        "fields": [],
+        "freeTextField": true
+      },
+      {
+        "label": "Healing Circumstance Bonus",
+        "type": "healingBonus-circumstance",
+        "fields": [],
+        "freeTextField": false
+      },
+      {
+        "label": "Healing Circumstance Penalty",
+        "type": "healingPenalty-circumstance",
+        "fields": [],
+        "freeTextField": false
+      },
+      {
+        "label": "Healing Item Bonus",
+        "type": "healingBonus-item",
+        "fields": [],
+        "freeTextField": false
+      },
+      {
+        "label": "Healing Item Penalty",
+        "type": "healingPenalty-item",
+        "fields": [],
+        "freeTextField": false
+      },
+      {
+        "label": "Healing Status Bonus",
+        "type": "healingBonus-status",
+        "fields": [],
+        "freeTextField": false
+      },
+      {
+        "label": "Healing Status Penalty",
+        "type": "healingPenalty-status",
+        "fields": [],
+        "freeTextField": false
+      },
+      {
+        "label": "Initiative Circumstance Bonus",
+        "type": "initiativeBonus-circumstance",
+        "fields": []
+      },
+      {
+        "label": "Initiative Circumstance Penalty",
+        "type": "initiativePenalty-circumstance",
+        "fields": []
+      },
+      {
+        "label": "Initiative Item Bonus",
+        "type": "initiativeBonus-item",
+        "fields": []
+      },
+      {
+        "label": "Initiative Item Penalty",
+        "type": "initiativePenalty-item",
+        "fields": []
+      },
+      {
+        "label": "Initiative Status Bonus",
+        "type": "initiativeBonus-status",
+        "fields": []
+      },
+      {
+        "label": "Initiative Status Penalty",
+        "type": "initiativePenalty-status",
+        "fields": []
+      },
+      {
+        "label": "Perception Circumstance Bonus",
+        "type": "perceptionBonus-circumstance",
+        "fields": []
+      },
+      {
+        "label": "Perception Circumstance Penalty",
+        "type": "perceptionPenalty-circumstance",
+        "fields": []
+      },
+      {
+        "label": "Perception Item Bonus",
+        "type": "perceptionBonus-item",
+        "fields": []
+      },
+      {
+        "label": "Perception Item Penalty",
+        "type": "perceptionPenalty-item",
+        "fields": []
+      },
+      {
+        "label": "Perception Status Bonus",
+        "type": "perceptionBonus-status",
+        "fields": []
+      },
+      {
+        "label": "Perception Status Penalty",
+        "type": "perceptionPenalty-status",
+        "fields": []
+      },
+      {
+        "label": "Persistent Damage",
+        "type": "persistentDamage",
+        "fields": [],
+        "freeTextField": false
+      },
+      {
+        "label": "Saving Throw Bonus (Untyped)",
+        "type": "saveBonus",
+        "fields": [
+          {
+            "label": "All Saving Throws",
+            "field": "all"
+          },
+          {
+            "label": "Fortitude",
+            "field": "fortitude"
+          },
+          {
+            "label": "Reflex",
+            "field": "reflex"
+          },
+          {
+            "label": "Will",
+            "field": "will"
+          },
+          {
+            "label": "Vs Spells",
+            "field": "spell"
+          }
+        ]
+      },
+      {
+        "label": "Saving Throw Circumstance Bonus",
+        "type": "saveBonus-circumstance",
+        "fields": [
+          {
+            "label": "All Saving Throws",
+            "field": "all"
+          },
+          {
+            "label": "Fortitude",
+            "field": "fortitude"
+          },
+          {
+            "label": "Reflex",
+            "field": "reflex"
+          },
+          {
+            "label": "Will",
+            "field": "will"
+          },
+          {
+            "label": "Vs Spells",
+            "field": "spell"
+          }
+        ]
+      },
+      {
+        "label": "Saving Throw Circumstance Penalty",
+        "type": "savePenalty-circumstance",
+        "fields": [
+          {
+            "label": "All Saving Throws",
+            "field": "all"
+          },
+          {
+            "label": "Fortitude",
+            "field": "fortitude"
+          },
+          {
+            "label": "Reflex",
+            "field": "reflex"
+          },
+          {
+            "label": "Will",
+            "field": "will"
+          },
+          {
+            "label": "Vs Spells",
+            "field": "spell"
+          }
+        ]
+      },
+      {
+        "label": "Saving Throw Item Bonus",
+        "type": "saveBonus-item",
+        "fields": [
+          {
+            "label": "All Saving Throws",
+            "field": "all"
+          },
+          {
+            "label": "Fortitude",
+            "field": "fortitude"
+          },
+          {
+            "label": "Reflex",
+            "field": "reflex"
+          },
+          {
+            "label": "Will",
+            "field": "will"
+          },
+          {
+            "label": "Vs Spells",
+            "field": "spell"
+          }
+        ]
+      },
+      {
+        "label": "Saving Throw Item Penalty",
+        "type": "savePenalty-item",
+        "fields": [
+          {
+            "label": "All Saving Throws",
+            "field": "all"
+          },
+          {
+            "label": "Fortitude",
+            "field": "fortitude"
+          },
+          {
+            "label": "Reflex",
+            "field": "reflex"
+          },
+          {
+            "label": "Will",
+            "field": "will"
+          },
+          {
+            "label": "Vs Spells",
+            "field": "spell"
+          }
+        ]
+      },
+      {
+        "label": "Saving Throw Penalty (Untyped)",
+        "type": "savePenalty",
+        "fields": [
+          {
+            "label": "All Saving Throws",
+            "field": "all"
+          },
+          {
+            "label": "Fortitude",
+            "field": "fortitude"
+          },
+          {
+            "label": "Reflex",
+            "field": "reflex"
+          },
+          {
+            "label": "Will",
+            "field": "will"
+          },
+          {
+            "label": "Vs Spells",
+            "field": "spell"
+          }
+        ]
+      },
+      {
+        "label": "Saving Throw Status Bonus",
+        "type": "saveBonus-status",
+        "fields": [
+          {
+            "label": "All Saving Throws",
+            "field": "all"
+          },
+          {
+            "label": "Fortitude",
+            "field": "fortitude"
+          },
+          {
+            "label": "Reflex",
+            "field": "reflex"
+          },
+          {
+            "label": "Will",
+            "field": "will"
+          },
+          {
+            "label": "Vs Spells",
+            "field": "spell"
+          }
+        ]
+      },
+      {
+        "label": "Saving Throw Status Penalty",
+        "type": "savePenalty-status",
+        "fields": [
+          {
+            "label": "All Saving Throws",
+            "field": "all"
+          },
+          {
+            "label": "Fortitude",
+            "field": "fortitude"
+          },
+          {
+            "label": "Reflex",
+            "field": "reflex"
+          },
+          {
+            "label": "Will",
+            "field": "will"
+          },
+          {
+            "label": "Vs Spells",
+            "field": "spell"
+          }
+        ]
+      },
+      {
+        "label": "Skill Check Bonus (Untyped)",
+        "type": "skillBonus",
+        "fields": [
+          {
+            "label": "All Skills",
+            "field": "all"
+          },
+          {
+            "label": "Strength-based",
+            "field": "str"
+          },
+          {
+            "label": "Dexterity-based",
+            "field": "dex"
+          },
+          {
+            "label": "Constitution-based",
+            "field": "con"
+          },
+          {
+            "label": "Intelligence-based",
+            "field": "int"
+          },
+          {
+            "label": "Wisdom-based",
+            "field": "wis"
+          },
+          {
+            "label": "Charisma-based",
+            "field": "cha"
+          },
+          {
+            "label": "Acrobatics",
+            "field": "acrobatics"
+          },
+          {
+            "label": "Arcana",
+            "field": "arcana"
+          },
+          {
+            "label": "Athletics",
+            "field": "athletics"
+          },
+          {
+            "label": "Crafting",
+            "field": "crafting"
+          },
+          {
+            "label": "Deception",
+            "field": "deception"
+          },
+          {
+            "label": "Diplomacy",
+            "field": "diplomacy"
+          },
+          {
+            "label": "Intimidation",
+            "field": "intimidation"
+          },
+          {
+            "label": "Medicine",
+            "field": "medicine"
+          },
+          {
+            "label": "Nature",
+            "field": "nature"
+          },
+          {
+            "label": "Occultism",
+            "field": "occultism"
+          },
+          {
+            "label": "Performance",
+            "field": "performance"
+          },
+          {
+            "label": "Religion",
+            "field": "religion"
+          },
+          {
+            "label": "Society",
+            "field": "society"
+          },
+          {
+            "label": "Stealth",
+            "field": "stealth"
+          },
+          {
+            "label": "Survival",
+            "field": "survival"
+          },
+          {
+            "label": "Thievery",
+            "field": "thievery"
+          }
+        ]
+      },
+      {
+        "label": "Skill Check Circumstance Bonus",
+        "type": "skillBonus-circumstance",
+        "fields": [
+          {
+            "label": "All Skills",
+            "field": "all"
+          },
+          {
+            "label": "Strength-based",
+            "field": "str"
+          },
+          {
+            "label": "Dexterity-based",
+            "field": "dex"
+          },
+          {
+            "label": "Constitution-based",
+            "field": "con"
+          },
+          {
+            "label": "Intelligence-based",
+            "field": "int"
+          },
+          {
+            "label": "Wisdom-based",
+            "field": "wis"
+          },
+          {
+            "label": "Charisma-based",
+            "field": "cha"
+          },
+          {
+            "label": "Acrobatics",
+            "field": "acrobatics"
+          },
+          {
+            "label": "Arcana",
+            "field": "arcana"
+          },
+          {
+            "label": "Athletics",
+            "field": "athletics"
+          },
+          {
+            "label": "Crafting",
+            "field": "crafting"
+          },
+          {
+            "label": "Deception",
+            "field": "deception"
+          },
+          {
+            "label": "Diplomacy",
+            "field": "diplomacy"
+          },
+          {
+            "label": "Intimidation",
+            "field": "intimidation"
+          },
+          {
+            "label": "Medicine",
+            "field": "medicine"
+          },
+          {
+            "label": "Nature",
+            "field": "nature"
+          },
+          {
+            "label": "Occultism",
+            "field": "occultism"
+          },
+          {
+            "label": "Performance",
+            "field": "performance"
+          },
+          {
+            "label": "Religion",
+            "field": "religion"
+          },
+          {
+            "label": "Society",
+            "field": "society"
+          },
+          {
+            "label": "Stealth",
+            "field": "stealth"
+          },
+          {
+            "label": "Survival",
+            "field": "survival"
+          },
+          {
+            "label": "Thievery",
+            "field": "thievery"
+          }
+        ]
+      },
+      {
+        "label": "Skill Check Circumstance Penalty",
+        "type": "skillPenalty-circumstance",
+        "fields": [
+          {
+            "label": "All Skills",
+            "field": "all"
+          },
+          {
+            "label": "Strength-based",
+            "field": "str"
+          },
+          {
+            "label": "Dexterity-based",
+            "field": "dex"
+          },
+          {
+            "label": "Constitution-based",
+            "field": "con"
+          },
+          {
+            "label": "Intelligence-based",
+            "field": "int"
+          },
+          {
+            "label": "Wisdom-based",
+            "field": "wis"
+          },
+          {
+            "label": "Charisma-based",
+            "field": "cha"
+          },
+          {
+            "label": "Acrobatics",
+            "field": "acrobatics"
+          },
+          {
+            "label": "Arcana",
+            "field": "arcana"
+          },
+          {
+            "label": "Athletics",
+            "field": "athletics"
+          },
+          {
+            "label": "Crafting",
+            "field": "crafting"
+          },
+          {
+            "label": "Deception",
+            "field": "deception"
+          },
+          {
+            "label": "Diplomacy",
+            "field": "diplomacy"
+          },
+          {
+            "label": "Intimidation",
+            "field": "intimidation"
+          },
+          {
+            "label": "Medicine",
+            "field": "medicine"
+          },
+          {
+            "label": "Nature",
+            "field": "nature"
+          },
+          {
+            "label": "Occultism",
+            "field": "occultism"
+          },
+          {
+            "label": "Performance",
+            "field": "performance"
+          },
+          {
+            "label": "Religion",
+            "field": "religion"
+          },
+          {
+            "label": "Society",
+            "field": "society"
+          },
+          {
+            "label": "Stealth",
+            "field": "stealth"
+          },
+          {
+            "label": "Survival",
+            "field": "survival"
+          },
+          {
+            "label": "Thievery",
+            "field": "thievery"
+          }
+        ]
+      },
+      {
+        "label": "Skill Check Item Bonus",
+        "type": "skillBonus-item",
+        "fields": [
+          {
+            "label": "All Skills",
+            "field": "all"
+          },
+          {
+            "label": "Strength-based",
+            "field": "str"
+          },
+          {
+            "label": "Dexterity-based",
+            "field": "dex"
+          },
+          {
+            "label": "Constitution-based",
+            "field": "con"
+          },
+          {
+            "label": "Intelligence-based",
+            "field": "int"
+          },
+          {
+            "label": "Wisdom-based",
+            "field": "wis"
+          },
+          {
+            "label": "Charisma-based",
+            "field": "cha"
+          },
+          {
+            "label": "Acrobatics",
+            "field": "acrobatics"
+          },
+          {
+            "label": "Arcana",
+            "field": "arcana"
+          },
+          {
+            "label": "Athletics",
+            "field": "athletics"
+          },
+          {
+            "label": "Crafting",
+            "field": "crafting"
+          },
+          {
+            "label": "Deception",
+            "field": "deception"
+          },
+          {
+            "label": "Diplomacy",
+            "field": "diplomacy"
+          },
+          {
+            "label": "Intimidation",
+            "field": "intimidation"
+          },
+          {
+            "label": "Medicine",
+            "field": "medicine"
+          },
+          {
+            "label": "Nature",
+            "field": "nature"
+          },
+          {
+            "label": "Occultism",
+            "field": "occultism"
+          },
+          {
+            "label": "Performance",
+            "field": "performance"
+          },
+          {
+            "label": "Religion",
+            "field": "religion"
+          },
+          {
+            "label": "Society",
+            "field": "society"
+          },
+          {
+            "label": "Stealth",
+            "field": "stealth"
+          },
+          {
+            "label": "Survival",
+            "field": "survival"
+          },
+          {
+            "label": "Thievery",
+            "field": "thievery"
+          }
+        ]
+      },
+      {
+        "label": "Skill Check Item Penalty",
+        "type": "skillPenalty-item",
+        "fields": [
+          {
+            "label": "All Skills",
+            "field": "all"
+          },
+          {
+            "label": "Strength-based",
+            "field": "str"
+          },
+          {
+            "label": "Dexterity-based",
+            "field": "dex"
+          },
+          {
+            "label": "Constitution-based",
+            "field": "con"
+          },
+          {
+            "label": "Intelligence-based",
+            "field": "int"
+          },
+          {
+            "label": "Wisdom-based",
+            "field": "wis"
+          },
+          {
+            "label": "Charisma-based",
+            "field": "cha"
+          },
+          {
+            "label": "Acrobatics",
+            "field": "acrobatics"
+          },
+          {
+            "label": "Arcana",
+            "field": "arcana"
+          },
+          {
+            "label": "Athletics",
+            "field": "athletics"
+          },
+          {
+            "label": "Crafting",
+            "field": "crafting"
+          },
+          {
+            "label": "Deception",
+            "field": "deception"
+          },
+          {
+            "label": "Diplomacy",
+            "field": "diplomacy"
+          },
+          {
+            "label": "Intimidation",
+            "field": "intimidation"
+          },
+          {
+            "label": "Medicine",
+            "field": "medicine"
+          },
+          {
+            "label": "Nature",
+            "field": "nature"
+          },
+          {
+            "label": "Occultism",
+            "field": "occultism"
+          },
+          {
+            "label": "Performance",
+            "field": "performance"
+          },
+          {
+            "label": "Religion",
+            "field": "religion"
+          },
+          {
+            "label": "Society",
+            "field": "society"
+          },
+          {
+            "label": "Stealth",
+            "field": "stealth"
+          },
+          {
+            "label": "Survival",
+            "field": "survival"
+          },
+          {
+            "label": "Thievery",
+            "field": "thievery"
+          }
+        ]
+      },
+      {
+        "label": "Skill Check Penalty (Untyped)",
+        "type": "skillPenalty",
+        "fields": [
+          {
+            "label": "All Skills",
+            "field": "all"
+          },
+          {
+            "label": "Strength-based",
+            "field": "str"
+          },
+          {
+            "label": "Dexterity-based",
+            "field": "dex"
+          },
+          {
+            "label": "Constitution-based",
+            "field": "con"
+          },
+          {
+            "label": "Intelligence-based",
+            "field": "int"
+          },
+          {
+            "label": "Wisdom-based",
+            "field": "wis"
+          },
+          {
+            "label": "Charisma-based",
+            "field": "cha"
+          },
+          {
+            "label": "Acrobatics",
+            "field": "acrobatics"
+          },
+          {
+            "label": "Arcana",
+            "field": "arcana"
+          },
+          {
+            "label": "Athletics",
+            "field": "athletics"
+          },
+          {
+            "label": "Crafting",
+            "field": "crafting"
+          },
+          {
+            "label": "Deception",
+            "field": "deception"
+          },
+          {
+            "label": "Diplomacy",
+            "field": "diplomacy"
+          },
+          {
+            "label": "Intimidation",
+            "field": "intimidation"
+          },
+          {
+            "label": "Medicine",
+            "field": "medicine"
+          },
+          {
+            "label": "Nature",
+            "field": "nature"
+          },
+          {
+            "label": "Occultism",
+            "field": "occultism"
+          },
+          {
+            "label": "Performance",
+            "field": "performance"
+          },
+          {
+            "label": "Religion",
+            "field": "religion"
+          },
+          {
+            "label": "Society",
+            "field": "society"
+          },
+          {
+            "label": "Stealth",
+            "field": "stealth"
+          },
+          {
+            "label": "Survival",
+            "field": "survival"
+          },
+          {
+            "label": "Thievery",
+            "field": "thievery"
+          }
+        ]
+      },
+      {
+        "label": "Skill Check Status Bonus",
+        "type": "skillBonus-status",
+        "fields": [
+          {
+            "label": "All Skills",
+            "field": "all"
+          },
+          {
+            "label": "Strength-based",
+            "field": "str"
+          },
+          {
+            "label": "Dexterity-based",
+            "field": "dex"
+          },
+          {
+            "label": "Constitution-based",
+            "field": "con"
+          },
+          {
+            "label": "Intelligence-based",
+            "field": "int"
+          },
+          {
+            "label": "Wisdom-based",
+            "field": "wis"
+          },
+          {
+            "label": "Charisma-based",
+            "field": "cha"
+          },
+          {
+            "label": "Acrobatics",
+            "field": "acrobatics"
+          },
+          {
+            "label": "Arcana",
+            "field": "arcana"
+          },
+          {
+            "label": "Athletics",
+            "field": "athletics"
+          },
+          {
+            "label": "Crafting",
+            "field": "crafting"
+          },
+          {
+            "label": "Deception",
+            "field": "deception"
+          },
+          {
+            "label": "Diplomacy",
+            "field": "diplomacy"
+          },
+          {
+            "label": "Intimidation",
+            "field": "intimidation"
+          },
+          {
+            "label": "Medicine",
+            "field": "medicine"
+          },
+          {
+            "label": "Nature",
+            "field": "nature"
+          },
+          {
+            "label": "Occultism",
+            "field": "occultism"
+          },
+          {
+            "label": "Performance",
+            "field": "performance"
+          },
+          {
+            "label": "Religion",
+            "field": "religion"
+          },
+          {
+            "label": "Society",
+            "field": "society"
+          },
+          {
+            "label": "Stealth",
+            "field": "stealth"
+          },
+          {
+            "label": "Survival",
+            "field": "survival"
+          },
+          {
+            "label": "Thievery",
+            "field": "thievery"
+          }
+        ]
+      },
+      {
+        "label": "Skill Check Status Penalty",
+        "type": "skillPenalty-status",
+        "fields": [
+          {
+            "label": "All Skills",
+            "field": "all"
+          },
+          {
+            "label": "Strength-based",
+            "field": "str"
+          },
+          {
+            "label": "Dexterity-based",
+            "field": "dex"
+          },
+          {
+            "label": "Constitution-based",
+            "field": "con"
+          },
+          {
+            "label": "Intelligence-based",
+            "field": "int"
+          },
+          {
+            "label": "Wisdom-based",
+            "field": "wis"
+          },
+          {
+            "label": "Charisma-based",
+            "field": "cha"
+          },
+          {
+            "label": "Acrobatics",
+            "field": "acrobatics"
+          },
+          {
+            "label": "Arcana",
+            "field": "arcana"
+          },
+          {
+            "label": "Athletics",
+            "field": "athletics"
+          },
+          {
+            "label": "Crafting",
+            "field": "crafting"
+          },
+          {
+            "label": "Deception",
+            "field": "deception"
+          },
+          {
+            "label": "Diplomacy",
+            "field": "diplomacy"
+          },
+          {
+            "label": "Intimidation",
+            "field": "intimidation"
+          },
+          {
+            "label": "Medicine",
+            "field": "medicine"
+          },
+          {
+            "label": "Nature",
+            "field": "nature"
+          },
+          {
+            "label": "Occultism",
+            "field": "occultism"
+          },
+          {
+            "label": "Performance",
+            "field": "performance"
+          },
+          {
+            "label": "Religion",
+            "field": "religion"
+          },
+          {
+            "label": "Society",
+            "field": "society"
+          },
+          {
+            "label": "Stealth",
+            "field": "stealth"
+          },
+          {
+            "label": "Survival",
+            "field": "survival"
+          },
+          {
+            "label": "Thievery",
+            "field": "thievery"
+          }
+        ]
+      },
+      {
+        "label": "Spell Attack Circumstance Bonus",
+        "type": "spellAttackBonus-circumstance",
+        "fields": []
+      },
+      {
+        "label": "Spell Attack Circumstance Penalty",
+        "type": "spellAttackPenalty-circumstance",
+        "fields": []
+      },
+      {
+        "label": "Spell Attack Item Bonus",
+        "type": "spellAttackBonus-item",
+        "fields": []
+      },
+      {
+        "label": "Spell Attack Item Penalty",
+        "type": "spellAttackPenalty-item",
+        "fields": []
+      },
+      {
+        "label": "Spell Attack Status Bonus",
+        "type": "spellAttackBonus-status",
+        "fields": []
+      },
+      {
+        "label": "Spell Attack Status Penalty",
+        "type": "spellAttackPenalty-status",
+        "fields": []
+      },
+      {
+        "label": "Spell Damage Bonus (Untyped)",
+        "type": "spellDamageBonus",
+        "fields": [
+          {
+            "label": "All Spells",
+            "field": "all"
+          },
+          {
+            "label": "Spell Attacks Only",
+            "field": "attack"
+          }
+        ]
+      },
+      {
+        "label": "Spell Damage Circumstance Bonus",
+        "type": "spellDamageBonus-circumstance",
+        "fields": [
+          {
+            "label": "All Spells",
+            "field": "all"
+          },
+          {
+            "label": "Spell Attacks Only",
+            "field": "attack"
+          }
+        ]
+      },
+      {
+        "label": "Spell Damage Circumstance Penalty",
+        "type": "spellDamagePenalty-circumstance",
+        "fields": [
+          {
+            "label": "All Spells",
+            "field": "all"
+          },
+          {
+            "label": "Spell Attacks Only",
+            "field": "attack"
+          }
+        ]
+      },
+      {
+        "label": "Spell Damage Item Bonus",
+        "type": "spellDamageBonus-item",
+        "fields": [
+          {
+            "label": "All Spells",
+            "field": "all"
+          },
+          {
+            "label": "Spell Attacks Only",
+            "field": "attack"
+          }
+        ]
+      },
+      {
+        "label": "Spell Damage Item Penalty",
+        "type": "spellDamagePenalty-item",
+        "fields": [
+          {
+            "label": "All Spells",
+            "field": "all"
+          },
+          {
+            "label": "Spell Attacks Only",
+            "field": "attack"
+          }
+        ]
+      },
+      {
+        "label": "Spell Damage Penalty (Untyped)",
+        "type": "spellDamagePenalty",
+        "fields": [
+          {
+            "label": "All Spells",
+            "field": "all"
+          },
+          {
+            "label": "Spell Attacks Only",
+            "field": "attack"
+          }
+        ]
+      },
+      {
+        "label": "Spell Damage Status Bonus",
+        "type": "spellDamageBonus-status",
+        "fields": [
+          {
+            "label": "All Spells",
+            "field": "all"
+          },
+          {
+            "label": "Spell Attacks Only",
+            "field": "attack"
+          }
+        ]
+      },
+      {
+        "label": "Spell Damage Status Penalty",
+        "type": "spellDamagePenalty-status",
+        "fields": [
+          {
+            "label": "All Spells",
+            "field": "all"
+          },
+          {
+            "label": "Spell Attacks Only",
+            "field": "attack"
+          }
+        ]
+      },
+      {
+        "label": "Spell DC Circumstance Bonus",
+        "type": "spellDCBonus-circumstance",
+        "fields": []
+      },
+      {
+        "label": "Spell DC Circumstance Penalty",
+        "type": "spellDCPenalty-circumstance",
+        "fields": []
+      },
+      {
+        "label": "Spell DC Item Bonus",
+        "type": "spellDCBonus-item",
+        "fields": []
+      },
+      {
+        "label": "Spell DC Item Penalty",
+        "type": "spellDCPenalty-item",
+        "fields": []
+      },
+      {
+        "label": "Spell DC Status Bonus",
+        "type": "spellDCBonus-status",
+        "fields": []
+      },
+      {
+        "label": "Spell DC Status Penalty",
+        "type": "spellDCPenalty-status",
+        "fields": []
+      },
+      {
+        "label": "Spell or Ability Name",
+        "type": "spellName",
+        "fields": []
+      },
+      {
+        "label": "Token Mark",
+        "type": "tokenMark",
+        "fields": [],
+        "freeTextField": true
+      }
+    ],
+    "otherSettings": {
+      "advDisRolls": [
+        "d20"
+      ],
+      "advName": "Fortune",
+      "advShortName": "FOR",
+      "disName": "Misfortune",
+      "disShortName": "MIS",
+      "commonScript": {
+        "file": "rollhandlers/common.js"
+      },
+      "scripts": {
+        "PF2e": {
+          "file": "rollhandlers/PF2e.js"
+        },
+        "Spells": {
+          "file": "rollhandlers/spells.js"
+        }
+      },
+      "defaultDice": "default",
+      "defaultUnitsPerSquare": 5,
+      "defaultUnits": "feet",
+      "alternateDiagonalMovement": true,
+      "rerollContextMenuLabel": "Re-roll and use Hero Point",
+      "onReroll": {
+        "file": "rollhandlers/onReroll.js"
+      },
+      "rerollIgnoresAdvDis": true
+    },
+    "campaignSettings": [
+      {
+        "name": "Track Coin Weight",
+        "key": "coinWeight",
+        "description": "When calculating inventory weight, include coinage (1000 coins / 1 bulk).",
+        "values": [
+          {
+            "label": "No",
+            "value": "no"
+          },
+          {
+            "label": "Yes",
+            "value": "yes"
+          }
+        ]
+      }
+    ],
+    "themes": [
+      {
+        "name": "Pathfinder - Light",
+        "colorScheme": "light",
+        "theme": {
+          "scale": 1,
+          "fontSmoothing": true,
+          "focusRing": "auto",
+          "white": "#fff",
+          "black": "#000",
+          "colors": {
+            "dark": [
+              "#fafaf7",
+              "#b8b8b8",
+              "#828282",
+              "#696969",
+              "#424242",
+              "#3b3b3b",
+              "#2e2e2e",
+              "#242424",
+              "#1f1f1f",
+              "#141414"
+            ],
+            "gray": [
+              "#fcfcfc",
+              "#e3e3e3",
+              "#ebe8df",
+              "#dcd9cc",
+              "#d9d2b6",
+              "#ded3a6",
+              "#a69b6d",
+              "#786f48",
+              "#59502a",
+              "#362f15"
+            ],
+            "red": [
+              "#ffe7e7",
+              "#ffcece",
+              "#ff9a9b",
+              "#ff6464",
+              "#ff3636",
+              "#ff1818",
+              "#ff0308",
+              "#e40000",
+              "#cc0000",
+              "#b20000"
+            ],
+            "pink": [
+              "#fff0f6",
+              "#ffdeeb",
+              "#fcc2d7",
+              "#faa2c1",
+              "#f783ac",
+              "#f06595",
+              "#e64980",
+              "#d6336c",
+              "#c2255c",
+              "#a61e4d"
+            ],
+            "grape": [
+              "#f8f0fc",
+              "#f3d9fa",
+              "#eebefa",
+              "#e599f7",
+              "#da77f2",
+              "#cc5de8",
+              "#be4bdb",
+              "#ae3ec9",
+              "#9c36b5",
+              "#862e9c"
+            ],
+            "violet": [
+              "#f3f0ff",
+              "#e5dbff",
+              "#d0bfff",
+              "#b197fc",
+              "#9775fa",
+              "#845ef7",
+              "#7950f2",
+              "#7048e8",
+              "#6741d9",
+              "#5f3dc4"
+            ],
+            "indigo": [
+              "#edf2ff",
+              "#dbe4ff",
+              "#bac8ff",
+              "#91a7ff",
+              "#748ffc",
+              "#5c7cfa",
+              "#4c6ef5",
+              "#4263eb",
+              "#3b5bdb",
+              "#364fc7"
+            ],
+            "blue": [
+              "#acf0fa",
+              "#abeaff",
+              "#7ddaff",
+              "#47c8fc",
+              "#21bbfc",
+              "#00a1e6",
+              "#008ac2",
+              "#0986bd",
+              "#0075a8",
+              "#0073a8"
+            ],
+            "cyan": [
+              "#e3fafc",
+              "#c5f6fa",
+              "#99e9f2",
+              "#66d9e8",
+              "#3bc9db",
+              "#22b8cf",
+              "#15aabf",
+              "#1098ad",
+              "#0c8599",
+              "#0b7285"
+            ],
+            "teal": [
+              "#e6fcf5",
+              "#c3fae8",
+              "#96f2d7",
+              "#63e6be",
+              "#38d9a9",
+              "#20c997",
+              "#12b886",
+              "#0ca678",
+              "#099268",
+              "#087f5b"
+            ],
+            "green": [
+              "#c4ffd7",
+              "#adf7c7",
+              "#83dea0",
+              "#4cd479",
+              "#42cf6f",
+              "#2dbd5c",
+              "#12b347",
+              "#0eab44",
+              "#029c3d",
+              "#00973c"
+            ],
+            "lime": [
+              "#f4fce3",
+              "#e9fac8",
+              "#d8f5a2",
+              "#c0eb75",
+              "#a9e34b",
+              "#94d82d",
+              "#82c91e",
+              "#74b816",
+              "#66a80f",
+              "#5c940d"
+            ],
+            "yellow": [
+              "#fff9db",
+              "#fff3bf",
+              "#ffec99",
+              "#ffe066",
+              "#ffd43b",
+              "#fcc419",
+              "#fab005",
+              "#f59f00",
+              "#f08c00",
+              "#e67700"
+            ],
+            "orange": [
+              "#fff4e6",
+              "#ffe8cc",
+              "#ffd8a8",
+              "#ffc078",
+              "#ffa94d",
+              "#ff922b",
+              "#fd7e14",
+              "#f76707",
+              "#e8590c",
+              "#d9480f"
+            ],
+            "primary": [
+              "#a1d1bc",
+              "#79b39a",
+              "#649c84",
+              "#509176",
+              "#377a5e",
+              "#2a694e",
+              "#1a523a",
+              "#144731",
+              "#0c3322",
+              "#07301e"
+            ],
+            "secondary": [
+              "#ffebeb",
+              "#f9d1d1",
+              "#f89f9e",
+              "#f86a68",
+              "#f9403b",
+              "#f92b20",
+              "#fa2113",
+              "#c70f04",
+              "#c70f04",
+              "#ad0000"
+            ],
+            "tertiary": [
+              "#e2f8ff",
+              "#ceecff",
+              "#a0d6fa",
+              "#6ebff5",
+              "#46abf1",
+              "#2c9fef",
+              "#1899f0",
+              "#0185d6",
+              "#0076c1",
+              "#0066ab"
+            ]
+          },
+          "primaryShade": {
+            "light": 6,
+            "dark": 8
+          },
+          "primaryColor": "primary",
+          "autoContrast": false,
+          "luminanceThreshold": 0.3,
+          "fontFamily": "Roboto",
+          "fontFamilyMonospace": "ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, Liberation Mono, Courier New, monospace",
+          "respectReducedMotion": false,
+          "cursorType": "default",
+          "defaultGradient": {
+            "from": "blue",
+            "to": "cyan",
+            "deg": 45
+          },
+          "defaultRadius": "xs",
+          "activeClassName": "mantine-active",
+          "focusClassName": "",
+          "headings": {
+            "fontFamily": "Roboto",
+            "fontWeight": "700",
+            "textWrap": "wrap",
+            "sizes": {
+              "h1": {
+                "fontSize": "calc(2.125rem * var(--mantine-scale))",
+                "lineHeight": "1.3"
+              },
+              "h2": {
+                "fontSize": "calc(1.625rem * var(--mantine-scale))",
+                "lineHeight": "1.35"
+              },
+              "h3": {
+                "fontSize": "calc(1.375rem * var(--mantine-scale))",
+                "lineHeight": "1.4"
+              },
+              "h4": {
+                "fontSize": "calc(1.125rem * var(--mantine-scale))",
+                "lineHeight": "1.45"
+              },
+              "h5": {
+                "fontSize": "calc(1rem * var(--mantine-scale))",
+                "lineHeight": "1.5"
+              },
+              "h6": {
+                "fontSize": "calc(0.875rem * var(--mantine-scale))",
+                "lineHeight": "1.5"
+              }
+            }
+          },
+          "fontSizes": {
+            "xs": "calc(0.75rem * var(--mantine-scale))",
+            "sm": "calc(0.875rem * var(--mantine-scale))",
+            "md": "calc(1rem * var(--mantine-scale))",
+            "lg": "calc(1.125rem * var(--mantine-scale))",
+            "xl": "calc(1.25rem * var(--mantine-scale))",
+            "xxs": "0.7rem"
+          },
+          "lineHeights": {
+            "xs": "1.4",
+            "sm": "1.45",
+            "md": "1.55",
+            "lg": "1.6",
+            "xl": "1.65"
+          },
+          "radius": {
+            "xs": "calc(0.125rem * var(--mantine-scale))",
+            "sm": "calc(0.25rem * var(--mantine-scale))",
+            "md": "calc(0.5rem * var(--mantine-scale))",
+            "lg": "calc(1rem * var(--mantine-scale))",
+            "xl": "calc(2rem * var(--mantine-scale))"
+          },
+          "spacing": {
+            "xs": "calc(0.625rem * var(--mantine-scale))",
+            "sm": "calc(0.75rem * var(--mantine-scale))",
+            "md": "calc(1rem * var(--mantine-scale))",
+            "lg": "calc(1.25rem * var(--mantine-scale))",
+            "xl": "calc(2rem * var(--mantine-scale))",
+            "xxs": "0.4rem"
+          },
+          "breakpoints": {
+            "xs": "36em",
+            "sm": "48em",
+            "md": "62em",
+            "lg": "75em",
+            "xl": "88em"
+          },
+          "shadows": {
+            "xs": "0 calc(0.0625rem * var(--mantine-scale)) calc(0.1875rem * var(--mantine-scale)) rgba(0, 0, 0, 0.05), 0 calc(0.0625rem * var(--mantine-scale)) calc(0.125rem * var(--mantine-scale)) rgba(0, 0, 0, 0.1)",
+            "sm": "0 calc(0.0625rem * var(--mantine-scale)) calc(0.1875rem * var(--mantine-scale)) rgba(0, 0, 0, 0.05), rgba(0, 0, 0, 0.05) 0 calc(0.625rem * var(--mantine-scale)) calc(0.9375rem * var(--mantine-scale)) calc(-0.3125rem * var(--mantine-scale)), rgba(0, 0, 0, 0.04) 0 calc(0.4375rem * var(--mantine-scale)) calc(0.4375rem * var(--mantine-scale)) calc(-0.3125rem * var(--mantine-scale))",
+            "md": "0 calc(0.0625rem * var(--mantine-scale)) calc(0.1875rem * var(--mantine-scale)) rgba(0, 0, 0, 0.05), rgba(0, 0, 0, 0.05) 0 calc(1.25rem * var(--mantine-scale)) calc(1.5625rem * var(--mantine-scale)) calc(-0.3125rem * var(--mantine-scale)), rgba(0, 0, 0, 0.04) 0 calc(0.625rem * var(--mantine-scale)) calc(0.625rem * var(--mantine-scale)) calc(-0.3125rem * var(--mantine-scale))",
+            "lg": "0 calc(0.0625rem * var(--mantine-scale)) calc(0.1875rem * var(--mantine-scale)) rgba(0, 0, 0, 0.05), rgba(0, 0, 0, 0.05) 0 calc(1.75rem * var(--mantine-scale)) calc(1.4375rem * var(--mantine-scale)) calc(-0.4375rem * var(--mantine-scale)), rgba(0, 0, 0, 0.04) 0 calc(0.75rem * var(--mantine-scale)) calc(0.75rem * var(--mantine-scale)) calc(-0.4375rem * var(--mantine-scale))",
+            "xl": "0 calc(0.0625rem * var(--mantine-scale)) calc(0.1875rem * var(--mantine-scale)) rgba(0, 0, 0, 0.05), rgba(0, 0, 0, 0.05) 0 calc(2.25rem * var(--mantine-scale)) calc(1.75rem * var(--mantine-scale)) calc(-0.4375rem * var(--mantine-scale)), rgba(0, 0, 0, 0.04) 0 calc(1.0625rem * var(--mantine-scale)) calc(1.0625rem * var(--mantine-scale)) calc(-0.4375rem * var(--mantine-scale))"
+          },
+          "other": {},
+          "components": {}
+        }
+      },
+      {
+        "name": "Pathfinder - Dark",
+        "colorScheme": "dark",
+        "theme": {
+          "scale": 1,
+          "fontSmoothing": true,
+          "focusRing": "auto",
+          "white": "#fff",
+          "black": "#000",
+          "colors": {
+            "dark": [
+              "#fafaf7",
+              "#b8b8b8",
+              "#828282",
+              "#696969",
+              "#424242",
+              "#3b3b3b",
+              "#2e2e2e",
+              "#242424",
+              "#1f1f1f",
+              "#141414"
+            ],
+            "gray": [
+              "#f8f9fa",
+              "#f1f3f5",
+              "#e9ecef",
+              "#dee2e6",
+              "#ced4da",
+              "#adb5bd",
+              "#868e96",
+              "#495057",
+              "#343a40",
+              "#212529"
+            ],
+            "red": [
+              "#fff0e4",
+              "#ffe0cf",
+              "#fac0a1",
+              "#f69e6e",
+              "#f28043",
+              "#f06e27",
+              "#ff0308",
+              "#e40000",
+              "#cc0000",
+              "#b20000"
+            ],
+            "pink": [
+              "#fff0f6",
+              "#ffdeeb",
+              "#fcc2d7",
+              "#faa2c1",
+              "#f783ac",
+              "#f06595",
+              "#e64980",
+              "#d6336c",
+              "#c2255c",
+              "#a61e4d"
+            ],
+            "grape": [
+              "#f8f0fc",
+              "#f3d9fa",
+              "#eebefa",
+              "#e599f7",
+              "#da77f2",
+              "#cc5de8",
+              "#be4bdb",
+              "#ae3ec9",
+              "#9c36b5",
+              "#862e9c"
+            ],
+            "violet": [
+              "#f3f0ff",
+              "#e5dbff",
+              "#d0bfff",
+              "#b197fc",
+              "#9775fa",
+              "#845ef7",
+              "#7950f2",
+              "#7048e8",
+              "#6741d9",
+              "#5f3dc4"
+            ],
+            "indigo": [
+              "#edf2ff",
+              "#dbe4ff",
+              "#bac8ff",
+              "#91a7ff",
+              "#748ffc",
+              "#5c7cfa",
+              "#4c6ef5",
+              "#4263eb",
+              "#3b5bdb",
+              "#364fc7"
+            ],
+            "blue": [
+              "#dffbff",
+              "#caf2ff",
+              "#99e2ff",
+              "#64d2ff",
+              "#3cc4fe",
+              "#23bcfe",
+              "#09b8ff",
+              "#00a1e4",
+              "#008fcd",
+              "#007cb6"
+            ],
+            "cyan": [
+              "#e3fafc",
+              "#c5f6fa",
+              "#99e9f2",
+              "#66d9e8",
+              "#3bc9db",
+              "#22b8cf",
+              "#15aabf",
+              "#1098ad",
+              "#0c8599",
+              "#0b7285"
+            ],
+            "teal": [
+              "#e6fcf5",
+              "#c3fae8",
+              "#96f2d7",
+              "#63e6be",
+              "#38d9a9",
+              "#20c997",
+              "#12b886",
+              "#0ca678",
+              "#099268",
+              "#087f5b"
+            ],
+            "green": [
+              "#e6ffee",
+              "#d3f9e0",
+              "#a8f2c0",
+              "#7aea9f",
+              "#54e382",
+              "#3bdf70",
+              "#2bdd66",
+              "#1bc455",
+              "#0bae4a",
+              "#00973c"
+            ],
+            "lime": [
+              "#f4fce3",
+              "#e9fac8",
+              "#d8f5a2",
+              "#c0eb75",
+              "#a9e34b",
+              "#94d82d",
+              "#82c91e",
+              "#74b816",
+              "#66a80f",
+              "#5c940d"
+            ],
+            "yellow": [
+              "#fff9db",
+              "#fff3bf",
+              "#ffec99",
+              "#ffe066",
+              "#ffd43b",
+              "#fcc419",
+              "#fab005",
+              "#f59f00",
+              "#f08c00",
+              "#e67700"
+            ],
+            "orange": [
+              "#fff4e6",
+              "#ffe8cc",
+              "#ffd8a8",
+              "#ffc078",
+              "#ffa94d",
+              "#ff922b",
+              "#fd7e14",
+              "#f76707",
+              "#e8590c",
+              "#d9480f"
+            ],
+            "primary": [
+              "#edfff7",
+              "#c2fce3",
+              "#a4f5d2",
+              "#7fdbb3",
+              "#56b089",
+              "#3c966f",
+              "#318761",
+              "#1f6647",
+              "#10472f",
+              "#08321f"
+            ],
+            "secondary": [
+              "#ffebeb",
+              "#f9d1d1",
+              "#f69e9d",
+              "#f86a68",
+              "#ff3636",
+              "#ff1818",
+              "#f92113",
+              "#df1708",
+              "#c70f04",
+              "#ad0000"
+            ],
+            "tertiary": [
+              "#e2f8ff",
+              "#ceecff",
+              "#9fd5f9",
+              "#6ebff5",
+              "#46abf1",
+              "#2c9fef",
+              "#1899f0",
+              "#0185d6",
+              "#c17c00",
+              "#0066ab"
+            ]
+          },
+          "primaryShade": {
+            "light": 6,
+            "dark": 8
+          },
+          "primaryColor": "primary",
+          "autoContrast": false,
+          "luminanceThreshold": 0.3,
+          "fontFamily": "Roboto",
+          "fontFamilyMonospace": "ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, Liberation Mono, Courier New, monospace",
+          "respectReducedMotion": false,
+          "cursorType": "default",
+          "defaultGradient": {
+            "from": "blue",
+            "to": "cyan",
+            "deg": 45
+          },
+          "defaultRadius": "xs",
+          "activeClassName": "mantine-active",
+          "focusClassName": "",
+          "headings": {
+            "fontFamily": "Roboto",
+            "fontWeight": "700",
+            "textWrap": "wrap",
+            "sizes": {
+              "h1": {
+                "fontSize": "calc(2.125rem * var(--mantine-scale))",
+                "lineHeight": "1.3"
+              },
+              "h2": {
+                "fontSize": "calc(1.625rem * var(--mantine-scale))",
+                "lineHeight": "1.35"
+              },
+              "h3": {
+                "fontSize": "calc(1.375rem * var(--mantine-scale))",
+                "lineHeight": "1.4"
+              },
+              "h4": {
+                "fontSize": "calc(1.125rem * var(--mantine-scale))",
+                "lineHeight": "1.45"
+              },
+              "h5": {
+                "fontSize": "calc(1rem * var(--mantine-scale))",
+                "lineHeight": "1.5"
+              },
+              "h6": {
+                "fontSize": "calc(0.875rem * var(--mantine-scale))",
+                "lineHeight": "1.5"
+              }
+            }
+          },
+          "fontSizes": {
+            "xs": "calc(0.75rem * var(--mantine-scale))",
+            "sm": "calc(0.875rem * var(--mantine-scale))",
+            "md": "calc(1rem * var(--mantine-scale))",
+            "lg": "calc(1.125rem * var(--mantine-scale))",
+            "xl": "calc(1.25rem * var(--mantine-scale))",
+            "xxs": "0.7rem"
+          },
+          "lineHeights": {
+            "xs": "1.4",
+            "sm": "1.45",
+            "md": "1.55",
+            "lg": "1.6",
+            "xl": "1.65"
+          },
+          "radius": {
+            "xs": "calc(0.125rem * var(--mantine-scale))",
+            "sm": "calc(0.25rem * var(--mantine-scale))",
+            "md": "calc(0.5rem * var(--mantine-scale))",
+            "lg": "calc(1rem * var(--mantine-scale))",
+            "xl": "calc(2rem * var(--mantine-scale))"
+          },
+          "spacing": {
+            "xs": "calc(0.625rem * var(--mantine-scale))",
+            "sm": "calc(0.75rem * var(--mantine-scale))",
+            "md": "calc(1rem * var(--mantine-scale))",
+            "lg": "calc(1.25rem * var(--mantine-scale))",
+            "xl": "calc(2rem * var(--mantine-scale))",
+            "xxs": "0.4rem"
+          },
+          "breakpoints": {
+            "xs": "36em",
+            "sm": "48em",
+            "md": "62em",
+            "lg": "75em",
+            "xl": "88em"
+          },
+          "shadows": {
+            "xs": "0 calc(0.0625rem * var(--mantine-scale)) calc(0.1875rem * var(--mantine-scale)) rgba(0, 0, 0, 0.05), 0 calc(0.0625rem * var(--mantine-scale)) calc(0.125rem * var(--mantine-scale)) rgba(0, 0, 0, 0.1)",
+            "sm": "0 calc(0.0625rem * var(--mantine-scale)) calc(0.1875rem * var(--mantine-scale)) rgba(0, 0, 0, 0.05), rgba(0, 0, 0, 0.05) 0 calc(0.625rem * var(--mantine-scale)) calc(0.9375rem * var(--mantine-scale)) calc(-0.3125rem * var(--mantine-scale)), rgba(0, 0, 0, 0.04) 0 calc(0.4375rem * var(--mantine-scale)) calc(0.4375rem * var(--mantine-scale)) calc(-0.3125rem * var(--mantine-scale))",
+            "md": "0 calc(0.0625rem * var(--mantine-scale)) calc(0.1875rem * var(--mantine-scale)) rgba(0, 0, 0, 0.05), rgba(0, 0, 0, 0.05) 0 calc(1.25rem * var(--mantine-scale)) calc(1.5625rem * var(--mantine-scale)) calc(-0.3125rem * var(--mantine-scale)), rgba(0, 0, 0, 0.04) 0 calc(0.625rem * var(--mantine-scale)) calc(0.625rem * var(--mantine-scale)) calc(-0.3125rem * var(--mantine-scale))",
+            "lg": "0 calc(0.0625rem * var(--mantine-scale)) calc(0.1875rem * var(--mantine-scale)) rgba(0, 0, 0, 0.05), rgba(0, 0, 0, 0.05) 0 calc(1.75rem * var(--mantine-scale)) calc(1.4375rem * var(--mantine-scale)) calc(-0.4375rem * var(--mantine-scale)), rgba(0, 0, 0, 0.04) 0 calc(0.75rem * var(--mantine-scale)) calc(0.75rem * var(--mantine-scale)) calc(-0.4375rem * var(--mantine-scale))",
+            "xl": "0 calc(0.0625rem * var(--mantine-scale)) calc(0.1875rem * var(--mantine-scale)) rgba(0, 0, 0, 0.05), rgba(0, 0, 0, 0.05) 0 calc(2.25rem * var(--mantine-scale)) calc(1.75rem * var(--mantine-scale)) calc(-0.4375rem * var(--mantine-scale)), rgba(0, 0, 0, 0.04) 0 calc(1.0625rem * var(--mantine-scale)) calc(1.0625rem * var(--mantine-scale)) calc(-0.4375rem * var(--mantine-scale))"
+          },
+          "other": {},
+          "components": {}
+        }
+      }
+    ]
+  }
+}
