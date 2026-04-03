@@ -7169,11 +7169,9 @@ function isOffGuardDueToFlanking({
     return false;
   }
 
-  // Get source position
-  const sourcePos = sourceToken.position;
   const targetPos = targetToken.position;
 
-  if (!sourcePos || !targetPos) {
+  if (!sourceToken.position || !targetPos) {
     return false;
   }
 
@@ -7181,6 +7179,27 @@ function isOffGuardDueToFlanking({
   const targetSize =
     targetToken?.data?.size || targetToken?.record?.data?.size || "medium";
   const targetSizeSquares = getSizeInSquares(targetSize);
+
+  // Compute the center of a token's bounding box from its position and size.
+  // Odd-sized tokens (1x1, 3x3): position is the center square.
+  // Even-sized tokens (2x2, 4x4): position is offset inward from top-right corner.
+  function getTokenCenter(token) {
+    const pos = token.position;
+    const size = token?.data?.size || token?.record?.data?.size || "medium";
+    const sizeSquares = getSizeInSquares(size);
+    if (sizeSquares <= 1) return pos;
+    if (sizeSquares % 2 === 1) {
+      return pos; // Odd: position is already the center
+    }
+    const offset = sizeSquares / 2 - 1;
+    const right = pos.x + offset + 0.5;
+    const left = right - sizeSquares;
+    const top = pos.y - offset - 0.5;
+    const bottom = top + sizeSquares;
+    return { x: (left + right) / 2, y: (top + bottom) / 2 };
+  }
+
+  const sourcePos = getTokenCenter(sourceToken);
 
   const targetTokenHasAllAroundVision =
     targetToken?.data?.acDetails
@@ -7416,10 +7435,10 @@ function isOffGuardDueToFlanking({
       continue; // Ally is not within reach of target
     }
 
-    const allyPos = ally.position;
-    if (!allyPos) {
+    if (!ally.position) {
       continue;
     }
+    const allyPos = getTokenCenter(ally);
 
     // Check if the line between source and ally passes through opposite sides
     if (doesLineCrossOppositeSides(sourcePos, allyPos)) {
