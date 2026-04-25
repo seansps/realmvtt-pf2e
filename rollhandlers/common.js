@@ -154,7 +154,7 @@ function updateIWRName(listType) {
       if (!iwrData?.data?.type) return "";
 
       const typeOption = typeOptions.find(
-        (opt) => opt.value === iwrData.data.type
+        (opt) => opt.value === iwrData.data.type,
       );
       const typeLabel = typeOption ? typeOption.label : iwrData.data.type || "";
 
@@ -337,7 +337,7 @@ function checkForReplacements(
   replacements = {},
   recordOverride = null,
   effectContext = null,
-  context = {}
+  context = {},
 ) {
   let thisRecord = recordOverride || record;
 
@@ -363,7 +363,7 @@ function checkForReplacements(
     /@actor\.abilities\.(str|dex|con|int|wis|cha)\.mod/g,
     (_match, ability) => {
       return String(parseInt(thisRecord?.data?.[ability] || "0", 10));
-    }
+    },
   );
 
   // Replace all @record.data.... with the value of the field
@@ -413,7 +413,7 @@ function checkForReplacements(
     // Minimum of 1 if half level is 0
     value = value.replaceAll(
       matchHalfLevel[0],
-      String(Math.max(1, Math.floor(actorLevel / 2)))
+      String(Math.max(1, Math.floor(actorLevel / 2))),
     );
   } else if (matchCharacterLevel) {
     // Minimum of 1
@@ -422,7 +422,7 @@ function checkForReplacements(
 
   // Case for Strength|Dexterity|Constitution|Wisdom|Intelligence|Charisma
   const matchModifier = value.match(
-    /[Ss]trength|[Dd]exterity|[Cc]onstitution|[Ww]isdom|[Ii]ntelligence|[Cc]harisma/
+    /[Ss]trength|[Dd]exterity|[Cc]onstitution|[Ww]isdom|[Ii]ntelligence|[Cc]harisma/,
   );
   if (matchModifier) {
     let attribute = "str";
@@ -439,7 +439,7 @@ function checkForReplacements(
     }
     const attributeMod = parseInt(
       thisRecord?.data?.[`${attribute}`] || "0",
-      10
+      10,
     );
     value = value.replaceAll(matchModifier[0], attributeMod);
   }
@@ -588,7 +588,7 @@ function findTernary(str) {
 function getTotalValueFromFields(
   recordContext,
   fieldsToAddToUses,
-  fieldValueOverrides
+  fieldValueOverrides,
 ) {
   let total = 0;
   let times5 = false;
@@ -648,7 +648,7 @@ function getAttackModifiersForTarget(target, distance) {
   }
   const attackTargetingEffects = getEffectsAndModifiersForToken(
     target,
-    effectsToCheck
+    effectsToCheck,
   );
   attackTargetingEffects.forEach((r) => {
     results.push({
@@ -678,7 +678,7 @@ function getDamageEffectsForTarget(ourToken, target) {
     effectsToCheck, // that match damageTargetBonus
     "", // field is irrelevant
     undefined, // itemId is irrelevant
-    ourToken?._id // appliedById is the caller
+    ourToken?._id, // appliedById is the caller
   );
 
   damageEffects.forEach((r) => {
@@ -713,7 +713,7 @@ const toSlug = (name) => {
 function collectTraitsAndProperties(
   token,
   context = {},
-  skipRollOptions = false
+  skipRollOptions = false,
 ) {
   const traits = new Set();
 
@@ -916,13 +916,13 @@ function collectTraitsAndProperties(
       // Add damage category based on type
       if (
         ["bludgeoning", "piercing", "slashing", "bleed", "poison"].includes(
-          damageTypeLower
+          damageTypeLower,
         )
       ) {
         traits.add(`item:damage:category:physical`);
       } else if (
         ["acid", "cold", "electricity", "fire", "sonic"].includes(
-          damageTypeLower
+          damageTypeLower,
         )
       ) {
         traits.add(`item:damage:category:energy`);
@@ -947,13 +947,13 @@ function collectTraitsAndProperties(
           // Add damage category based on type
           if (
             ["bludgeoning", "piercing", "slashing", "bleed", "poison"].includes(
-              damageTypeLower
+              damageTypeLower,
             )
           ) {
             traits.add(`item:damage:category:physical`);
           } else if (
             ["acid", "cold", "electricity", "fire", "sonic"].includes(
-              damageTypeLower
+              damageTypeLower,
             )
           ) {
             traits.add(`item:damage:category:energy`);
@@ -993,7 +993,7 @@ function collectTraitsAndProperties(
     if (obj.recordType === "items" && obj.data?.type === "weapon") {
       const itemTraits = Array.isArray(obj.data.traits) ? obj.data.traits : [];
       const traitNames = itemTraits.map((t) =>
-        (typeof t === "string" ? t : t.name || "").toLowerCase()
+        (typeof t === "string" ? t : t.name || "").toLowerCase(),
       );
       const hasThrown = traitNames.includes("thrown");
       const range = parseInt(obj.data?.range, 10) || 0;
@@ -1193,7 +1193,7 @@ function updateRollOptions(record, valuesToSet) {
     undefined,
     undefined,
     {},
-    baseTraits // Pass base traits to evaluate predicates against
+    baseTraits, // Pass base traits to evaluate predicates against
   );
 
   // Collect active rollOptions (single pass - no cascading)
@@ -1294,7 +1294,7 @@ function parseModifierPredicate(predicateInput) {
     // If JSON parse fails, return empty array
     console.warn(
       `Failed to parse modifier predicate as JSON: ${predicateString}`,
-      e
+      e,
     );
     return [];
   }
@@ -1434,7 +1434,7 @@ function evaluateEffectPredicate(predicate, traits, target, context = {}) {
   // Array: treat as implicit AND - all items must be true
   if (Array.isArray(predicate)) {
     return predicate.every((item) =>
-      evaluateEffectPredicate(item, traits, target, context)
+      evaluateEffectPredicate(item, traits, target, context),
     );
   }
 
@@ -1451,7 +1451,7 @@ function evaluateEffectPredicate(predicate, traits, target, context = {}) {
         ? predicate.or
         : [predicate.or];
       return orArray.some((item) =>
-        evaluateEffectPredicate(item, traits, target, context)
+        evaluateEffectPredicate(item, traits, target, context),
       );
     }
 
@@ -1461,7 +1461,7 @@ function evaluateEffectPredicate(predicate, traits, target, context = {}) {
         ? predicate.and
         : [predicate.and];
       return andArray.every((item) =>
-        evaluateEffectPredicate(item, traits, target, context)
+        evaluateEffectPredicate(item, traits, target, context),
       );
     }
 
@@ -1471,7 +1471,7 @@ function evaluateEffectPredicate(predicate, traits, target, context = {}) {
         ? predicate.nand
         : [predicate.nand];
       return !nandArray.every((item) =>
-        evaluateEffectPredicate(item, traits, target, context)
+        evaluateEffectPredicate(item, traits, target, context),
       );
     }
 
@@ -1481,7 +1481,7 @@ function evaluateEffectPredicate(predicate, traits, target, context = {}) {
         ? predicate.nor
         : [predicate.nor];
       return !norArray.some((item) =>
-        evaluateEffectPredicate(item, traits, target, context)
+        evaluateEffectPredicate(item, traits, target, context),
       );
     }
 
@@ -1491,7 +1491,7 @@ function evaluateEffectPredicate(predicate, traits, target, context = {}) {
         ? predicate.xor
         : [predicate.xor];
       const trueCount = xorArray.filter((item) =>
-        evaluateEffectPredicate(item, traits, target, context)
+        evaluateEffectPredicate(item, traits, target, context),
       ).length;
       return trueCount === 1;
     }
@@ -1507,7 +1507,7 @@ function evaluateEffectPredicate(predicate, traits, target, context = {}) {
 
         if (operands.length !== 2) {
           console.warn(
-            `Comparison operator ${op} requires exactly 2 operands, got ${operands.length}`
+            `Comparison operator ${op} requires exactly 2 operands, got ${operands.length}`,
           );
           return false;
         }
@@ -1517,13 +1517,13 @@ function evaluateEffectPredicate(predicate, traits, target, context = {}) {
           operands[0],
           target,
           context,
-          traits
+          traits,
         );
         const rightValue = resolvePredicateValue(
           operands[1],
           target,
           context,
-          traits
+          traits,
         );
 
         // Perform comparison
@@ -1578,7 +1578,7 @@ function applyAdjustModifiers(record, currentValue, targetSlug, weapon = null) {
     undefined,
     weapon?._id,
     undefined,
-    weapon ? { weapon } : {}
+    weapon ? { weapon } : {},
   );
 
   let adjustedValue = currentValue;
@@ -1646,7 +1646,7 @@ function processDamageModifierCategories(
   damageModifiers,
   existingPersistent = "",
   existingSplash = 0,
-  existingSplashType = ""
+  existingSplashType = "",
 ) {
   const filteredModifiers = [];
   const persistentDamageParts = existingPersistent ? [existingPersistent] : [];
@@ -1665,7 +1665,7 @@ function processDamageModifierCategories(
     // Check if this modifier has dice and a damage type with a category suffix
     // Pattern: "{dice} {damageType}-{category}" e.g., "1d6 poison-persistent"
     const match = value.match(
-      /^([0-9]+d[0-9]+(?:\s*[+\-]\s*[0-9]+)?)\s+([a-z]+)-(persistent|splash|precision)$/i
+      /^([0-9]+d[0-9]+(?:\s*[+\-]\s*[0-9]+)?)\s+([a-z]+)-(persistent|splash|precision)$/i,
     );
 
     if (match) {
@@ -1715,7 +1715,7 @@ function getEffectsAndModifiersForToken(
   itemId = undefined,
   appliedById = undefined,
   context = {},
-  prebuiltTraitsSet = null
+  prebuiltTraitsSet = null,
 ) {
   if (!target) {
     return [];
@@ -1754,7 +1754,7 @@ function getEffectsAndModifiersForToken(
       }
       if (field && field.startsWith("@record")) {
         field = String(
-          api.getValueOnRecord(target, field.replace("@record.", "")) || ""
+          api.getValueOnRecord(target, field.replace("@record.", "")) || "",
         ).toLowerCase();
       }
 
@@ -1767,7 +1767,7 @@ function getEffectsAndModifiersForToken(
             rule.data.predicate,
             traitsSet,
             target,
-            context
+            context,
           );
           if (!predicatePassed) {
             // Mark as inactive
@@ -1878,7 +1878,7 @@ function getEffectsAndModifiersForToken(
         stackModifiers[`${effect?._id}-${JSON.stringify(rule)}`] = true;
         // The value is the number of times they have this effect
         let value = target?.effectIds?.filter(
-          (id) => id === effect?._id
+          (id) => id === effect?._id,
         ).length;
         if (isPenalty && value > 0) {
           value = -value;
@@ -1980,7 +1980,7 @@ function getEffectsAndModifiersForToken(
   const equippedItems = items.filter(
     (item) =>
       item.data?.carried === "equipped" &&
-      (!requiresInvestment(item) || item.data?.invested === "true")
+      (!requiresInvestment(item) || item.data?.invested === "true"),
   );
 
   // Get and modifiers from runes
@@ -2047,7 +2047,7 @@ function getEffectsAndModifiersForToken(
           parsedPredicate,
           traitsSet,
           target,
-          context
+          context,
         );
         active = predicatePassed;
       } else {
@@ -2176,7 +2176,7 @@ function getEffectsAndModifiersForToken(
 
   // Process AdjustModifier rules - these modify existing modifiers by slug
   const adjustModifiers = results.filter(
-    (r) => r.modifierType === "adjustModifier" && r.active
+    (r) => r.modifierType === "adjustModifier" && r.active,
   );
   adjustModifiers.forEach((adjMod) => {
     const targetSlug = adjMod.targetSlug || "";
@@ -2194,7 +2194,7 @@ function getEffectsAndModifiersForToken(
           parsedPredicate,
           traitsSet,
           target,
-          context
+          context,
         );
         if (!predicatePassed) {
           return; // Skip this adjustModifier
@@ -2326,13 +2326,16 @@ function getEffectsAndModifiersForToken(
   if (field && field !== "") {
     results = results.filter(
       (r) =>
-        r.field === field || r.field === "all" || r.field === itemId || !r.field
+        r.field === field ||
+        r.field === "all" ||
+        r.field === itemId ||
+        !r.field,
     );
   }
 
   // Filter by itemId if provided, some effects only apply to the itemId, or if the field is set to the itemId
   results = results.filter(
-    (r) => r.itemId === itemId || r.field === itemId || r.itemId === undefined
+    (r) => r.itemId === itemId || r.field === itemId || r.itemId === undefined,
   );
 
   // For the roll, we need only count 1 status / item / circumstance bonus or penalty,
@@ -2383,14 +2386,14 @@ function getEffectsAndModifiersForToken(
   Object.keys(bonusGroups).forEach((type) => {
     if (bonusGroups[type].length > 0) {
       const highestBonus = bonusGroups[type].reduce((highest, current) =>
-        (current.value || 0) > (highest.value || 0) ? current : highest
+        (current.value || 0) > (highest.value || 0) ? current : highest,
       );
       filteredResults.push(highestBonus);
     }
 
     if (penaltyGroups[type].length > 0) {
       const highestPenalty = penaltyGroups[type].reduce((highest, current) =>
-        (current.value || 0) < (highest.value || 0) ? current : highest
+        (current.value || 0) < (highest.value || 0) ? current : highest,
       );
       filteredResults.push(highestPenalty);
     }
@@ -2491,7 +2494,7 @@ function getDegreeOfSuccessAdjustments(
   fields,
   itemId = undefined,
   appliedById = undefined,
-  context = {}
+  context = {},
 ) {
   // Normalize fields to array
   const fieldsArray = Array.isArray(fields) ? fields : [fields];
@@ -2506,7 +2509,7 @@ function getDegreeOfSuccessAdjustments(
       field,
       itemId,
       appliedById,
-      context
+      context,
     );
     allAdjustments.push(...adjustments);
   });
@@ -2629,7 +2632,7 @@ function applyEffect(
   effectName,
   times = 1,
   duration = undefined,
-  value = undefined
+  value = undefined,
 ) {
   let targets = api.getSelectedOrDroppedToken();
   targets.forEach((target) => {
@@ -2698,7 +2701,7 @@ function useItem() {
 
   const itemDescription = updateDamageMacros(
     api.richTextToMarkdown(description || ""),
-    { item }
+    { item },
   );
   let markdownDescription = `
 #### ${itemIcon}${itemName}
@@ -2748,7 +2751,7 @@ performDamageRollForSpellOrItem("${record._id}","${record.recordType}", "${itemD
     let autoDestroy = item.data?.uses?.autoDestroy || false;
     const isAmmo = item?.data?.itemCategory?.toLowerCase() === "ammo";
     const isThrown = item?.data?.traits?.some((trait) =>
-      trait.toLowerCase().startsWith("thrown")
+      trait.toLowerCase().startsWith("thrown"),
     );
     const isBomb = item?.data?.group?.toLowerCase() === "bomb";
 
@@ -3200,7 +3203,7 @@ function getResilientArmorBonus(record, bestArmor) {
 
   // Find the armor in the inventory and check for a rune
   const armor = (record.data?.inventory || [])?.find(
-    (item) => item._id === bestArmor?.armor?.armorId
+    (item) => item._id === bestArmor?.armor?.armorId,
   );
 
   if (armor) {
@@ -3273,7 +3276,7 @@ function getSaveDCForToken(token, saveType) {
   const saveMods = getEffectsAndModifiersForToken(
     token,
     [`saveBonus`, `savePenalty`],
-    saveType
+    saveType,
   );
 
   const saveValue = parseInt(token.data?.[`${saveType}Mod`] || "0", 10);
@@ -3304,7 +3307,7 @@ function getArmorClassForToken(token, targetIsOffGuardDueToFlanking = false) {
     undefined,
     undefined,
     undefined,
-    armorItem ? { item: armorItem } : {}
+    armorItem ? { item: armorItem } : {},
   );
 
   let tokenData = token.data === undefined ? token.record.data : token.data;
@@ -3314,7 +3317,7 @@ function getArmorClassForToken(token, targetIsOffGuardDueToFlanking = false) {
 
   // Check if there's already a circumstance penalty
   const existingCircumstancePenalty = acModifiers.find(
-    (mod) => mod.modifierType === "circumstance" && mod.isPenalty
+    (mod) => mod.modifierType === "circumstance" && mod.isPenalty,
   );
 
   // Apply all modifiers from getEffectsAndModifiersForToken
@@ -3387,7 +3390,7 @@ function updateAttribute({
   // You can carry an amount of Bulk equal to 5 plus your Strength modifier without penalty
   let strength = parseInt(
     record.data?.str !== undefined ? record.data?.str : 0,
-    10
+    10,
   );
   if (attribute === "str") {
     strength = value;
@@ -3397,7 +3400,7 @@ function updateAttribute({
   // AC = 10 + your Dexterity modifier. Wearing armor changes your AC and adds proficency bonus if proficient
   let dexValue = parseInt(
     record.data?.dex !== undefined ? record.data?.dex : 0,
-    10
+    10,
   );
   if (attribute === "dex") {
     dexValue = value;
@@ -3420,7 +3423,7 @@ function updateAttribute({
     undefined,
     undefined,
     undefined,
-    armorItem ? { item: armorItem } : {}
+    armorItem ? { item: armorItem } : {},
   );
   acCalculationMods.forEach((mod) => {
     if (mod.field !== undefined && mod.field !== "dex") {
@@ -3432,7 +3435,7 @@ function updateAttribute({
       record.data?.[additionalAcAttribute] !== undefined
         ? record.data?.[additionalAcAttribute]
         : 0,
-      10
+      10,
     );
     if (attribute === additionalAcAttribute) {
       additionalAcValue = value;
@@ -3456,7 +3459,7 @@ function updateAttribute({
   const armorProf = getProfiencyForArmor(
     record,
     bestArmor?.armor?.armorCategory,
-    bestArmor?.armor?.group
+    bestArmor?.armor?.group,
   );
   // Prof bonus is prof * 2 + level, if we're proficient, else we don't add level
   if (armorProf > 0) {
@@ -3469,7 +3472,7 @@ function updateAttribute({
     "all",
     undefined,
     undefined,
-    armorItem ? { item: armorItem } : {}
+    armorItem ? { item: armorItem } : {},
   );
   const armorModsSet = new Set();
   acBonus.forEach((modifier) => {
@@ -3491,7 +3494,7 @@ function updateAttribute({
       bestArmor.armorType,
       undefined,
       undefined,
-      armorItem ? { item: armorItem } : {}
+      armorItem ? { item: armorItem } : {},
     );
     armorTypeBonus.forEach((modifier) => {
       // Only if it was from a feature or item, not effect
@@ -3513,7 +3516,7 @@ function updateAttribute({
       "Shield",
       undefined,
       undefined,
-      armorItem ? { item: armorItem } : {}
+      armorItem ? { item: armorItem } : {},
     );
     shieldBonus.forEach((modifier) => {
       // Only if it was from a feature or item, not effect
@@ -3578,7 +3581,7 @@ function updateAttribute({
     valuesToSet[`data.shieldHp`] = bestArmor.shield.hp.value;
     valuesToSet[`data.shieldMaxHp`] = bestArmor.shield.hp.max;
     valuesToSet[`data.shieldBt`] = Math.floor(
-      (bestArmor.shield.hp.max || 0) / 2
+      (bestArmor.shield.hp.max || 0) / 2,
     );
   } else {
     valuesToSet[`data.shieldHp`] = null;
@@ -3682,13 +3685,13 @@ function processChoices(record, depth = 0) {
           // Check if this choice object has a predicate that needs to pass
           if (choiceObj.data?.predicate) {
             const parsedPredicate = parseModifierPredicate(
-              choiceObj.data.predicate
+              choiceObj.data.predicate,
             );
             const predicatePassed = evaluateEffectPredicate(
               parsedPredicate,
               traitsSet,
               record,
-              {}
+              {},
             );
             if (!predicatePassed) {
               continue; // Skip this choice if predicate fails
@@ -3753,7 +3756,7 @@ function addFeatsToCharacter(record, feats, callback = undefined) {
     // Check if this feat is already in the character's current feats
     const featName = JSON.parse(featToAdd).name;
     const alreadyHasFeat = curFeats.some(
-      (existingFeat) => existingFeat.name === featName
+      (existingFeat) => existingFeat.name === featName,
     );
 
     if (alreadyHasFeat) {
@@ -3887,7 +3890,7 @@ function promptForChoices(record, choicesToMake, index, depth = 0) {
       // Process any actor template patterns (e.g., {actor|system.details.class.trait})
       const processedQueryString = processQueryActorTemplates(
         queryString,
-        record
+        record,
       );
       optionsQuery = JSON.parse(processedQueryString);
       useQuery = true;
@@ -3929,7 +3932,7 @@ function promptForChoices(record, choicesToMake, index, depth = 0) {
       // If rollOption prefix is set, construct the full rollOption
       if (rollOptionPrefix) {
         selectedChoiceData.selectedRollOption = `${rollOptionPrefix}:${toSlug(
-          selectedRecord.name
+          selectedRecord.name,
         )}`;
       }
 
@@ -3948,7 +3951,7 @@ function promptForChoices(record, choicesToMake, index, depth = 0) {
 
       // Find the selected option
       const selectedOption = options.find(
-        (opt) => opt._id === selectedOptionId
+        (opt) => opt._id === selectedOptionId,
       );
       if (!selectedOption) {
         // Option not found, continue to next
@@ -4150,9 +4153,9 @@ function promptForChoices(record, choicesToMake, index, depth = 0) {
               return !ancestryFeatures.some(
                 (existingFeature) =>
                   existingFeature.name === newFeature.name ||
-                  existingFeature._id === newFeature._id
+                  existingFeature._id === newFeature._id,
               );
-            }
+            },
           );
           ancestryFeatures = [...ancestryFeatures, ...newFeatures];
         }
@@ -4194,7 +4197,7 @@ function promptForChoices(record, choicesToMake, index, depth = 0) {
             return !classFeatures.some(
               (existingFeature) =>
                 existingFeature.name === newFeature.name ||
-                existingFeature._id === newFeature._id
+                existingFeature._id === newFeature._id,
             );
           });
           classFeatures = [...classFeatures, ...newFeatures];
@@ -4230,7 +4233,7 @@ function promptForChoices(record, choicesToMake, index, depth = 0) {
         const newFeats = itemsByType.bonusFeats.filter((newFeat) => {
           // Check if a feat with the same name already exists
           return !bonusFeats.some(
-            (existingFeat) => existingFeat.name === newFeat.name
+            (existingFeat) => existingFeat.name === newFeat.name,
           );
         });
         bonusFeats = [...bonusFeats, ...newFeats];
@@ -4277,8 +4280,8 @@ function promptForChoices(record, choicesToMake, index, depth = 0) {
           type: isFeat
             ? undefined
             : group.name === "Ancestry"
-            ? "ancestryfeature"
-            : "classfeature",
+              ? "ancestryfeature"
+              : "classfeature",
           level: feature.data?.level || 1,
           description: `Choice made for: ${feature.name}`,
         },
@@ -4341,7 +4344,7 @@ function promptForChoices(record, choicesToMake, index, depth = 0) {
       const updatedFeature = { ...currentFeature };
       const choiceObjects = currentFeature.data?.choices || [];
       const choiceIndex = choiceObjects.findIndex(
-        (c) => c._id === choiceObj._id
+        (c) => c._id === choiceObj._id,
       );
 
       if (choiceIndex >= 0) {
@@ -4377,7 +4380,7 @@ function promptForChoices(record, choicesToMake, index, depth = 0) {
 
           // Find the feature in the current record by _id
           featureIndex = ancestryFeatures.findIndex(
-            (f) => f._id === feature._id
+            (f) => f._id === feature._id,
           );
 
           // Replace the feature that had the choice with the updated version
@@ -4397,7 +4400,7 @@ function promptForChoices(record, choicesToMake, index, depth = 0) {
 
           // Find the feature in the current record by _id
           featureIndex = heritageFeatures.findIndex(
-            (f) => f._id === feature._id
+            (f) => f._id === feature._id,
           );
 
           // Replace the feature that had the choice with the updated version
@@ -4472,7 +4475,7 @@ function promptForChoices(record, choicesToMake, index, depth = 0) {
     api.showValuePrompt(
       choiceObj.name || "Enter Value",
       promptName,
-      textInputCallback
+      textInputCallback,
     );
   } else if (useQuery) {
     // Use query to populate options
@@ -4485,7 +4488,7 @@ function promptForChoices(record, choicesToMake, index, depth = 0) {
       callback,
       "OK",
       "Cancel",
-      1 // Limit 1 choice
+      1, // Limit 1 choice
     );
   } else {
     // Use options list
@@ -4502,7 +4505,7 @@ function promptForChoices(record, choicesToMake, index, depth = 0) {
           parsedPredicate,
           traitsSet,
           record,
-          {}
+          {},
         );
         return predicatePassed;
       }
@@ -4529,7 +4532,7 @@ function promptForChoices(record, choicesToMake, index, depth = 0) {
       callback,
       "OK",
       "Cancel",
-      1 // Limit 1 choice
+      1, // Limit 1 choice
     );
   }
 }
@@ -4643,7 +4646,7 @@ function updateSpellcastingEntries(record, valuesToSet) {
 
       const proficiencyBonus = calculateProficiencyBonusForLevel(
         level,
-        newTraining
+        newTraining,
       );
 
       // Check if attribute is being updated in valuesToSet
@@ -4666,16 +4669,16 @@ function setFeatSlots(record, valuesToSet) {
   const classes = record.data?.classes || [];
   const classObj = classes?.[0];
   const ancestryFeatLevels = (classObj?.data?.ancestryFeatLevels || []).map(
-    (level) => parseInt(level, 10)
+    (level) => parseInt(level, 10),
   );
   const classFeatLevels = (classObj?.data?.classFeatLevels || []).map((level) =>
-    parseInt(level, 10)
+    parseInt(level, 10),
   );
   const generalFeatLevels = (classObj?.data?.generalFeatLevels || []).map(
-    (level) => parseInt(level, 10)
+    (level) => parseInt(level, 10),
   );
   const skillFeatLevels = (classObj?.data?.skillFeatLevels || []).map((level) =>
-    parseInt(level, 10)
+    parseInt(level, 10),
   );
 
   // Get current feats to check what slots already exist
@@ -4703,7 +4706,7 @@ function setFeatSlots(record, valuesToSet) {
     if (level <= characterLevel) {
       const existingSlot = currentFeats.find(
         (feat) =>
-          feat.data?.featSlotType === "ancestry" && feat.data?.level === level
+          feat.data?.featSlotType === "ancestry" && feat.data?.level === level,
       );
 
       if (!existingSlot) {
@@ -4732,7 +4735,7 @@ function setFeatSlots(record, valuesToSet) {
     if (level <= characterLevel) {
       const existingSlot = currentFeats.find(
         (feat) =>
-          feat.data?.featSlotType === "class" && feat.data?.level === level
+          feat.data?.featSlotType === "class" && feat.data?.level === level,
       );
 
       if (!existingSlot) {
@@ -4761,7 +4764,7 @@ function setFeatSlots(record, valuesToSet) {
     if (level <= characterLevel) {
       const existingSlot = currentFeats.find(
         (feat) =>
-          feat.data?.featSlotType === "general" && feat.data?.level === level
+          feat.data?.featSlotType === "general" && feat.data?.level === level,
       );
 
       if (!existingSlot) {
@@ -4790,7 +4793,7 @@ function setFeatSlots(record, valuesToSet) {
     if (level <= characterLevel) {
       const existingSlot = currentFeats.find(
         (feat) =>
-          feat.data?.featSlotType === "skill" && feat.data?.level === level
+          feat.data?.featSlotType === "skill" && feat.data?.level === level,
       );
 
       if (!existingSlot) {
@@ -4927,11 +4930,11 @@ function updateProficiencies(record, valuesToSet) {
   if (classObj?.data?.savingThrows) {
     proficiencies.reflex = parseInt(
       classObj.data.savingThrows?.reflex || "0",
-      10
+      10,
     );
     proficiencies.fortitude = parseInt(
       classObj.data.savingThrows?.fortitude || "0",
-      10
+      10,
     );
     proficiencies.will = parseInt(classObj.data.savingThrows?.will || "0", 10);
   }
@@ -4941,7 +4944,7 @@ function updateProficiencies(record, valuesToSet) {
   if (classObj?.data?.defenses) {
     proficiencies.unarmored = parseInt(
       classObj.data.defenses?.unarmored || "0",
-      10
+      10,
     );
     proficiencies.light = parseInt(classObj.data.defenses?.light || "0", 10);
     proficiencies.medium = parseInt(classObj.data.defenses?.medium || "0", 10);
@@ -4953,7 +4956,7 @@ function updateProficiencies(record, valuesToSet) {
     proficiencies.martial = parseInt(classObj.data.attacks?.martial || "0", 10);
     proficiencies.advanced = parseInt(
       classObj.data.attacks?.advanced || "0",
-      10
+      10,
     );
     // Handle "other" attack proficiency (e.g., Alchemical Bombs for Alchemist)
     if (
@@ -4963,14 +4966,14 @@ function updateProficiencies(record, valuesToSet) {
       proficiencies.otherName = classObj.data.attacks.other.name;
       proficiencies.otherRank = parseInt(
         classObj.data.attacks.other.rank || "0",
-        10
+        10,
       );
     }
   }
   if (classObj?.data?.spellcasting) {
     proficiencies.spellcasting = parseInt(
       classObj.data.spellcasting || "0",
-      10
+      10,
     );
   }
   // Class and background skills
@@ -5113,7 +5116,7 @@ function updateProficiencies(record, valuesToSet) {
   }
   const currentClassDCProficiency = parseInt(
     record.data?.classDCProficiency || "0",
-    10
+    10,
   );
 
   // If no class, reset class DC proficiency to 0
@@ -5123,11 +5126,11 @@ function updateProficiencies(record, valuesToSet) {
   } else {
     const effectiveClassDCProficiency = Math.max(
       currentClassDCProficiency,
-      proficiencies.classDC
+      proficiencies.classDC,
     );
     const classDCProficiencyBonus = calculateProficiencyBonus(
       record,
-      effectiveClassDCProficiency
+      effectiveClassDCProficiency,
     );
     valuesToSet["data.classDC"] =
       10 + classDCProficiencyBonus + keyAbilityScore;
@@ -5149,7 +5152,7 @@ function updateProficiencies(record, valuesToSet) {
   const effectiveReflex = Math.max(currentReflex, proficiencies.reflex);
   const reflexProficiencyBonus = calculateProficiencyBonus(
     record,
-    effectiveReflex
+    effectiveReflex,
   );
   valuesToSet["data.reflexMod"] = dexMod + reflexProficiencyBonus;
   if (currentReflex < proficiencies.reflex || proficiencies.reflex === 0) {
@@ -5160,11 +5163,11 @@ function updateProficiencies(record, valuesToSet) {
   const currentFortitude = parseInt(record.data?.fortitude || "0", 10);
   const effectiveFortitude = Math.max(
     currentFortitude,
-    proficiencies.fortitude
+    proficiencies.fortitude,
   );
   const fortitudeProficiencyBonus = calculateProficiencyBonus(
     record,
-    effectiveFortitude
+    effectiveFortitude,
   );
   valuesToSet["data.fortitudeMod"] = conMod + fortitudeProficiencyBonus;
   if (
@@ -5187,11 +5190,11 @@ function updateProficiencies(record, valuesToSet) {
   const currentPerception = parseInt(record.data?.perception || "0", 10);
   const effectivePerception = Math.max(
     currentPerception,
-    proficiencies.perception
+    proficiencies.perception,
   );
   const perceptionProficiencyBonus = calculateProficiencyBonus(
     record,
-    effectivePerception
+    effectivePerception,
   );
   valuesToSet["data.perceptionMod"] = wisMod + perceptionProficiencyBonus;
   if (
@@ -5214,17 +5217,17 @@ function updateProficiencies(record, valuesToSet) {
     // Get the current skill proficiency from the record
     const currentSkillProficiency = parseInt(
       record.data?.[skillName] || "0",
-      10
+      10,
     );
 
     // Use the higher of current proficiency or calculated proficiency for the modifier
     const effectiveProficiency = Math.max(
       currentSkillProficiency,
-      skillProficiency
+      skillProficiency,
     );
     const skillProficiencyBonus = calculateProficiencyBonus(
       record,
-      effectiveProficiency
+      effectiveProficiency,
     );
 
     // Always set the modifier based on the effective proficiency
@@ -5250,7 +5253,7 @@ function updateProficiencies(record, valuesToSet) {
 
     // Check if this lore skill already exists in current lore skills
     const existingLoreSkill = currentLoreSkills.find(
-      (skill) => skill.name === loreSkillFullName
+      (skill) => skill.name === loreSkillFullName,
     );
 
     if (existingLoreSkill) {
@@ -5305,7 +5308,7 @@ function updateProficiencies(record, valuesToSet) {
   // Set armor and weapon proficiencies
   const currentUnarmored = parseInt(
     record.data?.defenses?.unarmored || "0",
-    10
+    10,
   );
   if (
     currentUnarmored < proficiencies.unarmored ||
@@ -5331,7 +5334,7 @@ function updateProficiencies(record, valuesToSet) {
 
   const currentUnarmed = parseInt(
     record.data?.attackProficiencies?.unarmed || "0",
-    10
+    10,
   );
   if (currentUnarmed < proficiencies.unarmed || proficiencies.unarmed === 0) {
     valuesToSet["data.attackProficiencies.unarmed"] = proficiencies.unarmed;
@@ -5339,7 +5342,7 @@ function updateProficiencies(record, valuesToSet) {
 
   const currentSimple = parseInt(
     record.data?.attackProficiencies?.simple || "0",
-    10
+    10,
   );
   if (currentSimple < proficiencies.simple || proficiencies.simple === 0) {
     valuesToSet["data.attackProficiencies.simple"] = proficiencies.simple;
@@ -5347,7 +5350,7 @@ function updateProficiencies(record, valuesToSet) {
 
   const currentMartial = parseInt(
     record.data?.attackProficiencies?.martial || "0",
-    10
+    10,
   );
   if (currentMartial < proficiencies.martial || proficiencies.martial === 0) {
     valuesToSet["data.attackProficiencies.martial"] = proficiencies.martial;
@@ -5355,7 +5358,7 @@ function updateProficiencies(record, valuesToSet) {
 
   const currentAdvanced = parseInt(
     record.data?.attackProficiencies?.advanced || "0",
-    10
+    10,
   );
   if (
     currentAdvanced < proficiencies.advanced ||
@@ -5368,7 +5371,7 @@ function updateProficiencies(record, valuesToSet) {
   if (proficiencies.otherName) {
     const currentOtherRank = parseInt(
       record.data?.attackProficiencies?.other?.rank || "0",
-      10
+      10,
     );
     if (
       currentOtherRank < proficiencies.otherRank ||
@@ -5577,7 +5580,7 @@ function setProvidedItems(record, callback = undefined) {
             parsedPredicate,
             traitsSet,
             record,
-            {}
+            {},
           );
           if (!predicatePassed) {
             continue; // Skip this item if predicate fails
@@ -5649,7 +5652,7 @@ function setProvidedItems(record, callback = undefined) {
     if (recordType === "items") {
       // Add to inventory if not already present (check by fromId or name)
       const alreadyExists = existingInventory.some(
-        (i) => i.data?.fromId === itemId || i.name === item.name
+        (i) => i.data?.fromId === itemId || i.name === item.name,
       );
       if (!alreadyExists) {
         itemsToAdd.inventory.push({
@@ -5667,7 +5670,7 @@ function setProvidedItems(record, callback = undefined) {
     } else if (recordType === "feats") {
       // Add to bonusFeats if not already present (check by fromId or name)
       const alreadyExists = existingBonusFeats.some(
-        (f) => f.data?.fromId === itemId || f.name === item.name
+        (f) => f.data?.fromId === itemId || f.name === item.name,
       );
       if (!alreadyExists) {
         itemsToAdd.bonusFeats.push({
@@ -5681,7 +5684,7 @@ function setProvidedItems(record, callback = undefined) {
     } else if (recordType === "actions") {
       // Add to actions if not already present (check by fromId or name)
       const alreadyExists = existingActions.some(
-        (a) => a.data?.fromId === itemId || a.name === item.name
+        (a) => a.data?.fromId === itemId || a.name === item.name,
       );
       if (!alreadyExists) {
         itemsToAdd.actions.push({
@@ -5706,7 +5709,7 @@ function setProvidedItems(record, callback = undefined) {
             (f) =>
               f.data?.fromId === itemId ||
               f._id === itemId ||
-              f.name === item.name
+              f.name === item.name,
           );
 
           if (!alreadyExists) {
@@ -5729,7 +5732,7 @@ function setProvidedItems(record, callback = undefined) {
             (f) =>
               f.data?.fromId === itemId ||
               f._id === itemId ||
-              f.name === item.name
+              f.name === item.name,
           );
 
           if (!alreadyExists) {
@@ -5954,7 +5957,7 @@ function updateTogglesList(record, valuesToSet) {
   if (!hasChanges) {
     // Same length, check if any items are different
     const existingMap = new Map(
-      existingToggles.map((t) => [t.name, t.data?.predicateValue || ""])
+      existingToggles.map((t) => [t.name, t.data?.predicateValue || ""]),
     );
 
     for (const newToggle of newToggles) {
@@ -5982,7 +5985,7 @@ function onAddEditFeature(
   record,
   callback = undefined,
   skipChoices = false,
-  depth = 0
+  depth = 0,
 ) {
   // Calculate Pathfinder 2e ability boosts first
   const boostResults = calculateAbilityBoosts(record);
@@ -6256,7 +6259,7 @@ function onAddEditFeature(
         // Remove from array
         if (Array.isArray(currentValue)) {
           valuesToSet[dataPath] = currentValue.filter(
-            (item) => item !== effectValue
+            (item) => item !== effectValue,
           );
         }
         // Mark as processed
@@ -6428,7 +6431,7 @@ function rollSave(record, type, dc = null, isSpell = false, isMacro = false) {
   const additionalMods = getEffectsAndModifiersForToken(
     record,
     [`saveBonus`, `savePenalty`],
-    saveType
+    saveType,
   );
 
   const additionalModsSet = new Set();
@@ -6438,7 +6441,7 @@ function rollSave(record, type, dc = null, isSpell = false, isMacro = false) {
     const spellSaveMods = getEffectsAndModifiersForToken(
       record,
       [`saveBonus`, `savePenalty`],
-      "spell"
+      "spell",
     );
     spellSaveMods.forEach((mod) => {
       const modString = modToString(mod);
@@ -6461,7 +6464,7 @@ function rollSave(record, type, dc = null, isSpell = false, isMacro = false) {
   const allEffectMods = getEffectsAndModifiersForToken(
     record,
     [`allBonus`, `allPenalty`],
-    attribute
+    attribute,
   );
 
   // Add save-specific modifiers
@@ -6514,7 +6517,7 @@ function rollSave(record, type, dc = null, isSpell = false, isMacro = false) {
       "1d20",
       modifiers,
       metadata,
-      "save"
+      "save",
     );
   } else {
     api.promptRoll(`${saveDisplay} Save`, "1d20", modifiers, metadata, "save");
@@ -6595,7 +6598,7 @@ function rollSkill(
   isMacro = false,
   isInitiative = false,
   initiativeGroup = undefined,
-  additionalMetadata = {}
+  additionalMetadata = {},
 ) {
   if (!record || !skillName) {
     console.error("rollSkill: Invalid record or skillName");
@@ -6634,7 +6637,7 @@ function rollSkill(
     // NPCs need to get the skill mod from the .skills list
     const skills = record.data?.skills || [];
     const skillObj = skills.find(
-      (s) => s?.name?.toLowerCase() === skillName?.toLowerCase()
+      (s) => s?.name?.toLowerCase() === skillName?.toLowerCase(),
     );
     skillMod = skillObj?.data?.mod || 0;
   }
@@ -6670,7 +6673,7 @@ function rollSkill(
       "perception",
       undefined,
       undefined,
-      context
+      context,
     );
   } else {
     // Regular skills get skill bonuses
@@ -6680,7 +6683,7 @@ function rollSkill(
       skill,
       undefined,
       undefined,
-      context
+      context,
     );
   }
   if (isInitiative) {
@@ -6690,7 +6693,7 @@ function rollSkill(
       undefined,
       undefined,
       undefined,
-      context
+      context,
     );
     initiativeMods.forEach((mod) => {
       additionalMods.push(mod);
@@ -6722,7 +6725,7 @@ function rollSkill(
     allEffectMods = getEffectsAndModifiersForToken(
       record,
       ["allBonus", "allPenalty", "skillBonus", "skillPenalty"],
-      attribute
+      attribute,
     );
   }
 
@@ -6735,7 +6738,7 @@ function rollSkill(
       skill,
       undefined,
       undefined,
-      context
+      context,
     );
   }
 
@@ -6770,7 +6773,7 @@ function rollSkill(
     [skill, attribute],
     undefined,
     undefined,
-    context
+    context,
   );
 
   // Prepare metadata for the roll handler
@@ -6800,7 +6803,7 @@ function rollSkill(
       "1d20",
       modifiers,
       metadata,
-      isInitiative ? "initiative" : "skill"
+      isInitiative ? "initiative" : "skill",
     );
   } else {
     api.promptRoll(
@@ -6808,7 +6811,7 @@ function rollSkill(
       "1d20",
       modifiers,
       metadata,
-      isInitiative ? "initiative" : "skill"
+      isInitiative ? "initiative" : "skill",
     );
   }
 }
@@ -6886,7 +6889,7 @@ function rollSkillCheck(skill, dc, options = {}) {
       undefined,
       {
         action: actionName,
-      }
+      },
     );
   });
 }
@@ -6923,7 +6926,7 @@ function updateTotalBulk(record, setValue = true) {
         // Subtract what's ignored
         totalBulkOfPack = Math.max(
           0,
-          totalBulkOfPack - parseFloat(item.data?.bulk?.ignored || "0")
+          totalBulkOfPack - parseFloat(item.data?.bulk?.ignored || "0"),
         );
         totalBulk += totalBulkOfPack;
       }
@@ -6986,7 +6989,7 @@ function isTokenIncapacitated(token) {
     // Check if the effect name contains any of the incapacitating conditions
     if (
       incapacitatingConditions.some((condition) =>
-        effectName.includes(condition)
+        effectName.includes(condition),
       )
     ) {
       return true;
@@ -7093,7 +7096,7 @@ function isOffGuard(token) {
     (effect) =>
       effect.name.toLowerCase().includes("off-guard") ||
       effect.name.toLowerCase().includes("off guard") ||
-      effect.name.toLowerCase().includes("offguard")
+      effect.name.toLowerCase().includes("offguard"),
   );
 }
 
@@ -7110,7 +7113,7 @@ function canBeOffGuard(targetToken, attackerToken, source = "flanking") {
   const preventionModifiers = getEffectsAndModifiersForToken(
     targetToken,
     ["offGuardPrevention"],
-    source
+    source,
   );
 
   if (preventionModifiers.length === 0) {
@@ -7358,25 +7361,25 @@ function isOffGuardDueToFlanking({
         pos1,
         pos2,
         topLeft,
-        topRight
+        topRight,
       );
       const intersectsBottom = lineSegmentsIntersect(
         pos1,
         pos2,
         bottomLeft,
-        bottomRight
+        bottomRight,
       );
       const intersectsLeft = lineSegmentsIntersect(
         pos1,
         pos2,
         topLeft,
-        bottomLeft
+        bottomLeft,
       );
       const intersectsRight = lineSegmentsIntersect(
         pos1,
         pos2,
         topRight,
-        bottomRight
+        bottomRight,
       );
 
       // Also check if either point is inside the bounding box
@@ -7710,12 +7713,12 @@ function useAction(action) {
 
   const actionDescription = updateDamageMacros(
     api.richTextToMarkdown(action?.data?.description || ""),
-    { item: action }
+    { item: action },
   );
 
   let portrait = action?.portrait
     ? `![${actionName}](${assetUrl}${encodeURI(
-        action?.portrait
+        action?.portrait,
       )}?width=40&height=40) `
     : "";
 
@@ -7865,10 +7868,10 @@ function getWeaponDamageInfo(record, weapon) {
       (weapon.data?.weaponType || "melee").toLowerCase() === "unarmed"
     : (weapon.data?.range || 0) === 0;
   const hasThrownTrait = weapon.data?.traits?.some((trait) =>
-    trait.toLowerCase().startsWith("thrown")
+    trait.toLowerCase().startsWith("thrown"),
   );
   const hasDeathTrait = weapon.data?.traits?.some((trait) =>
-    trait.toLowerCase().includes("death")
+    trait.toLowerCase().includes("death"),
   );
 
   // Handle NPC attacks with damageRolls array
@@ -7877,16 +7880,16 @@ function getWeaponDamageInfo(record, weapon) {
 
     // Build damage string from all standard damage rolls
     const standardRolls = damageRolls.filter(
-      (roll) => !roll.data?.category || roll.data?.category === "standard"
+      (roll) => !roll.data?.category || roll.data?.category === "standard",
     );
     const precisionRolls = damageRolls.filter(
-      (roll) => roll.data?.category === "precision"
+      (roll) => roll.data?.category === "precision",
     );
     const splashRolls = damageRolls.filter(
-      (roll) => roll.data?.category === "splash"
+      (roll) => roll.data?.category === "splash",
     );
     const persistentRolls = damageRolls.filter(
-      (roll) => roll.data?.category === "persistent"
+      (roll) => roll.data?.category === "persistent",
     );
 
     let damageString = "";
@@ -7944,7 +7947,7 @@ function getWeaponDamageInfo(record, weapon) {
     // Check for deadly/fatal traits
     let deadlyDie = null;
     const deadlyTrait = weapon.data?.traits?.find((trait) =>
-      trait.toLowerCase().startsWith("deadly")
+      trait.toLowerCase().startsWith("deadly"),
     );
     if (deadlyTrait) {
       const match = deadlyTrait.match(/deadly[\s\-]*(d\d+)/i);
@@ -7955,7 +7958,7 @@ function getWeaponDamageInfo(record, weapon) {
 
     let fatalDie = null;
     const fatalTrait = weapon.data?.traits?.find((trait) =>
-      trait.toLowerCase().startsWith("fatal")
+      trait.toLowerCase().startsWith("fatal"),
     );
     if (fatalTrait) {
       const match = fatalTrait.match(/fatal[\s\-]*(d\d+)/i);
@@ -8026,7 +8029,7 @@ function getWeaponDamageInfo(record, weapon) {
   // If the weapon has the propulsive trait we only do half strength
   if (
     weapon.data?.traits?.some((trait) =>
-      trait.toLowerCase().includes("propulsive")
+      trait.toLowerCase().includes("propulsive"),
     )
   ) {
     isPropulsive = true;
@@ -8036,7 +8039,7 @@ function getWeaponDamageInfo(record, weapon) {
   // Format: "Deadly d4", "Deadly d10", "Deadly-d10", etc.
   let deadlyDie = null;
   const deadlyTrait = weapon.data?.traits?.find((trait) =>
-    trait.toLowerCase().startsWith("deadly")
+    trait.toLowerCase().startsWith("deadly"),
   );
   if (deadlyTrait) {
     // Match with optional space or hyphen between "deadly" and die size
@@ -8049,7 +8052,7 @@ function getWeaponDamageInfo(record, weapon) {
   // Check for fatal trait the same way
   let fatalDie = null;
   const fatalTrait = weapon.data?.traits?.find((trait) =>
-    trait.toLowerCase().startsWith("fatal")
+    trait.toLowerCase().startsWith("fatal"),
   );
   if (fatalTrait) {
     // Match with optional space or hyphen between "fatal" and die size
@@ -8191,7 +8194,7 @@ function countWeaponDamageDice(weapon, strikingRune) {
     // For NPC attacks, count dice from all standard damage rolls
     const damageRolls = weapon.data?.damageRolls || [];
     const standardRolls = damageRolls.filter(
-      (roll) => !roll.data?.category || roll.data?.category === "standard"
+      (roll) => !roll.data?.category || roll.data?.category === "standard",
     );
 
     let totalDice = 0;
@@ -8229,7 +8232,7 @@ function countWeaponDamageDice(weapon, strikingRune) {
 function activateSneakAttackIfConditionsMet(
   modifiers,
   weapon,
-  targetIsOffGuard
+  targetIsOffGuard,
 ) {
   if (!targetIsOffGuard) {
     return modifiers; // No sneak attack if target is not off-guard
@@ -8240,10 +8243,10 @@ function activateSneakAttackIfConditionsMet(
   const traits = weapon.data?.traits || [];
 
   const hasAgileTrait = traits.some((trait) =>
-    trait.toLowerCase().includes("agile")
+    trait.toLowerCase().includes("agile"),
   );
   const hasFinesseTrait = traits.some((trait) =>
-    trait.toLowerCase().includes("finesse")
+    trait.toLowerCase().includes("finesse"),
   );
 
   // Determine if sneak attack conditions are met
@@ -8322,7 +8325,7 @@ function collectFeatures(record) {
   const equippedItems = items.filter(
     (item) =>
       item.data?.carried === "equipped" &&
-      (!requiresInvestment(item) || item.data?.invested === "true")
+      (!requiresInvestment(item) || item.data?.invested === "true"),
   );
   features.push(...equippedItems);
   return features;
@@ -8361,12 +8364,12 @@ function getProfiencyForWeapon(
   record,
   weaponCategory,
   weaponGroup,
-  weapon = null
+  weapon = null,
 ) {
   // First check proficiency for the weapon category
   let weaponProficiency = parseInt(
     record.data?.attackProficiencies?.[weaponCategory] || "0",
-    10
+    10,
   );
 
   // Check if "other" attack proficiency applies to this weapon
@@ -8399,7 +8402,7 @@ function getProfiencyForWeapon(
       // the weapon group matches the rest (e.g., "simple firearms" matches simple category + firearm group)
       else if (otherName.startsWith(weaponCategoryLower + " ")) {
         const expectedGroup = otherName.substring(
-          weaponCategoryLower.length + 1
+          weaponCategoryLower.length + 1,
         );
         // Handle plurals (e.g., "firearms" -> "firearm")
         const normalizedExpectedGroup = expectedGroup.endsWith("s")
@@ -8457,7 +8460,7 @@ function getProfiencyForWeapon(
       "",
       undefined,
       undefined,
-      { item: weapon }
+      { item: weapon },
     );
 
     for (const mod of weaponProfMods) {
@@ -8494,7 +8497,7 @@ function evaluatePredicate(
   record,
   item,
   targetIsOffGuard = false,
-  traits = null
+  traits = null,
 ) {
   if (!predicate || typeof predicate !== "string") {
     console.warn("evaluatePredicate: invalid predicate", predicate);
@@ -8518,7 +8521,7 @@ function evaluatePredicate(
     if (!item || !item.data) return false;
     const traits = item.data?.traits || [];
     return traits.some((trait) =>
-      trait.toLowerCase().includes(traitName.toLowerCase())
+      trait.toLowerCase().includes(traitName.toLowerCase()),
     );
   };
 
@@ -8548,7 +8551,7 @@ function evaluatePredicate(
       const profRank = getItemProficiencyRank();
       evaluatedPredicate = evaluatedPredicate.replace(
         /item:proficiency:rank/g,
-        String(profRank)
+        String(profRank),
       );
     }
 
@@ -8560,27 +8563,27 @@ function evaluatePredicate(
       const offGuardValue = targetIsOffGuard || offGuardFromTraits ? "1" : "0";
       evaluatedPredicate = evaluatedPredicate.replace(
         /target:condition:off-guard/g,
-        offGuardValue
+        offGuardValue,
       );
     }
 
     // Handle item:trait:X patterns
     // Convert iterator to array to avoid issues when modifying the string
     const traitMatches = Array.from(
-      evaluatedPredicate.matchAll(/item:trait:(\w+)/g)
+      evaluatedPredicate.matchAll(/item:trait:(\w+)/g),
     );
     for (const match of traitMatches) {
       const traitName = match[1];
       const hasTrait = hasItemTrait(traitName);
       evaluatedPredicate = evaluatedPredicate.replace(
         match[0],
-        hasTrait ? "1" : "0"
+        hasTrait ? "1" : "0",
       );
     }
 
     // Handle item:category:X patterns (e.g., item:category:martial, item:category:simple)
     const categoryMatches = Array.from(
-      evaluatedPredicate.matchAll(/item:category:(\w+)/g)
+      evaluatedPredicate.matchAll(/item:category:(\w+)/g),
     );
     for (const match of categoryMatches) {
       const categoryName = match[1].toLowerCase();
@@ -8588,13 +8591,13 @@ function evaluatePredicate(
       const hasCategory = itemCategory === categoryName;
       evaluatedPredicate = evaluatedPredicate.replace(
         match[0],
-        hasCategory ? "1" : "0"
+        hasCategory ? "1" : "0",
       );
     }
 
     // Handle item:group:X patterns (e.g., item:group:firearm, item:group:crossbow)
     const groupMatches = Array.from(
-      evaluatedPredicate.matchAll(/item:group:(\w+)/g)
+      evaluatedPredicate.matchAll(/item:group:(\w+)/g),
     );
     for (const match of groupMatches) {
       const groupName = match[1].toLowerCase();
@@ -8602,7 +8605,7 @@ function evaluatePredicate(
       const hasGroup = itemGroup === groupName;
       evaluatedPredicate = evaluatedPredicate.replace(
         match[0],
-        hasGroup ? "1" : "0"
+        hasGroup ? "1" : "0",
       );
     }
 
@@ -8611,7 +8614,7 @@ function evaluatePredicate(
     // For now, we ignore origin predicates by treating them as true (1)
     // Origin predicates reference properties of the entity that created/applied the effect
     const originMatches = Array.from(
-      evaluatedPredicate.matchAll(/origin:[\w:]+/g)
+      evaluatedPredicate.matchAll(/origin:[\w:]+/g),
     );
     for (const match of originMatches) {
       evaluatedPredicate = evaluatedPredicate.replace(match[0], "1");
@@ -8621,7 +8624,7 @@ function evaluatePredicate(
     // TODO: Implement proper item tag evaluation
     // For now, we treat item:tag predicates as true (1) since we don't support tags yet
     const tagMatches = Array.from(
-      evaluatedPredicate.matchAll(/item:tag:[\w-]+/g)
+      evaluatedPredicate.matchAll(/item:tag:[\w-]+/g),
     );
     for (const match of tagMatches) {
       evaluatedPredicate = evaluatedPredicate.replace(match[0], "1");
@@ -8720,7 +8723,7 @@ function evaluatePredicate(
 function hasCriticalSpecializationEffect(
   record,
   item,
-  targetIsOffGuard = false
+  targetIsOffGuard = false,
 ) {
   const features = collectFeatures(record);
 
@@ -8769,7 +8772,7 @@ function hasCriticalSpecializationEffect(
               parsedPredicate,
               traits,
               record,
-              context
+              context,
             );
 
             if (predicateResult) {
@@ -8783,7 +8786,7 @@ function hasCriticalSpecializationEffect(
                 record,
                 item,
                 targetIsOffGuard,
-                traits
+                traits,
               )
             ) {
               return true;
@@ -8808,7 +8811,7 @@ function hasCriticalSpecializationEffect(
               record,
               item,
               targetIsOffGuard,
-              traits
+              traits,
             )
           ) {
             return true;
@@ -8945,18 +8948,18 @@ function performAttackRoll(record, weapon, weaponDataPath, attackNumber = 1) {
       (weapon.data?.weaponType || "melee").toLowerCase() === "unarmed"
     : (weapon.data?.range || 0) === 0;
   const hasThrownTrait = weapon.data?.traits?.some((trait) =>
-    trait.toLowerCase().startsWith("thrown")
+    trait.toLowerCase().startsWith("thrown"),
   );
   const hasFinesseTrait = weapon.data?.traits?.some((trait) =>
-    trait.toLowerCase().includes("finesse")
+    trait.toLowerCase().includes("finesse"),
   );
   const hasAgileTrait = weapon.data?.traits?.some((trait) =>
-    trait.toLowerCase().includes("agile")
+    trait.toLowerCase().includes("agile"),
   );
   const range = weapon.data?.range || getRangeFromTraits(weapon.data?.traits);
   const volleyRange = getVolleyRangeFromTraits(weapon.data?.traits);
   const hasReachTrait = weapon.data?.traits?.some((trait) =>
-    trait.toLowerCase().includes("reach")
+    trait.toLowerCase().includes("reach"),
   );
 
   // Create a list of all traits as tags that we'll add to the roll message
@@ -8973,7 +8976,7 @@ function performAttackRoll(record, weapon, weaponDataPath, attackNumber = 1) {
       trait.toLowerCase().includes("arcane") ||
       trait.toLowerCase().includes("divine") ||
       trait.toLowerCase().includes("occult") ||
-      trait.toLowerCase().includes("primal")
+      trait.toLowerCase().includes("primal"),
   );
   const hasRunes =
     runes.length > 0 ||
@@ -9018,7 +9021,7 @@ function performAttackRoll(record, weapon, weaponDataPath, attackNumber = 1) {
   // If the weapon has the propulsive trait we only do half strength
   if (
     weapon.data?.traits?.some((trait) =>
-      trait.toLowerCase().includes("propulsive")
+      trait.toLowerCase().includes("propulsive"),
     )
   ) {
     isPropulsive = true;
@@ -9066,7 +9069,7 @@ function performAttackRoll(record, weapon, weaponDataPath, attackNumber = 1) {
       const usesMax = parseInt(ammoItem.data?.uses?.max || "0", 10);
       const usesValue = parseInt(
         ammoItem.data?.uses?.value || (usesMax > 0 ? usesMax : "0"),
-        10
+        10,
       );
 
       if (usesMax <= 1) {
@@ -9168,7 +9171,7 @@ function performAttackRoll(record, weapon, weaponDataPath, attackNumber = 1) {
 
   let targetShieldRaised = false;
   const damageIsPhysical = ["bludgeoning", "piercing", "slashing"].includes(
-    damageType.toLowerCase()
+    damageType.toLowerCase(),
   );
 
   // Check for persistent damage
@@ -9249,7 +9252,7 @@ function performAttackRoll(record, weapon, weaponDataPath, attackNumber = 1) {
     undefined, // Don't filter by field here
     weapon._id,
     undefined,
-    { weapon, targets }
+    { weapon, targets },
   );
 
   if (damageCalculationMod.length) {
@@ -9291,7 +9294,7 @@ function performAttackRoll(record, weapon, weaponDataPath, attackNumber = 1) {
         if (
           alternativeAbility &&
           ["str", "dex", "con", "int", "wis", "cha"].includes(
-            alternativeAbility
+            alternativeAbility,
           )
         ) {
           const alternativeScore = record.data?.[alternativeAbility] || 0;
@@ -9317,7 +9320,7 @@ function performAttackRoll(record, weapon, weaponDataPath, attackNumber = 1) {
     undefined,
     weapon._id,
     undefined,
-    { weapon, targets }
+    { weapon, targets },
   );
   attackCalculationMod.forEach((mod) => {
     const attackCalculation = mod.field;
@@ -9356,7 +9359,7 @@ function performAttackRoll(record, weapon, weaponDataPath, attackNumber = 1) {
       record,
       weaponCategory,
       weaponGroup,
-      weapon
+      weapon,
     );
     const proficiencyNames = [
       "Untrained",
@@ -9402,7 +9405,7 @@ function performAttackRoll(record, weapon, weaponDataPath, attackNumber = 1) {
     isMelee ? "melee" : "ranged",
     weapon._id,
     undefined,
-    { weapon, targets }
+    { weapon, targets },
   );
   otherBonusesAndPenalties.forEach((mod) => {
     const modString = modToString(mod);
@@ -9420,7 +9423,7 @@ function performAttackRoll(record, weapon, weaponDataPath, attackNumber = 1) {
       "unarmed",
       weapon._id,
       undefined,
-      { weapon, targets }
+      { weapon, targets },
     );
     unarmedBonusesAndPenalties.forEach((mod) => {
       const modString = modToString(mod);
@@ -9438,7 +9441,7 @@ function performAttackRoll(record, weapon, weaponDataPath, attackNumber = 1) {
     abilityScore,
     weapon._id,
     undefined,
-    { weapon, targets }
+    { weapon, targets },
   );
   statBonusesAndPenalties.forEach((mod) => {
     const modString = modToString(mod);
@@ -9463,7 +9466,7 @@ function performAttackRoll(record, weapon, weaponDataPath, attackNumber = 1) {
   const hasNonlethalTrait = traits.some(
     (trait) =>
       trait.toLowerCase().trim() === "nonlethal" ||
-      trait.toLowerCase().trim() === "non-lethal"
+      trait.toLowerCase().trim() === "non-lethal",
   );
 
   if (hasNonlethalTrait) {
@@ -9473,7 +9476,7 @@ function performAttackRoll(record, weapon, weaponDataPath, attackNumber = 1) {
       (mod) =>
         mod.modifierType === "circumstance" &&
         mod.value < 0 &&
-        Math.abs(mod.value) >= 2
+        Math.abs(mod.value) >= 2,
     );
 
     let lethalPenaltyValue = -2;
@@ -9505,7 +9508,7 @@ function performAttackRoll(record, weapon, weaponDataPath, attackNumber = 1) {
       isSpell ? "spell" : "attack",
       weapon._id,
       undefined,
-      { weapon, targets }
+      { weapon, targets },
     );
 
     if (mapReductionMod.length) {
@@ -9542,7 +9545,7 @@ function performAttackRoll(record, weapon, weaponDataPath, attackNumber = 1) {
     isMelee ? "melee" : "ranged",
     weapon._id,
     undefined,
-    { weapon, targets }
+    { weapon, targets },
   );
 
   // Damage stat modifiers
@@ -9553,11 +9556,11 @@ function performAttackRoll(record, weapon, weaponDataPath, attackNumber = 1) {
       damageScore,
       weapon._id,
       undefined,
-      { weapon, targets }
+      { weapon, targets },
     );
     // Create a Set from existing damage modifiers to avoid duplicates
     const seenDamageModifiers = new Set(
-      damageModifiers.map((mod) => modToString(mod))
+      damageModifiers.map((mod) => modToString(mod)),
     );
     damageStatModifiers.forEach((mod) => {
       const modString = modToString(mod);
@@ -9571,7 +9574,7 @@ function performAttackRoll(record, weapon, weaponDataPath, attackNumber = 1) {
   // Add extra damage modifiers passed via weapon (e.g., from elemental blast)
   if (weapon.data?.extraDamageModifiers) {
     const seenDamageModifiers = new Set(
-      damageModifiers.map((mod) => modToString(mod))
+      damageModifiers.map((mod) => modToString(mod)),
     );
     weapon.data.extraDamageModifiers.forEach((mod) => {
       const modString = modToString(mod);
@@ -9636,7 +9639,7 @@ function performAttackRoll(record, weapon, weaponDataPath, attackNumber = 1) {
     damageModifiers,
     persistentDamage,
     splashDamage,
-    splashDamageType
+    splashDamageType,
   );
   damageModifiers = processedDamage.modifiers;
   persistentDamage = processedDamage.persistentDamage;
@@ -9656,7 +9659,7 @@ function performAttackRoll(record, weapon, weaponDataPath, attackNumber = 1) {
         mod.valueType === "string" &&
         typeof mod.value === "string" &&
         mod.value.trim().toLowerCase().startsWith("ignore") &&
-        mod.value.trim().toLowerCase().includes("resistance")
+        mod.value.trim().toLowerCase().includes("resistance"),
     )
     ?.map((mod) => mod.value.split(" ")[1])
     .join(",");
@@ -9667,7 +9670,7 @@ function performAttackRoll(record, weapon, weaponDataPath, attackNumber = 1) {
         typeof mod.value === "string" &&
         mod.value.trim().toLowerCase().startsWith("ignore") &&
         (mod.value.trim().toLowerCase().includes("immunities") ||
-          mod.value.trim().toLowerCase().includes("immunity"))
+          mod.value.trim().toLowerCase().includes("immunity")),
     )
     ?.map((mod) => mod.value.split(" ")[1])
     .join(",");
@@ -9677,13 +9680,13 @@ function performAttackRoll(record, weapon, weaponDataPath, attackNumber = 1) {
         mod.valueType === "string" &&
         typeof mod.value === "string" &&
         mod.value.trim().toLowerCase().startsWith("ignore") &&
-        mod.value.trim().toLowerCase().includes("weakness")
+        mod.value.trim().toLowerCase().includes("weakness"),
     )
     ?.map((mod) => mod.value.split(" ")[1])
     .join(",");
   // Filter these out of the modifiers array, we don't need them to be toggleable
   const filteredDamageModifiers = damageModifiers.filter(
-    (m) => !m?.value?.toString()?.toLowerCase()?.includes("ignore")
+    (m) => !m?.value?.toString()?.toLowerCase()?.includes("ignore"),
   );
 
   // Roll for each target or just once
@@ -9714,7 +9717,7 @@ function performAttackRoll(record, weapon, weaponDataPath, attackNumber = 1) {
           undefined,
           weapon._id,
           undefined,
-          { weapon, targets: [target] }
+          { weapon, targets: [target] },
         );
         let ignoreRangePenalty = 0;
         for (const mod of ignoreRangePenaltyMod) {
@@ -9734,7 +9737,7 @@ function performAttackRoll(record, weapon, weaponDataPath, attackNumber = 1) {
             api.showNotification(
               `Target is beyond maximum range (${6 * range} ft)!`,
               "red",
-              "Out of Range"
+              "Out of Range",
             );
             continue;
           }
@@ -9779,7 +9782,7 @@ function performAttackRoll(record, weapon, weaponDataPath, attackNumber = 1) {
       let autoCritical = false;
       const targetEffects = getAttackModifiersForTarget(
         target?.token,
-        targetDistance
+        targetDistance,
       );
       targetEffects.forEach((r) => {
         if (r.value === "critical") {
@@ -9792,7 +9795,7 @@ function performAttackRoll(record, weapon, weaponDataPath, attackNumber = 1) {
       // Get damage effects for the target
       const targetDamageEffects = getDamageEffectsForTarget(
         ourToken,
-        target?.token
+        target?.token,
       );
       const allDamageModifiers = [...filteredDamageModifiers];
       targetDamageEffects.forEach((r) => {
@@ -9820,7 +9823,7 @@ function performAttackRoll(record, weapon, weaponDataPath, attackNumber = 1) {
       const finalDamageModifiers = activateSneakAttackIfConditionsMet(
         allDamageModifiers,
         weapon,
-        targetIsOffGuard
+        targetIsOffGuard,
       );
 
       // Build list of precision modifier indices for damage handler
@@ -9833,14 +9836,14 @@ function performAttackRoll(record, weapon, weaponDataPath, attackNumber = 1) {
 
       let targetAc = getArmorClassForToken(
         target?.token,
-        targetIsOffGuardDueToFlanking
+        targetIsOffGuardDueToFlanking,
       );
 
       // Check if we have a critical specialization effect
       const hasCriticalSpecialization = hasCriticalSpecializationEffect(
         record,
         weapon,
-        targetIsOffGuard
+        targetIsOffGuard,
       );
 
       const diceRoll = "1d20";
@@ -9851,7 +9854,7 @@ function performAttackRoll(record, weapon, weaponDataPath, attackNumber = 1) {
         [attackField, abilityScore],
         weapon._id,
         undefined,
-        { weapon, targets: [target] }
+        { weapon, targets: [target] },
       );
 
       const metadata = {
@@ -9865,6 +9868,7 @@ function performAttackRoll(record, weapon, weaponDataPath, attackNumber = 1) {
         damageCategories: damageCategories,
         runes: runes,
         icon: isMelee && !isThrown ? "IconSword" : "IconBow",
+        portrait: weapon?.portrait,
         targetName: targetName,
         tokenId: ourToken?._id,
         tokenName:
@@ -9904,14 +9908,14 @@ function performAttackRoll(record, weapon, weaponDataPath, attackNumber = 1) {
         diceRoll,
         modifiers,
         metadata,
-        "attack"
+        "attack",
       );
     }
   } else {
     const hasCriticalSpecialization = hasCriticalSpecializationEffect(
       record,
       weapon,
-      false
+      false,
     );
 
     // Build list of precision modifier indices for damage handler
@@ -9929,7 +9933,7 @@ function performAttackRoll(record, weapon, weaponDataPath, attackNumber = 1) {
       [attackField, abilityScore],
       weapon._id,
       undefined,
-      { weapon }
+      { weapon },
     );
 
     const metadata = {
@@ -9943,6 +9947,7 @@ function performAttackRoll(record, weapon, weaponDataPath, attackNumber = 1) {
       weaponGroup: weaponGroup,
       hasCriticalSpecialization: hasCriticalSpecialization,
       icon: isMelee && !isThrown ? "IconSword" : "IconBow",
+      portrait: weapon?.portrait,
       tokenId: ourToken?._id,
       tokenName:
         ourToken?.identified === false
@@ -9973,7 +9978,7 @@ function performAttackRoll(record, weapon, weaponDataPath, attackNumber = 1) {
       "1d20",
       modifiers,
       metadata,
-      "attack"
+      "attack",
     );
   }
 }
@@ -9981,7 +9986,7 @@ function performAttackRoll(record, weapon, weaponDataPath, attackNumber = 1) {
 function performDamageRollForSpellOrItem(recordId, recordType, weaponDataPath) {
   if (!recordId || !recordType || !weaponDataPath) {
     console.error(
-      `Invalid parameters for performDamageRollForSpellOrItem: recordId: ${recordId}, recordType: ${recordType}, weaponDataPath: ${weaponDataPath}`
+      `Invalid parameters for performDamageRollForSpellOrItem: recordId: ${recordId}, recordType: ${recordType}, weaponDataPath: ${weaponDataPath}`,
     );
     return;
   }
@@ -10083,7 +10088,7 @@ function performDamageRoll(record, weapon, weaponDataPath, isCritical) {
         trait.toLowerCase().includes("arcane") ||
         trait.toLowerCase().includes("divine") ||
         trait.toLowerCase().includes("occult") ||
-        trait.toLowerCase().includes("primal")
+        trait.toLowerCase().includes("primal"),
     );
   const hasRunes =
     propertyRunes.length > 0 ||
@@ -10113,7 +10118,7 @@ function performDamageRoll(record, weapon, weaponDataPath, isCritical) {
   // Determine damage stat (for stat-based damage modifiers)
   let damageScore = "";
   const isPropulsive = weapon.data?.traits?.some((trait) =>
-    trait.toLowerCase().includes("propulsive")
+    trait.toLowerCase().includes("propulsive"),
   );
   const addStrengthToDamage = isMelee || isThrown;
 
@@ -10132,7 +10137,7 @@ function performDamageRoll(record, weapon, weaponDataPath, isCritical) {
     undefined, // Don't filter by field here
     weapon._id,
     undefined,
-    { weapon }
+    { weapon },
   );
 
   if (damageCalculationMod.length) {
@@ -10175,7 +10180,7 @@ function performDamageRoll(record, weapon, weaponDataPath, isCritical) {
         if (
           alternativeAbility &&
           ["str", "dex", "con", "int", "wis", "cha"].includes(
-            alternativeAbility
+            alternativeAbility,
           )
         ) {
           const alternativeScore = record.data?.[alternativeAbility] || 0;
@@ -10197,7 +10202,7 @@ function performDamageRoll(record, weapon, weaponDataPath, isCritical) {
   if (!weaponDamageInfo.isItem) {
     if (weaponDamageInfo.isSpell) {
       const isCantrip = weapon.data?.traits?.some((trait) =>
-        trait.toLowerCase().includes("cantrip")
+        trait.toLowerCase().includes("cantrip"),
       );
       let types = isCantrip
         ? ["cantripDamageBonus", "cantripDamagePenalty"]
@@ -10211,7 +10216,7 @@ function performDamageRoll(record, weapon, weaponDataPath, isCritical) {
         isMelee ? "melee" : "ranged",
         weapon._id,
         undefined,
-        { weapon }
+        { weapon },
       );
     } else {
       damageModifiers = getEffectsAndModifiersForToken(
@@ -10220,7 +10225,7 @@ function performDamageRoll(record, weapon, weaponDataPath, isCritical) {
         isMelee ? "melee" : "ranged",
         weapon._id,
         undefined,
-        { weapon }
+        { weapon },
       );
     }
   }
@@ -10233,11 +10238,11 @@ function performDamageRoll(record, weapon, weaponDataPath, isCritical) {
       damageScore,
       weapon._id,
       undefined,
-      { weapon }
+      { weapon },
     );
     // Create a Set from existing damage modifiers to avoid duplicates
     const seenDamageModifiers = new Set(
-      damageModifiers.map((mod) => modToString(mod))
+      damageModifiers.map((mod) => modToString(mod)),
     );
     damageStatModifiers.forEach((mod) => {
       const modString = modToString(mod);
@@ -10289,7 +10294,7 @@ function performDamageRoll(record, weapon, weaponDataPath, isCritical) {
     damageModifiers,
     persistentDamage,
     splashDamage,
-    splashDamageType
+    splashDamageType,
   );
   damageModifiers = processedDamage.modifiers;
   persistentDamage = processedDamage.persistentDamage;
@@ -10323,7 +10328,7 @@ function performDamageRoll(record, weapon, weaponDataPath, isCritical) {
       // Parse each component like "1d4 fire" or "3 bludgeoning"
       // Pattern: "(dice or number) (damage type)"
       const componentMatch = component.match(
-        /^([0-9]*d[0-9]+|[0-9]+)\s+([a-z]+)$/i
+        /^([0-9]*d[0-9]+|[0-9]+)\s+([a-z]+)$/i,
       );
 
       if (componentMatch) {
@@ -10423,7 +10428,7 @@ function performDamageRoll(record, weapon, weaponDataPath, isCritical) {
         mod.valueType === "string" &&
         typeof mod.value === "string" &&
         mod.value.trim().toLowerCase().startsWith("ignore") &&
-        mod.value.trim().toLowerCase().includes("resistance")
+        mod.value.trim().toLowerCase().includes("resistance"),
     )
     ?.map((mod) => mod.value.split(" ")[1])
     .join(",");
@@ -10434,7 +10439,7 @@ function performDamageRoll(record, weapon, weaponDataPath, isCritical) {
         typeof mod.value === "string" &&
         mod.value.trim().toLowerCase().startsWith("ignore") &&
         (mod.value.trim().toLowerCase().includes("immunities") ||
-          mod.value.trim().toLowerCase().includes("immunity"))
+          mod.value.trim().toLowerCase().includes("immunity")),
     )
     ?.map((mod) => mod.value.split(" ")[1])
     .join(",");
@@ -10444,13 +10449,13 @@ function performDamageRoll(record, weapon, weaponDataPath, isCritical) {
         mod.valueType === "string" &&
         typeof mod.value === "string" &&
         mod.value.trim().toLowerCase().startsWith("ignore") &&
-        mod.value.trim().toLowerCase().includes("weakness")
+        mod.value.trim().toLowerCase().includes("weakness"),
     )
     ?.map((mod) => mod.value.split(" ")[1])
     .join(",");
   // Filter these out of the modifiers array, we don't need them to be toggleable
   const filteredDamageModifiers = damageModifiers.filter(
-    (m) => !m?.value?.toString()?.toLowerCase()?.includes("ignore")
+    (m) => !m?.value?.toString()?.toLowerCase()?.includes("ignore"),
   );
 
   // Roll for each target or just once
@@ -10459,7 +10464,7 @@ function performDamageRoll(record, weapon, weaponDataPath, isCritical) {
   let targetIsOffGuard = false;
   let targetShieldRaised = false;
   const damageIsPhysical = ["bludgeoning", "piercing", "slashing"].includes(
-    damageType.toLowerCase()
+    damageType.toLowerCase(),
   );
 
   if (targets.length > 0) {
@@ -10486,7 +10491,7 @@ function performDamageRoll(record, weapon, weaponDataPath, isCritical) {
       // Get damage effects for the target
       const targetDamageEffects = getDamageEffectsForTarget(
         ourToken,
-        target?.token
+        target?.token,
       );
       targetDamageEffects.forEach((r) => {
         filteredDamageModifiers.push({
@@ -10501,7 +10506,7 @@ function performDamageRoll(record, weapon, weaponDataPath, isCritical) {
   const finalDamageModifiers = activateSneakAttackIfConditionsMet(
     filteredDamageModifiers,
     weapon,
-    targetIsOffGuard
+    targetIsOffGuard,
   );
 
   // Build list of precision modifier indices for damage handler
@@ -10514,6 +10519,8 @@ function performDamageRoll(record, weapon, weaponDataPath, isCritical) {
 
   const metadata = {
     attack: `${weapon.name}`,
+    icon: isMelee && !isThrown ? "IconSword" : "IconBow",
+    portrait: weapon?.portrait,
     traits: traits,
     damageCategories,
     rollName: damageKind === "healing" ? "Healing" : "Damage",
@@ -10542,7 +10549,7 @@ function performDamageRoll(record, weapon, weaponDataPath, isCritical) {
     damage,
     finalDamageModifiers,
     metadata,
-    damageKind === "healing" ? "healing" : "damage"
+    damageKind === "healing" ? "healing" : "damage",
   );
 }
 
@@ -10575,13 +10582,13 @@ function rollMatchesCondition(roll, conditionsArray) {
       traits.some(
         (trait) =>
           trait.toLowerCase().trim().replace(/-/g, "").replace(/ /g, "") ===
-          condition.toLowerCase().trim().replace(/-/g, "").replace(/ /g, "")
+          condition.toLowerCase().trim().replace(/-/g, "").replace(/ /g, ""),
       ) ||
       damageCategories.some(
         (category) =>
           category.toLowerCase().trim().replace(/-/g, "").replace(/ /g, "") ===
-          condition.toLowerCase().trim().replace(/-/g, "").replace(/ /g, "")
-      )
+          condition.toLowerCase().trim().replace(/-/g, "").replace(/ /g, ""),
+      ),
   );
 }
 
@@ -10717,8 +10724,8 @@ function getIWR(target, armorSpecDetails = null) {
         categoryLower === "medium"
           ? 3 + potencyValue
           : categoryLower === "heavy"
-          ? 5 + potencyValue
-          : 0;
+            ? 5 + potencyValue
+            : 0;
       if (skeletalValue > 0) {
         if (
           !resistancesMap["precision"] ||
@@ -10992,7 +10999,7 @@ function applyDamage(
   roll,
   halfDamage = false,
   splashDamage = null,
-  shieldDamage = false
+  shieldDamage = false,
 ) {
   // If splashDamage is provided, we're applying splash damage directly
   // splashDamage should be an object like: { type: "fire", value: 3 }
@@ -11056,7 +11063,7 @@ function applyDamage(
         if (bestArmor?.armor?.armorId) {
           const inventory = target.data?.inventory || [];
           targetArmorItem = inventory.find(
-            (item) => item._id === bestArmor.armor.armorId
+            (item) => item._id === bestArmor.armor.armorId,
           );
 
           if (targetArmorItem) {
@@ -11067,7 +11074,7 @@ function applyDamage(
             // Check if target has armor specialization for this armor
             targetHasArmorSpecialization = hasArmorSpecializationEffect(
               target,
-              targetArmorItem
+              targetArmorItem,
             );
 
             // Get armor specialization details if applicable
@@ -11094,7 +11101,7 @@ function applyDamage(
             "critical hit",
             "crits",
             "crit",
-          ].includes(immunityType.toLowerCase().trim())
+          ].includes(immunityType.toLowerCase().trim()),
       );
 
       // Get list of critical-only dice that shouldn't be doubled (deadly/fatal)
@@ -11194,7 +11201,7 @@ function applyDamage(
 
             // Find a matching critical-only die
             const matchIndex = remainingCriticalDice.findIndex(
-              (critDie) => critDie.dieType === rollType.die
+              (critDie) => critDie.dieType === rollType.die,
             );
 
             if (matchIndex >= 0) {
@@ -11218,13 +11225,13 @@ function applyDamage(
       // This must be done before we calculate baseDamage
       const targetTraits = target.data?.traits || [];
       const hasUndeadTrait = targetTraits.some(
-        (trait) => trait?.toLowerCase() === "undead"
+        (trait) => trait?.toLowerCase() === "undead",
       );
       const hasVitalityTrait = traits.some(
-        (trait) => trait?.toLowerCase() === "vitality"
+        (trait) => trait?.toLowerCase() === "vitality",
       );
       const hasVoidTrait = traits.some(
-        (trait) => trait?.toLowerCase() === "void"
+        (trait) => trait?.toLowerCase() === "void",
       );
 
       // Convert damage to healing based on vitality/void traits
@@ -11330,7 +11337,7 @@ function applyDamage(
       const isNonlethal = traits.some(
         (trait) =>
           trait.toLowerCase().trim() === "nonlethal" ||
-          trait.toLowerCase().trim() === "non-lethal"
+          trait.toLowerCase().trim() === "non-lethal",
       );
       const hasNonlethalImmunity =
         IWR.immunities["nonlethal"] || IWR.immunities["non-lethal"];
@@ -11403,7 +11410,7 @@ function applyDamage(
                     .replace(/-/g, "")
                     .replace(/ /g, "");
                   return immunityNormalized === categoryNormalized;
-                }
+                },
               );
 
               if (matchingImmunityKey) {
@@ -11483,7 +11490,7 @@ function applyDamage(
                   .replace(/-/g, "")
                   .replace(/ /g, "");
                 return weaknessNormalized === categoryNormalized;
-              }
+              },
             );
 
             if (matchingWeaknessKey) {
@@ -11575,7 +11582,7 @@ function applyDamage(
                   .replace(/-/g, "")
                   .replace(/ /g, "");
                 return resistanceNormalized === categoryNormalized;
-              }
+              },
             );
 
             if (matchingResistanceKey) {
@@ -11621,7 +11628,7 @@ function applyDamage(
       // Each type has already been capped at 0, so total can't be negative
       damage = Object.values(finalDamageByType).reduce(
         (sum, dmg) => sum + dmg,
-        0
+        0,
       );
 
       // Now apply precision-specific IWR adjustments
@@ -12045,7 +12052,7 @@ function applyDamage(
                 }
               });
             }
-          }
+          },
         );
       }
 
@@ -12056,7 +12063,7 @@ function applyDamage(
           ? `\n\`\`\`Undo\nif (isGM) { api.setValuesOnTokenById('${
               target._id
             }', '${target.recordType}', ${JSON.stringify(
-              oldValues
+              oldValues,
             )}); api.editMessage(null, \`~${message}~\`); } else { api.showNotification('Only the GM can undo damage.', 'yellow', 'Notice'); }\n\`\`\``
           : "";
 
@@ -12086,7 +12093,7 @@ function applyDamage(
         undefined,
         undefined,
         tags.length > 0 ? tags : undefined,
-        target
+        target,
       );
     }
   });
@@ -12107,7 +12114,7 @@ function performInitiativeRoll(record) {
     undefined,
     {
       initiativeSkill: initiativeSkill,
-    }
+    },
   );
 }
 
@@ -12115,7 +12122,7 @@ function replaceWithDamageMacro() {
   api.showNotification(
     "This macro must be used from the the Chat after using this ability.",
     "red",
-    "Requires Use"
+    "Requires Use",
   );
 }
 
@@ -12131,7 +12138,7 @@ function executeDamageMacro(
   formula,
   category = "standard",
   name = null,
-  context = {}
+  context = {},
 ) {
   if (!formula || formula.trim() === "") {
     return "";
@@ -12152,7 +12159,7 @@ function executeDamageMacro(
   // First replace @item.level/@item.rank with actual value
   processedFormula = processedFormula.replace(
     /@item\.(level|rank)/gi,
-    itemLevel
+    itemLevel,
   );
 
   // Then evaluate any mathematical expressions like floor(2/2), (3), etc.
@@ -12163,14 +12170,14 @@ function executeDamageMacro(
     (match) => {
       const evaluated = evaluateMath(match);
       return String(evaluated);
-    }
+    },
   );
 
   // Check for formulas with both standard and persistent damage
   // Example: "5d6 bludgeoning and 2d8 persistent electricity damage"
   let persistentDamage = null;
   const persistentMatch = processedFormula.match(
-    /\s+and\s+([0-9d+\-*/.() ]+)\s+persistent\s+([a-z]+)(\s+damage)?/i
+    /\s+and\s+([0-9d+\-*/.() ]+)\s+persistent\s+([a-z]+)(\s+damage)?/i,
   );
   if (persistentMatch) {
     // Extract persistent damage formula and type
@@ -12219,7 +12226,7 @@ function executeDamageMacro(
     applyPersistentDamage(
       cleanFormula,
       context.originTokenId,
-      context.originTokenName
+      context.originTokenName,
     );
     return;
   } else if (category === "splash") {
@@ -12228,7 +12235,7 @@ function executeDamageMacro(
 
     // Parse splash damage to add to criticalOnlyDice
     const splashMatch = cleanFormula.match(
-      /^([0-9]*d[0-9]+|[0-9]+)\s+([a-z]+)$/i
+      /^([0-9]*d[0-9]+|[0-9]+)\s+([a-z]+)$/i,
     );
     if (splashMatch) {
       const splashFormula = splashMatch[1];
@@ -12278,7 +12285,7 @@ function executeDamageMacro(
     mainDamage,
     modifiers,
     metadata,
-    category === "healing" ? "healing" : "damage"
+    category === "healing" ? "healing" : "damage",
   );
 }
 
@@ -12331,7 +12338,7 @@ function updateDamageMacros(description, context = {}) {
       const nameParam = name ? `"${name}"` : "null";
 
       return `executeDamageMacro("${formula}", ${categoryParam}, ${nameParam}, ${minimalContext})`;
-    }
+    },
   );
   return result;
 }
@@ -12378,7 +12385,7 @@ function treatWounds() {
     api.showNotification(
       "You must be at least Trained in Medicine to use Treat Wounds",
       "red",
-      "Notice"
+      "Notice",
     );
     return;
   }
@@ -12462,7 +12469,7 @@ function treatWounds() {
       const skillMods = getEffectsAndModifiersForToken(
         healer,
         ["skillBonus", "skillPenalty"],
-        "medicine"
+        "medicine",
       );
 
       skillMods.forEach((mod) => {
@@ -12478,7 +12485,7 @@ function treatWounds() {
       const allMods = getEffectsAndModifiersForToken(
         healer,
         ["allBonus", "allPenalty"],
-        wisdomAbility
+        wisdomAbility,
       );
 
       allMods.forEach((mod) => {
@@ -12517,12 +12524,12 @@ function treatWounds() {
         "1d20",
         modifiers,
         metadata,
-        "skill"
+        "skill",
       );
     },
     "Roll",
     "Cancel",
-    1
+    1,
   );
 }
 
@@ -12589,7 +12596,7 @@ function elementalBlast() {
       api.showNotification(
         `Invalid element: ${element}. Valid options: air, earth, fire, metal, water, wood`,
         "red",
-        "Error"
+        "Error",
       );
       return;
     }
@@ -12726,7 +12733,7 @@ function elementalBlast() {
                 "elemental-blast",
                 undefined,
                 undefined,
-                { weapon: syntheticWeapon }
+                { weapon: syntheticWeapon },
               );
               blastAttackMods.forEach((mod) => {
                 const modString = modToString(mod);
@@ -12743,7 +12750,7 @@ function elementalBlast() {
                 "elemental-blast",
                 undefined,
                 undefined,
-                { weapon: syntheticWeapon }
+                { weapon: syntheticWeapon },
               );
               allAttackMods.forEach((mod) => {
                 const modString = modToString(mod);
@@ -12764,7 +12771,7 @@ function elementalBlast() {
                 "elemental-blast",
                 undefined,
                 undefined,
-                { weapon: syntheticWeapon }
+                { weapon: syntheticWeapon },
               );
               blastDamageMods.forEach((mod) => {
                 const modString = modToString(mod);
@@ -12783,12 +12790,12 @@ function elementalBlast() {
             },
             "Roll Attack",
             "Cancel",
-            1
+            1,
           );
         },
         "Continue",
         "Cancel",
-        1
+        1,
       );
     };
 
@@ -12813,7 +12820,7 @@ function elementalBlast() {
         },
         "Continue",
         "Cancel",
-        1
+        1,
       );
     }
   }; // End of continueWithElement
@@ -12844,7 +12851,7 @@ function elementalBlast() {
       },
       "Continue",
       "Cancel",
-      1
+      1,
     );
   } else if (elementArray.length === 1) {
     // Only one element available, use it directly
@@ -12872,7 +12879,7 @@ function elementalBlast() {
       },
       "Continue",
       "Cancel",
-      1
+      1,
     );
   }
 }

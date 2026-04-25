@@ -40,6 +40,13 @@ const damageIgnoresWeaknesses =
   data?.roll?.metadata?.damageIgnoresWeaknesses || "";
 const hasDeathTrait = data?.roll?.metadata?.hasDeathTrait === true;
 const icon = data?.roll?.metadata?.icon;
+const portrait = data?.roll?.metadata?.portrait;
+// Prefer portrait at 30x30 if set, fall back to the icon glyph.
+const iconStr = portrait
+  ? `![](${assetUrl}${encodeURI(portrait)}?width=30&height=30)`
+  : icon
+    ? `:${icon}:`
+    : "";
 
 let damage = data?.roll?.metadata?.damage;
 let fatalDamageString = data?.roll?.metadata?.fatalDamageString;
@@ -174,28 +181,28 @@ if (dc > 0) {
   switch (degreeOfSuccess) {
     case 2:
       isCritical = true;
-      message = `[center]${icon ? `:${icon}:` : ""} ${attack} ${
+      message = `[center]${iconStr} ${attack} ${
         targetName ? ` :IconTargetArrow: ${targetName}` : ""
       }[/center]\n\n**[center][color=${degreeColor}]${degreeName}${modifierText}[/color] [gm]vs ${dcName} ${dc} (${marginText})[/gm][/center]**`;
       break;
     case 1:
-      message = `[center]${icon ? `:${icon}:` : ""} ${attack} ${
+      message = `[center]${iconStr} ${attack} ${
         targetName ? ` :IconTargetArrow: ${targetName}` : ""
       }[/center]\n\n**[center][color=${degreeColor}]${degreeName}${modifierText}[/color] [gm]vs ${dcName} ${dc} (${marginText})[/gm][/center]**`;
       break;
     case 0:
-      message = `[center]${icon ? `:${icon}:` : ""} ${attack} ${
+      message = `[center]${iconStr} ${attack} ${
         targetName ? ` :IconTargetArrow: ${targetName}` : ""
       }[/center]\n\n**[center][color=${degreeColor}]${degreeName}${modifierText}[/color] [gm]vs ${dcName} ${dc} (${marginText})[/gm][/center]**`;
       break;
     case -1:
-      message = `[center]${icon ? `:${icon}:` : ""} ${attack} ${
+      message = `[center]${iconStr} ${attack} ${
         targetName ? ` :IconTargetArrow: ${targetName}` : ""
       }[/center]\n\n**[center][color=${degreeColor}]${degreeName}${modifierText}[/color] [gm]vs ${dcName} ${dc} (${marginText})[/gm][/center]**`;
       break;
   }
 } else {
-  message = `[center]${icon ? `:${icon}:` : ""} ${attack} ${
+  message = `[center]${iconStr} ${attack} ${
     targetName ? ` :IconTargetArrow: ${targetName}` : ""
   }[/center]`;
 }
@@ -403,6 +410,10 @@ damageModifiers.forEach((mod, index) => {
 const damageMetadata = {
   // This is so that our damage handler script can tell if it was from a critical hit
   critical: isCritical && !isSpell,
+  // Carry the attack identity through so the damage message can show a header
+  attack: attack,
+  icon: icon,
+  portrait: portrait,
   traits,
   damageCategories,
   splashDamage: splashDamage,

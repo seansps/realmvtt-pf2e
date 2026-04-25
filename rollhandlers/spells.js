@@ -1026,6 +1026,9 @@ api.getRecord('${record.recordType}', '${record._id}', (record) => {
       traits: ${JSON.stringify(traits)},
       isVitalityDual: ${isVitalityDual},
       criticalOnlyDice: criticalOnlyDice,
+      attack: "${spellName}",
+      icon: "IconWand",
+      portrait: ${JSON.stringify(spell?.portrait || "")},
     },
     "damage"
   );
@@ -1236,6 +1239,8 @@ api.getRecord('${record.recordType}', '${record._id}', (record) => {
     // No target - just roll without target-specific modifiers
     const metadata = {
       attack: "${spellName}",
+      icon: "IconWand",
+      portrait: ${JSON.stringify(spell?.portrait || "")},
       rollName: "Spell Attack",
       tooltip: "Spell Attack vs ${dcDescription}",
       isSpell: true,
@@ -1305,6 +1310,8 @@ api.getRecord('${record.recordType}', '${record._id}', (record) => {
   
       const metadata = {
         attack: "${spellName}",
+        icon: "IconWand",
+        portrait: ${JSON.stringify(spell?.portrait || "")},
         rollName: "Spell Attack",
         tooltip: \`Spell Attack vs \${targetName}'s ${dcDescription}\`,
         isSpell: true,

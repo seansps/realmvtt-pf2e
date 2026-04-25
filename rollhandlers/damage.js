@@ -1,3 +1,18 @@
+// Optional header — when the damage roll came from an attack/spell, render
+// the source's portrait (or icon) + name above the damage breakdown.
+const damageAttackName = data.roll?.metadata?.attack || "";
+const damageIcon = data.roll?.metadata?.icon;
+const damagePortrait = data.roll?.metadata?.portrait;
+const damageIconStr = damagePortrait
+  ? `![](${assetUrl}${encodeURI(damagePortrait)}?width=30&height=30)`
+  : damageIcon
+    ? `:${damageIcon}:`
+    : "";
+const damageHeader =
+  damageAttackName || damageIconStr
+    ? `[center]${damageIconStr} ${damageAttackName}[/center]`
+    : "";
+
 // Here we need to determine if it was a hit or miss and display in the chat.
 const traits = data.roll?.metadata?.traits || [];
 const splashDamage = data.roll?.metadata?.splashDamage || 0;
@@ -297,6 +312,7 @@ applyDamage(null, ${JSON.stringify(data.roll)}, false, undefined, true);
   : "";
 
 const message = `
+${damageHeader}
 ${criticalDamageInfo}
 ${damageMacro}
 ${halfDamageMacro}
