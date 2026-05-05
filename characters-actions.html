@@ -16,150 +16,166 @@
   }
 </script>
 
-<div style="display: flex; flex-direction: column; gap: 8px">
-  <label
-    variant="bold"
-    field="attackListLabel"
-    label="Attacks"
-    size="md"
-    textalign="center"
-  ></label>
-  <list listtype="toggle_list" variant="striped" field="toggles"></list>
+<div class="sheet--spread">
+  <!-- ===== ATTACKS SECTION ===== -->
   <div
-    style="
-      width: 100%;
-      display: flex;
-      justify-content: flex-end;
-      gap: 4px;
-      align-items: center;
-    "
+    class="rvtt-sheet-section rvtt-sheet-corners"
+    style="background: var(--bg, transparent)"
   >
-    <label
-      size="xs"
-      variant="bold"
-      label="Initiative Skill"
-      textalign="right"
-    ></label>
-    <dropdown
-      field="initiativeSkill"
-      size="xs"
-      searchable="true"
-      defaultvalue="Perception"
-      placeholder="Perception"
-      options='[{"label": "Perception", "value": "Perception"}, 
-      {"label": "Acrobatics", "value": "Acrobatics"},
-      {"label": "Arcana", "value": "Arcana"},
-      {"label": "Athletics", "value": "Athletics"},
-      {"label": "Crafting", "value": "Crafting"},
-      {"label": "Deception", "value": "Deception"},
-      {"label": "Diplomacy", "value": "Diplomacy"},
-      {"label": "Intimidation", "value": "Intimidation"},
-      {"label": "Medicine", "value": "Medicine"},
-      {"label": "Nature", "value": "Nature"},
-      {"label": "Occultism", "value": "Occultism"},
-      {"label": "Performance", "value": "Performance"},
-      {"label": "Religion", "value": "Religion"},
-      {"label": "Society", "value": "Society"},
-      {"label": "Stealth", "value": "Stealth"},
-      {"label": "Survival", "value": "Survival"},
-      {"label": "Thievery", "value": "Thievery"}]'
+    <span class="rvtt-sheet-corner rvtt-sheet-corner--tl"></span>
+    <span class="rvtt-sheet-corner rvtt-sheet-corner--tr"></span>
+    <span class="rvtt-sheet-corner rvtt-sheet-corner--bl"></span>
+    <span class="rvtt-sheet-corner rvtt-sheet-corner--br"></span>
+
+    <div class="rvtt-sheet-divider">
+      <span class="rvtt-sheet-divider__label">&#10022; Attacks &#10022;</span>
+    </div>
+
+    <list listtype="toggle_list" variant="striped" field="toggles"></list>
+
+    <div
+      style="
+        width: 100%;
+        display: flex;
+        justify-content: flex-end;
+        gap: 4px;
+        align-items: center;
+        margin-top: 4px;
+      "
     >
-    </dropdown>
-    <button
-      field="rollInitBtn"
-      size="xs"
-      icon="D20"
-      label="Initiative"
-      variant="outline"
-      onclick="rollInitiative();"
-    ></button>
+      <label
+        class="rvtt-sheet-label rvtt-sheet-label--accent"
+        label="Initiative"
+      ></label>
+      <dropdown
+        field="initiativeSkill"
+        size="xs"
+        searchable="true"
+        defaultvalue="Perception"
+        placeholder="Perception"
+        options='[{"label": "Perception", "value": "Perception"},
+        {"label": "Acrobatics", "value": "Acrobatics"},
+        {"label": "Arcana", "value": "Arcana"},
+        {"label": "Athletics", "value": "Athletics"},
+        {"label": "Crafting", "value": "Crafting"},
+        {"label": "Deception", "value": "Deception"},
+        {"label": "Diplomacy", "value": "Diplomacy"},
+        {"label": "Intimidation", "value": "Intimidation"},
+        {"label": "Medicine", "value": "Medicine"},
+        {"label": "Nature", "value": "Nature"},
+        {"label": "Occultism", "value": "Occultism"},
+        {"label": "Performance", "value": "Performance"},
+        {"label": "Religion", "value": "Religion"},
+        {"label": "Society", "value": "Society"},
+        {"label": "Stealth", "value": "Stealth"},
+        {"label": "Survival", "value": "Survival"},
+        {"label": "Thievery", "value": "Thievery"}]'
+      ></dropdown>
+      <button
+        field="rollInitBtn"
+        size="xs"
+        icon="D20"
+        label="Initiative"
+        variant="outline"
+        onclick="rollInitiative();"
+      ></button>
+    </div>
+
+    <!-- For polymorph attacks -->
+    <list
+      listtype="polymorph_actions_list"
+      variant="striped"
+      field="attacks"
+    ></list>
+
+    <!-- For effects that grant strikes -->
+    <list
+      listtype="attack_list"
+      variant="striped"
+      field="granted_inventory"
+    ></list>
+    <!-- For actual attacks -->
+    <list listtype="attack_list" variant="striped" field="inventory"></list>
+    <list
+      listtype="attack_stowed_list"
+      variant="striped"
+      field="inventory"
+    ></list>
+    <list
+      listtype="attack_dropped_list"
+      variant="striped"
+      field="inventory"
+    ></list>
   </div>
 
-  <!-- For polymorph attacks -->
-  <list
-    listtype="polymorph_actions_list"
-    variant="striped"
-    field="attacks"
-  ></list>
+  <!-- ===== ACTIONS SECTION ===== -->
+  <div
+    class="rvtt-sheet-section rvtt-sheet-corners"
+    style="background: var(--bg, transparent)"
+  >
+    <span class="rvtt-sheet-corner rvtt-sheet-corner--tl"></span>
+    <span class="rvtt-sheet-corner rvtt-sheet-corner--tr"></span>
+    <span class="rvtt-sheet-corner rvtt-sheet-corner--bl"></span>
+    <span class="rvtt-sheet-corner rvtt-sheet-corner--br"></span>
 
-  <!-- For effects that grant strikes -->
-  <list
-    listtype="attack_list"
-    variant="striped"
-    field="granted_inventory"
-  ></list>
-  <!-- For actual attacks -->
-  <list listtype="attack_list" variant="striped" field="inventory"></list>
-  <list
-    listtype="attack_stowed_list"
-    variant="striped"
-    field="inventory"
-  ></list>
-  <list
-    listtype="attack_dropped_list"
-    variant="striped"
-    field="inventory"
-  ></list>
-</div>
+    <div class="rvtt-sheet-divider">
+      <span class="rvtt-sheet-divider__label">&#10022; Actions &#10022;</span>
+    </div>
 
-<div style="margin-top: 8px">
-  <label
-    variant="bold"
-    field="actionsLabel"
-    label="Actions"
-    size="md"
-    textalign="center"
-  ></label>
-</div>
+    <div style="width: 100%">
+      <list
+        listtype="character_action_list"
+        field="actions"
+        onchange="onAddAction();"
+        variant="striped"
+      ></list>
+    </div>
+  </div>
 
-<div style="width: 100%">
-  <list
-    listtype="character_action_list"
-    field="actions"
-    onchange="onAddAction();"
-    variant="striped"
-  ></list>
-</div>
+  <!-- ===== SPELLCASTING SECTION ===== -->
+  <div
+    class="rvtt-sheet-section rvtt-sheet-corners"
+    style="background: var(--bg, transparent)"
+  >
+    <span class="rvtt-sheet-corner rvtt-sheet-corner--tl"></span>
+    <span class="rvtt-sheet-corner rvtt-sheet-corner--tr"></span>
+    <span class="rvtt-sheet-corner rvtt-sheet-corner--bl"></span>
+    <span class="rvtt-sheet-corner rvtt-sheet-corner--br"></span>
 
-<div style="margin-top: 8px">
-  <label
-    variant="bold"
-    field="spellcastingLabel"
-    label="Spellcasting"
-    size="md"
-    textalign="center"
-  ></label>
-</div>
-
-<div style="width: 100%">
-  <list listtype="spellcasting_entry_list" field="spells"></list>
-  <popover>
-    <popover.target>
-      <div style="margin-top: 4px">
-        <button
-          size="xs"
-          variant="outline"
-          icon="IconPlus"
-          label="Add Spellcasting Entry"
-          hideonlocked="true"
-        ></button>
-      </div>
-    </popover.target>
-    <popover.dropdown>
-      <div
-        style="
-          display: flex;
-          flex-direction: column;
-          gap: 4px;
-          width: 200px;
-          max-width: 200px;
-        "
+    <div class="rvtt-sheet-divider">
+      <span class="rvtt-sheet-divider__label"
+        >&#10022; Spellcasting &#10022;</span
       >
-        <label
-          size="xs"
-          variant="bold"
-          label="Spellcasting Entry Settings"
-        ></label>
+    </div>
+
+    <div style="width: 100%">
+      <list listtype="spellcasting_entry_list" field="spells"></list>
+      <popover>
+        <popover.target>
+          <div style="margin-top: 4px">
+            <button
+              size="xs"
+              variant="outline"
+              icon="IconPlus"
+              label="Add Spellcasting Entry"
+              hideonlocked="true"
+            ></button>
+          </div>
+        </popover.target>
+        <popover.dropdown>
+          <div
+            style="
+              display: flex;
+              flex-direction: column;
+              gap: 4px;
+              width: 200px;
+              max-width: 200px;
+            "
+          >
+            <label
+              class="rvtt-sheet-label rvtt-sheet-label--accent"
+              label="Spellcasting Entry Settings"
+            ></label>
         <dropdown
           size="xs"
           field="addType"
@@ -213,14 +229,16 @@
       {"label": "Intelligence", "value": "int"},
       {"label": "Wisdom", "value": "wis"},
       {"label": "Charisma", "value": "cha"}]'
-        ></dropdown>
-        <button
-          size="xs"
-          variant="outline"
-          label="Add"
-          onclick="onAddSpellcastingEntry();"
-        ></button>
-      </div>
-    </popover.dropdown>
-  </popover>
+            ></dropdown>
+            <button
+              size="xs"
+              variant="outline"
+              label="Add"
+              onclick="onAddSpellcastingEntry();"
+            ></button>
+          </div>
+        </popover.dropdown>
+      </popover>
+    </div>
+  </div>
 </div>

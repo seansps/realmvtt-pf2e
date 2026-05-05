@@ -228,196 +228,198 @@
   }
 </script>
 
-<div style="display: flex; flex-direction: column">
-  <label
-    variant="bold"
-    field="craftingLabel"
-    label="Crafting"
-    size="md"
-    textalign="center"
-  ></label>
+<div class="sheet--spread">
+  <div
+    class="rvtt-sheet-section rvtt-sheet-corners"
+    style="background: var(--bg, transparent)"
+  >
+    <span class="rvtt-sheet-corner rvtt-sheet-corner--tl"></span>
+    <span class="rvtt-sheet-corner rvtt-sheet-corner--tr"></span>
+    <span class="rvtt-sheet-corner rvtt-sheet-corner--bl"></span>
+    <span class="rvtt-sheet-corner rvtt-sheet-corner--br"></span>
 
-  <div style="width: 100%">
-    <div style="float: right">
-      <checkbox
-        label="Show Advanced Alchemy (Alchemist)"
-        field="showAdvancedAlchemy"
-        onchange="onShowAdvancedAlchemy(value)"
-        textalign="left"
-        size="xs"
-        hideonlocked="true"
-      ></checkbox>
+    <div class="rvtt-sheet-divider">
+      <span class="rvtt-sheet-divider__label">&#10022; Crafting &#10022;</span>
     </div>
-  </div>
 
-  <box field="advancedAlchemyBox" hidden="true">
+    <div style="width: 100%">
+      <div style="float: right">
+        <checkbox
+          label="Show Advanced Alchemy (Alchemist)"
+          field="showAdvancedAlchemy"
+          onchange="onShowAdvancedAlchemy(value)"
+          textalign="left"
+          size="xs"
+          hideonlocked="true"
+        ></checkbox>
+      </div>
+    </div>
+
+    <box field="advancedAlchemyBox" hidden="true">
+      <div
+        style="
+          display: flex;
+          flex-direction: row;
+          width: 100%;
+          gap: 4px;
+          background-color: rgb(
+            from var(--mantine-color-primary-filled) r g b / 0.25
+          );
+          border-radius: 4px;
+          padding: 0px 4px;
+          margin-top: 8px;
+        "
+      >
+        <label
+          class="rvtt-sheet-label rvtt-sheet-label--accent"
+          label="Advanced Alchemy"
+        ></label>
+      </div>
+
+      <div style="height: 30px; display: flex; gap: 4px; align-items: center">
+        <div style="width: 30px; min-width: 30px"></div>
+        <div style="flex-grow: 1"></div>
+        <div style="width: 50px">
+          <label
+            class="rvtt-sheet-label"
+            width="100%"
+            textalign="center"
+            label="Quantity"
+          >
+          </label>
+        </div>
+        <div style="width: 30px"></div>
+        <box field="tableSpacer" width="16px" hideonlocked="true"></box>
+      </div>
+
+      <list
+        listtype="advanced_alchemy_list"
+        onchange="onAdvancedAlchemyItemChange()"
+        variant="striped-outline"
+        field="advancedAlchemyItems"
+      ></list>
+
+      <div style="margin-top: 4px">
+        <label
+          size="xs"
+          width="100%"
+          textalign="left"
+          field="totalDailyCraftingLabel"
+          color="dimmed"
+        >
+        </label>
+      </div>
+
+      <div
+        style="
+          height: 30px;
+          display: flex;
+          gap: 4px;
+          align-items: center;
+          margin-top: 4px;
+        "
+      >
+        <button
+          size="xs"
+          variant="light"
+          field="performCraftingBtn"
+          icon="IconHammer"
+          label="Perform Daily Crafting"
+          onclick="performDailyCrafting()"
+        ></button>
+
+        <button
+          size="xs"
+          variant="default"
+          field="resetCraftingBtn"
+          icon="IconRefresh"
+          label="Reset Crafting"
+          onclick="resetDailyCrafting()"
+        ></button>
+
+        <div style="width: 8px"></div>
+
+        <label
+          class="rvtt-sheet-label"
+          width="60px"
+          textalign="center"
+          label="# / Day"
+        >
+        </label>
+
+        <numberfield
+          size="xs"
+          field="numDailyCrafting"
+          label="Number per Day"
+          onchange="onNumDailyCraftingChange(value)"
+          variant="tooltip"
+          placeholder="0"
+          width="60px"
+          minvalue="0"
+          maxvalue="100"
+        ></numberfield>
+      </div>
+    </box>
+
     <div
       style="
         display: flex;
         flex-direction: row;
         width: 100%;
-        gap: 4px;
         background-color: rgb(
-          from var(--mantine-color-primary-filled) r g b / 0.25
+          from var(--mantine-color-tertiary-filled) r g b / 0.25
         );
         border-radius: 4px;
         padding: 0px 4px;
         margin-top: 8px;
       "
     >
-      <label label="Advanced Alchemy" size="sm" variant="bold"></label>
+      <label
+        class="rvtt-sheet-label rvtt-sheet-label--accent"
+        field="knownFormulasLabel"
+        label="Known Formulas"
+      ></label>
     </div>
 
     <div style="height: 30px; display: flex; gap: 4px; align-items: center">
       <div style="width: 30px; min-width: 30px"></div>
       <div style="flex-grow: 1"></div>
-      <div style="width: 50px">
+      <div style="width: 40px">
         <label
-          size="xs"
+          class="rvtt-sheet-label"
           width="100%"
           textalign="center"
-          label="Quantity"
-          variant="bold"
+          label="DC"
         >
         </label>
       </div>
-      <div style="width: 30px"></div>
+      <div style="width: 60px">
+        <label
+          class="rvtt-sheet-label"
+          width="100%"
+          textalign="center"
+          label="Cost"
+        >
+        </label>
+      </div>
+      <div style="width: 50px">
+        <label
+          class="rvtt-sheet-label"
+          width="100%"
+          textalign="center"
+          label="Quantity"
+        >
+        </label>
+      </div>
+      <div style="width: 90px"></div>
       <box field="tableSpacer" width="16px" hideonlocked="true"></box>
     </div>
 
     <list
-      listtype="advanced_alchemy_list"
-      onchange="onAdvancedAlchemyItemChange()"
+      listtype="crafting_list"
       variant="striped-outline"
-      field="advancedAlchemyItems"
+      keepitemondrag="true"
+      field="craftingItems"
     ></list>
-
-    <div style="margin-top: 4px">
-      <label
-        size="xs"
-        width="100%"
-        textalign="left"
-        field="totalDailyCraftingLabel"
-        color="dimmed"
-      >
-      </label>
-    </div>
-
-    <div
-      style="
-        height: 30px;
-        display: flex;
-        gap: 4px;
-        align-items: center;
-        margin-top: 4px;
-      "
-    >
-      <button
-        size="xs"
-        variant="light"
-        field="performCraftingBtn"
-        icon="IconHammer"
-        label="Perform Daily Crafting"
-        onclick="performDailyCrafting()"
-      ></button>
-
-      <button
-        size="xs"
-        variant="default"
-        field="resetCraftingBtn"
-        icon="IconRefresh"
-        label="Reset Crafting"
-        onclick="resetDailyCrafting()"
-      ></button>
-
-      <div style="width: 8px"></div>
-
-      <label
-        size="xs"
-        width="60px"
-        textalign="center"
-        label="# / Day"
-        variant="bold"
-      >
-      </label>
-
-      <numberfield
-        size="xs"
-        field="numDailyCrafting"
-        label="Number per Day"
-        onchange="onNumDailyCraftingChange(value)"
-        variant="tooltip"
-        placeholder="0"
-        width="60px"
-        minvalue="0"
-        maxvalue="100"
-      ></numberfield>
-    </div>
-  </box>
-
-  <div
-    style="
-      display: flex;
-      flex-direction: row;
-      width: 100%;
-      background-color: rgb(
-        from var(--mantine-color-tertiary-filled) r g b / 0.25
-      );
-      border-radius: 4px;
-      padding: 0px 4px;
-      margin-top: 8px;
-    "
-  >
-    <label
-      variant="bold"
-      field="knownFormulasLabel"
-      label="Known Formulas"
-      size="sm"
-      textalign="left"
-    ></label>
   </div>
-
-  <div style="height: 30px; display: flex; gap: 4px; align-items: center">
-    <div style="width: 30px; min-width: 30px"></div>
-    <div style="flex-grow: 1"></div>
-    <div style="width: 40px">
-      <label
-        size="xs"
-        width="100%"
-        textalign="center"
-        label="DC"
-        variant="bold"
-      >
-      </label>
-    </div>
-    <div style="width: 60px">
-      <label
-        size="xs"
-        width="100%"
-        textalign="center"
-        label="Cost"
-        variant="bold"
-      >
-      </label>
-    </div>
-    <div style="width: 50px">
-      <label
-        size="xs"
-        width="100%"
-        textalign="center"
-        label="Quantity"
-        variant="bold"
-      >
-      </label>
-    </div>
-    <div style="width: 90px"></div>
-    <box field="tableSpacer" width="16px" hideonlocked="true"></box>
-  </div>
-
-  <list
-    listtype="crafting_list"
-    variant="striped-outline"
-    keepitemondrag="true"
-    field="craftingItems"
-  ></list>
 </div>

@@ -94,7 +94,7 @@
           (record) => {
             // Update total weight
             updateTotalBulk(record);
-          }
+          },
         );
       } else {
         // Add the item to the list
@@ -119,9 +119,9 @@
               api.removeValueFromRecord(
                 sourceRecord,
                 sourceInfo.dataPath,
-                sourceInfo.index
+                sourceInfo.index,
               );
-            }
+            },
           );
         } else if (sourceInfo?.type === "partysheet") {
           // Remove the item from party sheet
@@ -172,7 +172,7 @@
         "data.gp": gp,
         "data.pp": pp,
       },
-      updateCoinage
+      updateCoinage,
     );
   }
 
@@ -202,7 +202,7 @@
             "data.addGp": "",
             "data.addPp": "",
           },
-          updateCoinage
+          updateCoinage,
         );
         api.closeOpenedPopovers();
       });
@@ -236,7 +236,7 @@
             api.showNotification(
               "Not enough currency!",
               "red",
-              "Not Enough Currency"
+              "Not Enough Currency",
             );
             return;
           }
@@ -268,7 +268,7 @@
               "data.deductPp": "",
               "data.redistributeGold": false,
             },
-            updateCoinage
+            updateCoinage,
           );
         } else {
           // Check if character has enough of each specific coin type
@@ -290,7 +290,7 @@
             api.showNotification(
               `Not enough coins! Short: ${shortages.join(", ")}. Enable "Redistribute" to convert currency.`,
               "red",
-              "Not Enough Coins"
+              "Not Enough Coins",
             );
             return;
           }
@@ -308,7 +308,7 @@
               "data.deductPp": "",
               "data.redistributeGold": false,
             },
-            updateCoinage
+            updateCoinage,
           );
         }
         api.closeOpenedPopovers();
@@ -317,507 +317,601 @@
   }
 </script>
 
-<div>
-  <label variant="bold" textalign="center" label="Inventory"></label>
-</div>
-
-<div style="display: flex; flex-direction: row; gap: 4px">
-  <dropdown
-    field="filterByType"
-    label="Filter by Type"
-    size="xs"
-    defaultvalue=""
-    placeholder="Select Type..."
-    disablediflocked="false"
-    options='[{"label": "All", "value": ""},
-            {"label": "Armor", "value": "armor"},
-            {"label": "Consumable", "value": "consumable"},
-            {"label": "Equipment", "value": "equipment"},
-            {"label": "Shield", "value": "shield"},
-            {"label": "Treasure", "value": "treasure"},
-            {"label": "Weapon", "value": "weapon"}]'
-  >
-  </dropdown>
-</div>
-
-<div style="display: flex; flex-direction: row; margin-top: 4px">
-  <div style="margin-left: 34px">
-    <label variant="bold" size="xs" textalign="left" label="Count"></label>
-  </div>
-  <div style="margin-left: 30px; flex-grow: 1">
-    <label variant="bold" size="xs" textalign="left" label="Item"></label>
-  </div>
-  <div style="min-width: 95px">
-    <label variant="bold" size="xs" textalign="left" label="Equipped"></label>
-  </div>
-  <box field="spacerRight" hideonlocked="true">
-    <div style="width: 16px"></div>
-  </box>
-</div>
-
-<div style="display: flex; flex-direction: column; flex-grow: 1">
-  <list
-    listtype="inventory_list"
-    radius="none"
-    variant="striped"
-    field="inventory"
-    onchange="onItemDeleted();"
-    onload="updateTotalBulk(record);"
-  >
-  </list>
-  <divider label="Containers" textalign="center"></divider>
-  <list
-    listtype="inventory_container_list"
-    radius="none"
-    variant="striped"
-    field="inventory"
-    onchange="onItemDeleted();"
-  >
-  </list>
-</div>
-
-<div style="margin-top: 8px">
-  <divider label="Bulk" textalign="center"></divider>
-</div>
-
-<div style="display: flex; flex-direction: row; gap: 4px; align-items: center">
-  <numberfield
-    width="50%"
-    placeholder="0"
-    field="totalBulk"
-    label="Total Bulk"
-  ></numberfield>
-  <div style="margin-top: 16px">
-    <label variant="bold" size="xs" textalign="left" label="/"></label>
-  </div>
-  <numberfield
-    width="50%"
-    placeholder="0"
-    field="bulk"
-    label="Max Bulk"
-  ></numberfield>
-</div>
-
-<div style="margin-top: 8px">
-  <divider label="Treasure" textalign="center"></divider>
-</div>
-
-<div
-  style="
-    display: flex;
-    flex-direction: row;
-    gap: 4px;
-    flex-wrap: wrap;
-    justify-content: center;
-  "
->
+<div class="sheet--spread">
   <div
-    style="display: flex; flex-direction: row; gap: 4px; align-items: center"
+    class="rvtt-sheet-section rvtt-sheet-corners"
+    style="background: var(--bg, transparent)"
   >
-    <label variant="bold" size="xs" textalign="left" label="CP"></label>
-    <div style="min-width: 30px; min-height: 30px; width: 30px; height: 30px">
-      <img
-        src="https://assets.realmvtt.com/icons/fantasy/copper-pieces.webp"
-        alt="Copper Pieces"
-        width="30px"
-        height="30px"
-      />
+    <span class="rvtt-sheet-corner rvtt-sheet-corner--tl"></span>
+    <span class="rvtt-sheet-corner rvtt-sheet-corner--tr"></span>
+    <span class="rvtt-sheet-corner rvtt-sheet-corner--bl"></span>
+    <span class="rvtt-sheet-corner rvtt-sheet-corner--br"></span>
+
+    <div class="rvtt-sheet-divider">
+      <span class="rvtt-sheet-divider__label">&#10022; Inventory &#10022;</span>
     </div>
-    <numberfield
-      placeholder="0"
-      field="cp"
-      width="80px"
-      onchange="updateCoinage();"
-    ></numberfield>
-  </div>
-  <div
-    style="display: flex; flex-direction: row; gap: 4px; align-items: center"
-  >
-    <label variant="bold" size="xs" textalign="left" label="SP"></label>
-    <div style="min-width: 30px; min-height: 30px; width: 30px; height: 30px">
-      <img
-        src="https://assets.realmvtt.com/icons/fantasy/silver-pieces.webp"
-        alt="Silver Pieces"
-        width="30px"
-        height="30px"
-      />
+
+    <div style="display: flex; flex-direction: row; gap: 4px">
+      <dropdown
+        field="filterByType"
+        label="Filter by Type"
+        size="xs"
+        defaultvalue=""
+        placeholder="Select Type..."
+        disablediflocked="false"
+        options='[{"label": "All", "value": ""},
+                {"label": "Armor", "value": "armor"},
+                {"label": "Consumable", "value": "consumable"},
+                {"label": "Equipment", "value": "equipment"},
+                {"label": "Shield", "value": "shield"},
+                {"label": "Treasure", "value": "treasure"},
+                {"label": "Weapon", "value": "weapon"}]'
+      >
+      </dropdown>
     </div>
-    <numberfield
-      placeholder="0"
-      field="sp"
-      width="80px"
-      onchange="updateCoinage();"
-    ></numberfield>
-  </div>
-  <div
-    style="display: flex; flex-direction: row; gap: 4px; align-items: center"
-  >
-    <label variant="bold" size="xs" textalign="left" label="GP"></label>
-    <div style="min-width: 30px; min-height: 30px; width: 30px; height: 30px">
-      <img
-        src="https://assets.realmvtt.com/icons/fantasy/gold-pieces.webp"
-        alt="Gold Pieces"
-        width="30px"
-        height="30px"
-      />
+
+    <div style="display: flex; flex-direction: row; margin-top: 4px">
+      <div style="margin-left: 34px">
+        <label class="rvtt-sheet-label" label="Count"></label>
+      </div>
+      <div style="margin-left: 30px; flex-grow: 1">
+        <label class="rvtt-sheet-label" label="Item"></label>
+      </div>
+      <div style="min-width: 95px">
+        <label class="rvtt-sheet-label" label="Equipped"></label>
+      </div>
+      <box field="spacerRight" hideonlocked="true">
+        <div style="width: 16px"></div>
+      </box>
     </div>
-    <numberfield
-      placeholder="0"
-      field="gp"
-      width="80px"
-      onchange="updateCoinage();"
-    ></numberfield>
-  </div>
-  <div
-    style="display: flex; flex-direction: row; gap: 4px; align-items: center"
-  >
-    <label variant="bold" size="xs" textalign="left" label="PP"></label>
-    <div style="min-width: 30px; min-height: 30px; width: 30px; height: 30px">
-      <img
-        src="https://assets.realmvtt.com/icons/fantasy/platinum-pieces.webp"
-        alt="Platinum Pieces"
-        width="30px"
-        height="30px"
-      />
+
+    <div style="display: flex; flex-direction: column; flex-grow: 1">
+      <list
+        listtype="inventory_list"
+        radius="none"
+        variant="striped"
+        field="inventory"
+        onchange="onItemDeleted()"
+        onload="updateTotalBulk(record)"
+      >
+      </list>
+      <div class="rvtt-sheet-divider" style="margin-top: 8px">
+        <span class="rvtt-sheet-divider__label"
+          >&#10022; Containers &#10022;</span
+        >
+      </div>
+      <list
+        listtype="inventory_container_list"
+        radius="none"
+        variant="striped"
+        field="inventory"
+        onchange="onItemDeleted()"
+      >
+      </list>
     </div>
-    <numberfield
-      placeholder="0"
-      field="pp"
-      width="80px"
-      onchange="updateCoinage();"
-    ></numberfield>
   </div>
+
   <div
-    style="
-      display: flex;
-      flex-direction: row;
-      gap: 4px;
-      align-items: center;
-      margin-left: 16px;
-      min-width: 124px;
-      justify-content: left;
-    "
+    class="rvtt-sheet-section rvtt-sheet-corners"
+    style="background: var(--bg, transparent)"
   >
-    <iconbutton
-      size="md"
-      variant="default"
-      hideonlocked="true"
-      options='[{"icon": "IconArrowsExchange", "label": "Redistribute Currency", "value": "redistribute"}]'
-      field="redistributeBtn"
-      onclick="redistributeCurrency();"
-    ></iconbutton>
-    <popover position="bottom" offset="4" witharrow="true">
-      <popover.target>
+    <span class="rvtt-sheet-corner rvtt-sheet-corner--tl"></span>
+    <span class="rvtt-sheet-corner rvtt-sheet-corner--tr"></span>
+    <span class="rvtt-sheet-corner rvtt-sheet-corner--bl"></span>
+    <span class="rvtt-sheet-corner rvtt-sheet-corner--br"></span>
+
+    <div class="rvtt-sheet-divider">
+      <span class="rvtt-sheet-divider__label">&#10022; Bulk &#10022;</span>
+    </div>
+
+    <div
+      style="display: flex; flex-direction: row; gap: 4px; align-items: center"
+    >
+      <numberfield
+        width="50%"
+        placeholder="0"
+        field="totalBulk"
+        label="Total Bulk"
+      ></numberfield>
+      <div style="margin-top: 16px">
+        <label class="rvtt-sheet-label" label="/"></label>
+      </div>
+      <numberfield
+        width="50%"
+        placeholder="0"
+        field="bulk"
+        label="Max Bulk"
+      ></numberfield>
+    </div>
+  </div>
+
+  <div
+    class="rvtt-sheet-section rvtt-sheet-corners"
+    style="background: var(--bg, transparent)"
+  >
+    <span class="rvtt-sheet-corner rvtt-sheet-corner--tl"></span>
+    <span class="rvtt-sheet-corner rvtt-sheet-corner--tr"></span>
+    <span class="rvtt-sheet-corner rvtt-sheet-corner--bl"></span>
+    <span class="rvtt-sheet-corner rvtt-sheet-corner--br"></span>
+
+    <div class="rvtt-sheet-divider">
+      <span class="rvtt-sheet-divider__label">&#10022; Treasure &#10022;</span>
+    </div>
+
+    <div
+      style="
+        display: flex;
+        flex-direction: row;
+        gap: 4px;
+        flex-wrap: wrap;
+        justify-content: center;
+      "
+    >
+      <div
+        style="
+          display: flex;
+          flex-direction: row;
+          gap: 4px;
+          align-items: center;
+        "
+      >
+        <label
+          class="rvtt-sheet-label rvtt-sheet-label--accent"
+          label="CP"
+        ></label>
+        <div
+          style="min-width: 30px; min-height: 30px; width: 30px; height: 30px"
+        >
+          <img
+            src="https://assets.realmvtt.com/icons/fantasy/copper-pieces.webp"
+            alt="Copper Pieces"
+            width="30px"
+            height="30px"
+          />
+        </div>
+        <numberfield
+          placeholder="0"
+          field="cp"
+          width="80px"
+          onchange="updateCoinage()"
+        ></numberfield>
+      </div>
+      <div
+        style="
+          display: flex;
+          flex-direction: row;
+          gap: 4px;
+          align-items: center;
+        "
+      >
+        <label
+          class="rvtt-sheet-label rvtt-sheet-label--accent"
+          label="SP"
+        ></label>
+        <div
+          style="min-width: 30px; min-height: 30px; width: 30px; height: 30px"
+        >
+          <img
+            src="https://assets.realmvtt.com/icons/fantasy/silver-pieces.webp"
+            alt="Silver Pieces"
+            width="30px"
+            height="30px"
+          />
+        </div>
+        <numberfield
+          placeholder="0"
+          field="sp"
+          width="80px"
+          onchange="updateCoinage()"
+        ></numberfield>
+      </div>
+      <div
+        style="
+          display: flex;
+          flex-direction: row;
+          gap: 4px;
+          align-items: center;
+        "
+      >
+        <label
+          class="rvtt-sheet-label rvtt-sheet-label--accent"
+          label="GP"
+        ></label>
+        <div
+          style="min-width: 30px; min-height: 30px; width: 30px; height: 30px"
+        >
+          <img
+            src="https://assets.realmvtt.com/icons/fantasy/gold-pieces.webp"
+            alt="Gold Pieces"
+            width="30px"
+            height="30px"
+          />
+        </div>
+        <numberfield
+          placeholder="0"
+          field="gp"
+          width="80px"
+          onchange="updateCoinage()"
+        ></numberfield>
+      </div>
+      <div
+        style="
+          display: flex;
+          flex-direction: row;
+          gap: 4px;
+          align-items: center;
+        "
+      >
+        <label
+          class="rvtt-sheet-label rvtt-sheet-label--accent"
+          label="PP"
+        ></label>
+        <div
+          style="min-width: 30px; min-height: 30px; width: 30px; height: 30px"
+        >
+          <img
+            src="https://assets.realmvtt.com/icons/fantasy/platinum-pieces.webp"
+            alt="Platinum Pieces"
+            width="30px"
+            height="30px"
+          />
+        </div>
+        <numberfield
+          placeholder="0"
+          field="pp"
+          width="80px"
+          onchange="updateCoinage()"
+        ></numberfield>
+      </div>
+      <div
+        style="
+          display: flex;
+          flex-direction: row;
+          gap: 4px;
+          align-items: center;
+          margin-left: 16px;
+          min-width: 124px;
+          justify-content: left;
+        "
+      >
         <iconbutton
           size="md"
           variant="default"
           hideonlocked="true"
-          options='[{"icon": "IconPlus", "label": "Add Currency", "value": "add"}]'
-          field="addCurrencyBtn"
+          options='[{"icon": "IconArrowsExchange", "label": "Redistribute Currency", "value": "redistribute"}]'
+          field="redistributeBtn"
+          onclick="redistributeCurrency()"
         ></iconbutton>
-      </popover.target>
-      <popover.dropdown>
-        <div
-          style="display: flex; flex-direction: column; gap: 4px; width: 200px"
-        >
-          <label size="xs" variant="bold" label="Add Currency"></label>
-          <div
-            style="
-              display: flex;
-              flex-direction: row;
-              gap: 4px;
-              align-items: center;
-            "
-          >
+        <popover position="bottom" offset="4" witharrow="true">
+          <popover.target>
+            <iconbutton
+              size="md"
+              variant="default"
+              hideonlocked="true"
+              options='[{"icon": "IconPlus", "label": "Add Currency", "value": "add"}]'
+              field="addCurrencyBtn"
+            ></iconbutton>
+          </popover.target>
+          <popover.dropdown>
             <div
               style="
-                min-width: 28px;
-                min-height: 28px;
-                width: 28px;
-                height: 28px;
+                display: flex;
+                flex-direction: column;
+                gap: 4px;
+                width: 200px;
               "
             >
-              <img
-                src="https://assets.realmvtt.com/icons/fantasy/copper-pieces.webp"
-                alt="CP"
-                width="28px"
-                height="28px"
-              />
+              <label
+                class="rvtt-sheet-label rvtt-sheet-label--accent"
+                label="Add Currency"
+              ></label>
+              <div
+                style="
+                  display: flex;
+                  flex-direction: row;
+                  gap: 4px;
+                  align-items: center;
+                "
+              >
+                <div
+                  style="
+                    min-width: 28px;
+                    min-height: 28px;
+                    width: 28px;
+                    height: 28px;
+                  "
+                >
+                  <img
+                    src="https://assets.realmvtt.com/icons/fantasy/copper-pieces.webp"
+                    alt="CP"
+                    width="28px"
+                    height="28px"
+                  />
+                </div>
+                <label size="xs" label="CP" width="24px"></label>
+                <numberfield
+                  placeholder="0"
+                  field="addCp"
+                  width="100%"
+                  disablediflocked="false"
+                ></numberfield>
+              </div>
+              <div
+                style="
+                  display: flex;
+                  flex-direction: row;
+                  gap: 4px;
+                  align-items: center;
+                "
+              >
+                <div
+                  style="
+                    min-width: 28px;
+                    min-height: 28px;
+                    width: 28px;
+                    height: 28px;
+                  "
+                >
+                  <img
+                    src="https://assets.realmvtt.com/icons/fantasy/silver-pieces.webp"
+                    alt="SP"
+                    width="28px"
+                    height="28px"
+                  />
+                </div>
+                <label size="xs" label="SP" width="24px"></label>
+                <numberfield
+                  placeholder="0"
+                  field="addSp"
+                  width="100%"
+                  disablediflocked="false"
+                ></numberfield>
+              </div>
+              <div
+                style="
+                  display: flex;
+                  flex-direction: row;
+                  gap: 4px;
+                  align-items: center;
+                "
+              >
+                <div
+                  style="
+                    min-width: 28px;
+                    min-height: 28px;
+                    width: 28px;
+                    height: 28px;
+                  "
+                >
+                  <img
+                    src="https://assets.realmvtt.com/icons/fantasy/gold-pieces.webp"
+                    alt="GP"
+                    width="28px"
+                    height="28px"
+                  />
+                </div>
+                <label size="xs" label="GP" width="24px"></label>
+                <numberfield
+                  placeholder="0"
+                  field="addGp"
+                  width="100%"
+                  disablediflocked="false"
+                ></numberfield>
+              </div>
+              <div
+                style="
+                  display: flex;
+                  flex-direction: row;
+                  gap: 4px;
+                  align-items: center;
+                "
+              >
+                <div
+                  style="
+                    min-width: 28px;
+                    min-height: 28px;
+                    width: 28px;
+                    height: 28px;
+                  "
+                >
+                  <img
+                    src="https://assets.realmvtt.com/icons/fantasy/platinum-pieces.webp"
+                    alt="PP"
+                    width="28px"
+                    height="28px"
+                  />
+                </div>
+                <label size="xs" label="PP" width="24px"></label>
+                <numberfield
+                  placeholder="0"
+                  field="addPp"
+                  width="100%"
+                  disablediflocked="false"
+                ></numberfield>
+              </div>
+              <button
+                size="xs"
+                variant="outline"
+                label="Add"
+                onclick="addCurrency()"
+              ></button>
             </div>
-            <label size="xs" label="CP" width="24px"></label>
-            <numberfield
-              placeholder="0"
-              field="addCp"
-              width="100%"
-              disablediflocked="false"
-            ></numberfield>
-          </div>
-          <div
-            style="
-              display: flex;
-              flex-direction: row;
-              gap: 4px;
-              align-items: center;
-            "
-          >
+          </popover.dropdown>
+        </popover>
+        <popover position="bottom" offset="4" witharrow="true">
+          <popover.target>
+            <iconbutton
+              size="md"
+              variant="default"
+              hideonlocked="true"
+              options='[{"icon": "IconMinus", "label": "Deduct Currency", "value": "deduct"}]'
+              field="deductCurrencyBtn"
+            ></iconbutton>
+          </popover.target>
+          <popover.dropdown>
             <div
               style="
-                min-width: 28px;
-                min-height: 28px;
-                width: 28px;
-                height: 28px;
+                display: flex;
+                flex-direction: column;
+                gap: 4px;
+                width: 200px;
               "
             >
-              <img
-                src="https://assets.realmvtt.com/icons/fantasy/silver-pieces.webp"
-                alt="SP"
-                width="28px"
-                height="28px"
-              />
+              <label
+                class="rvtt-sheet-label rvtt-sheet-label--accent"
+                label="Deduct Currency"
+              ></label>
+              <div
+                style="
+                  display: flex;
+                  flex-direction: row;
+                  gap: 4px;
+                  align-items: center;
+                "
+              >
+                <div
+                  style="
+                    min-width: 28px;
+                    min-height: 28px;
+                    width: 28px;
+                    height: 28px;
+                  "
+                >
+                  <img
+                    src="https://assets.realmvtt.com/icons/fantasy/copper-pieces.webp"
+                    alt="CP"
+                    width="28px"
+                    height="28px"
+                  />
+                </div>
+                <label size="xs" label="CP" width="24px"></label>
+                <numberfield
+                  placeholder="0"
+                  field="deductCp"
+                  width="100%"
+                  disablediflocked="false"
+                ></numberfield>
+              </div>
+              <div
+                style="
+                  display: flex;
+                  flex-direction: row;
+                  gap: 4px;
+                  align-items: center;
+                "
+              >
+                <div
+                  style="
+                    min-width: 28px;
+                    min-height: 28px;
+                    width: 28px;
+                    height: 28px;
+                  "
+                >
+                  <img
+                    src="https://assets.realmvtt.com/icons/fantasy/silver-pieces.webp"
+                    alt="SP"
+                    width="28px"
+                    height="28px"
+                  />
+                </div>
+                <label size="xs" label="SP" width="24px"></label>
+                <numberfield
+                  placeholder="0"
+                  field="deductSp"
+                  width="100%"
+                  disablediflocked="false"
+                ></numberfield>
+              </div>
+              <div
+                style="
+                  display: flex;
+                  flex-direction: row;
+                  gap: 4px;
+                  align-items: center;
+                "
+              >
+                <div
+                  style="
+                    min-width: 28px;
+                    min-height: 28px;
+                    width: 28px;
+                    height: 28px;
+                  "
+                >
+                  <img
+                    src="https://assets.realmvtt.com/icons/fantasy/gold-pieces.webp"
+                    alt="GP"
+                    width="28px"
+                    height="28px"
+                  />
+                </div>
+                <label size="xs" label="GP" width="24px"></label>
+                <numberfield
+                  placeholder="0"
+                  field="deductGp"
+                  width="100%"
+                  disablediflocked="false"
+                ></numberfield>
+              </div>
+              <div
+                style="
+                  display: flex;
+                  flex-direction: row;
+                  gap: 4px;
+                  align-items: center;
+                "
+              >
+                <div
+                  style="
+                    min-width: 28px;
+                    min-height: 28px;
+                    width: 28px;
+                    height: 28px;
+                  "
+                >
+                  <img
+                    src="https://assets.realmvtt.com/icons/fantasy/platinum-pieces.webp"
+                    alt="PP"
+                    width="28px"
+                    height="28px"
+                  />
+                </div>
+                <label size="xs" label="PP" width="24px"></label>
+                <numberfield
+                  placeholder="0"
+                  field="deductPp"
+                  width="100%"
+                  disablediflocked="false"
+                ></numberfield>
+              </div>
+              <checkbox
+                field="redistributeGold"
+                label="Redistribute currency as needed"
+                size="xs"
+                disablediflocked="false"
+              ></checkbox>
+              <button
+                size="xs"
+                variant="outline"
+                label="Deduct"
+                onclick="deductCurrency()"
+              ></button>
             </div>
-            <label size="xs" label="SP" width="24px"></label>
-            <numberfield
-              placeholder="0"
-              field="addSp"
-              width="100%"
-              disablediflocked="false"
-            ></numberfield>
-          </div>
-          <div
-            style="
-              display: flex;
-              flex-direction: row;
-              gap: 4px;
-              align-items: center;
-            "
-          >
-            <div
-              style="
-                min-width: 28px;
-                min-height: 28px;
-                width: 28px;
-                height: 28px;
-              "
-            >
-              <img
-                src="https://assets.realmvtt.com/icons/fantasy/gold-pieces.webp"
-                alt="GP"
-                width="28px"
-                height="28px"
-              />
-            </div>
-            <label size="xs" label="GP" width="24px"></label>
-            <numberfield
-              placeholder="0"
-              field="addGp"
-              width="100%"
-              disablediflocked="false"
-            ></numberfield>
-          </div>
-          <div
-            style="
-              display: flex;
-              flex-direction: row;
-              gap: 4px;
-              align-items: center;
-            "
-          >
-            <div
-              style="
-                min-width: 28px;
-                min-height: 28px;
-                width: 28px;
-                height: 28px;
-              "
-            >
-              <img
-                src="https://assets.realmvtt.com/icons/fantasy/platinum-pieces.webp"
-                alt="PP"
-                width="28px"
-                height="28px"
-              />
-            </div>
-            <label size="xs" label="PP" width="24px"></label>
-            <numberfield
-              placeholder="0"
-              field="addPp"
-              width="100%"
-              disablediflocked="false"
-            ></numberfield>
-          </div>
-          <button
-            size="xs"
-            variant="outline"
-            label="Add"
-            onclick="addCurrency();"
-          ></button>
-        </div>
-      </popover.dropdown>
-    </popover>
-    <popover position="bottom" offset="4" witharrow="true">
-      <popover.target>
-        <iconbutton
-          size="md"
-          variant="default"
-          hideonlocked="true"
-          options='[{"icon": "IconMinus", "label": "Deduct Currency", "value": "deduct"}]'
-          field="deductCurrencyBtn"
-        ></iconbutton>
-      </popover.target>
-      <popover.dropdown>
-        <div
-          style="display: flex; flex-direction: column; gap: 4px; width: 200px"
-        >
-          <label size="xs" variant="bold" label="Deduct Currency"></label>
-          <div
-            style="
-              display: flex;
-              flex-direction: row;
-              gap: 4px;
-              align-items: center;
-            "
-          >
-            <div
-              style="
-                min-width: 28px;
-                min-height: 28px;
-                width: 28px;
-                height: 28px;
-              "
-            >
-              <img
-                src="https://assets.realmvtt.com/icons/fantasy/copper-pieces.webp"
-                alt="CP"
-                width="28px"
-                height="28px"
-              />
-            </div>
-            <label size="xs" label="CP" width="24px"></label>
-            <numberfield
-              placeholder="0"
-              field="deductCp"
-              width="100%"
-              disablediflocked="false"
-            ></numberfield>
-          </div>
-          <div
-            style="
-              display: flex;
-              flex-direction: row;
-              gap: 4px;
-              align-items: center;
-            "
-          >
-            <div
-              style="
-                min-width: 28px;
-                min-height: 28px;
-                width: 28px;
-                height: 28px;
-              "
-            >
-              <img
-                src="https://assets.realmvtt.com/icons/fantasy/silver-pieces.webp"
-                alt="SP"
-                width="28px"
-                height="28px"
-              />
-            </div>
-            <label size="xs" label="SP" width="24px"></label>
-            <numberfield
-              placeholder="0"
-              field="deductSp"
-              width="100%"
-              disablediflocked="false"
-            ></numberfield>
-          </div>
-          <div
-            style="
-              display: flex;
-              flex-direction: row;
-              gap: 4px;
-              align-items: center;
-            "
-          >
-            <div
-              style="
-                min-width: 28px;
-                min-height: 28px;
-                width: 28px;
-                height: 28px;
-              "
-            >
-              <img
-                src="https://assets.realmvtt.com/icons/fantasy/gold-pieces.webp"
-                alt="GP"
-                width="28px"
-                height="28px"
-              />
-            </div>
-            <label size="xs" label="GP" width="24px"></label>
-            <numberfield
-              placeholder="0"
-              field="deductGp"
-              width="100%"
-              disablediflocked="false"
-            ></numberfield>
-          </div>
-          <div
-            style="
-              display: flex;
-              flex-direction: row;
-              gap: 4px;
-              align-items: center;
-            "
-          >
-            <div
-              style="
-                min-width: 28px;
-                min-height: 28px;
-                width: 28px;
-                height: 28px;
-              "
-            >
-              <img
-                src="https://assets.realmvtt.com/icons/fantasy/platinum-pieces.webp"
-                alt="PP"
-                width="28px"
-                height="28px"
-              />
-            </div>
-            <label size="xs" label="PP" width="24px"></label>
-            <numberfield
-              placeholder="0"
-              field="deductPp"
-              width="100%"
-              disablediflocked="false"
-            ></numberfield>
-          </div>
-          <checkbox
-            field="redistributeGold"
-            label="Redistribute currency as needed"
-            size="xs"
-            disablediflocked="false"
-          ></checkbox>
-          <button
-            size="xs"
-            variant="outline"
-            label="Deduct"
-            onclick="deductCurrency();"
-          ></button>
-        </div>
-      </popover.dropdown>
-    </popover>
-  </div>
-</div>
+          </popover.dropdown>
+        </popover>
+      </div>
+    </div>
 
-<div style="margin-top: 8px">
-  <stringfield
-    placeholder="None"
-    field="otherTreasure"
-    label="Other Treasure"
-    multiline="true"
-    maxrows="4"
-  >
-  </stringfield>
+    <div style="margin-top: 8px">
+      <stringfield
+        placeholder="None"
+        field="otherTreasure"
+        label="Other Treasure"
+        multiline="true"
+        maxrows="4"
+      >
+      </stringfield>
+    </div>
+  </div>
 </div>

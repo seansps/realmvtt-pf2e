@@ -41,7 +41,7 @@
     // Ensure uniqueness by name, keeping the first occurrence of each trait name
     const newTraitsList = [...curTraitsList, ...traitsObjects].filter(
       (trait, index, self) =>
-        self.findIndex((t) => t.name === trait.name) === index
+        self.findIndex((t) => t.name === trait.name) === index,
     );
 
     api.setValues(
@@ -64,7 +64,7 @@
           api.setHidden("ancestryDetailsLabel", true);
         });
         promptForHeritage(updatedRecord, ancestryName);
-      }
+      },
     );
   }
 
@@ -97,7 +97,7 @@
       "Select Heritage...",
       [],
       optionsPrompt,
-      onSelect
+      onSelect,
     );
   }
 
@@ -131,7 +131,7 @@
     // Ensure uniqueness by name, keeping the first occurrence of each trait name
     const newTraitsList = [...curTraitsList, ...traitsObjects].filter(
       (trait, index, self) =>
-        self.findIndex((t) => t.name === trait.name) === index
+        self.findIndex((t) => t.name === trait.name) === index,
     );
 
     api.setValuesOnRecord(
@@ -149,7 +149,7 @@
             api.setHidden("heritageDetailsLabel", true);
           });
         });
-      }
+      },
     );
   }
 
@@ -183,7 +183,7 @@
     // Ensure uniqueness by name, keeping the first occurrence of each trait name
     const newTraitsList = [...curTraitsList, ...traitsObjects].filter(
       (trait, index, self) =>
-        self.findIndex((t) => t.name === trait.name) === index
+        self.findIndex((t) => t.name === trait.name) === index,
     );
 
     api.setValues(
@@ -205,7 +205,7 @@
             api.setHidden("classDetailsLabel", true);
           });
         });
-      }
+      },
     );
   }
 
@@ -239,7 +239,7 @@
     // Ensure uniqueness by name, keeping the first occurrence of each trait name
     const newTraitsList = [...curTraitsList, ...traitsObjects].filter(
       (trait, index, self) =>
-        self.findIndex((t) => t.name === trait.name) === index
+        self.findIndex((t) => t.name === trait.name) === index,
     );
 
     api.setValues(
@@ -256,7 +256,7 @@
             api.setHidden("backgroundDetailsLabel", true);
           });
         });
-      }
+      },
     );
   }
 
@@ -270,7 +270,7 @@
         });
       },
       // Skip choice processing
-      true
+      true,
     );
   }
 
@@ -284,7 +284,7 @@
         });
       },
       // Skip choice processing
-      true
+      true,
     );
   }
 
@@ -306,9 +306,9 @@
             });
           },
           // Skip choice processing
-          true
+          true,
         );
-      }
+      },
     );
   }
 
@@ -322,7 +322,7 @@
         });
       },
       // Skip choice processing
-      true
+      true,
     );
   }
 
@@ -511,7 +511,7 @@
       (recordUpdated) => {
         // Recalculate features including any choices we need to now make
         onAddEditFeature(recordUpdated);
-      }
+      },
     );
   }
 
@@ -595,7 +595,7 @@
         undefined,
         [],
         [],
-        ourToken
+        ourToken,
       );
     }
     if (value === "false") {
@@ -608,7 +608,7 @@
         undefined,
         [],
         [],
-        ourToken
+        ourToken,
       );
     }
 
@@ -644,7 +644,7 @@
           }.`,
           undefined,
           [],
-          []
+          [],
         );
       });
     } else {
@@ -652,7 +652,7 @@
         "Refocusing (10 minutes). No Focus Points to recover.",
         undefined,
         [],
-        []
+        [],
       );
     }
   }
@@ -721,9 +721,8 @@
               } else if (isPrepared) {
                 // If it's a prepared spell, we need to mark the spell as not used
                 valuesToSet[`${dataPathToSpell}.data.used`] = false;
-                valuesToSet[
-                  `${dataPathToSpell}.fields.nameUsedBox.hidden`
-                ] = true;
+                valuesToSet[`${dataPathToSpell}.fields.nameUsedBox.hidden`] =
+                  true;
                 valuesToSet[`${dataPathToSpell}.fields.nameBox.hidden`] = false;
               }
             });
@@ -733,7 +732,7 @@
             const usedSpellsField = `used${capitalize(spellList)}`;
             const numSpells =
               api.getValue(
-                `data.spells.${spellListIndex}.data.${numSpellsField}`
+                `data.spells.${spellListIndex}.data.${numSpellsField}`,
               ) || 0;
             valuesToSet[
               `data.spells.${spellListIndex}.data.${usedSpellsField}`
@@ -792,11 +791,11 @@
       const int = record.data?.int || 0;
       numVersatileVials = 2 + int;
       const versatileVials = inventory.find((item) =>
-        item?.name.toLowerCase().startsWith("versatile vial")
+        item?.name.toLowerCase().startsWith("versatile vial"),
       );
       if (versatileVials) {
         const versatileVialsIndex = inventory.findIndex(
-          (item) => item._id === versatileVials._id
+          (item) => item._id === versatileVials._id,
         );
         const itemDataPath = `data.inventory.${versatileVialsIndex}.data`;
         valuesToSet[`${itemDataPath}.count`] = numVersatileVials;
@@ -809,13 +808,13 @@
     // Find effects that need to be modified
     const effects = record?.effects || [];
     const fatiguedEffect = effects.find((effect) =>
-      effect.name.toLowerCase().startsWith("fatigued")
+      effect.name.toLowerCase().startsWith("fatigued"),
     );
     const doomedEffect = effects.find((effect) =>
-      effect.name.toLowerCase().startsWith("doomed")
+      effect.name.toLowerCase().startsWith("doomed"),
     );
     const drainedEffect = effects.find((effect) =>
-      effect.name.toLowerCase().startsWith("drained")
+      effect.name.toLowerCase().startsWith("drained"),
     );
 
     // Process effects after all item operations complete
@@ -897,7 +896,7 @@
               } else {
                 processEffects();
               }
-            }
+            },
           );
         } else if (itemsToRemove.length > 0) {
           removeValuesSequentially(itemsToRemove, processEffects);
@@ -937,7 +936,7 @@
         const itemIdToRemove = itemIds[idIndex];
         const currentInventory = workingRecord.data?.inventory || [];
         const itemIndex = currentInventory.findIndex(
-          (item) => item._id === itemIdToRemove
+          (item) => item._id === itemIdToRemove,
         );
 
         if (itemIndex === -1) {
@@ -953,7 +952,7 @@
           (updatedRecord) => {
             // Move to the next item with the updated record
             removeNext(idIndex + 1, updatedRecord);
-          }
+          },
         );
       }
 
@@ -975,7 +974,7 @@
 
   function setAncestryBoostFields(
     overrideAlternateAncestryBoosts,
-    updateStats = false
+    updateStats = false,
   ) {
     // If alternateAncestryBoosts is true, or if we're human, we show ancestryBoost2
     let alternateAncestryBoosts =
@@ -1143,7 +1142,7 @@
     // Filter duplicates
     const filteredResults = results.filter(
       (result, index, self) =>
-        index === self.findIndex((t) => t.value === result.value)
+        index === self.findIndex((t) => t.value === result.value),
     );
 
     return filteredResults;
@@ -1185,7 +1184,7 @@
     // Filter duplicates
     boosts = boosts.filter(
       (boost, index, self) =>
-        index === self.findIndex((t) => t.value === boost.value)
+        index === self.findIndex((t) => t.value === boost.value),
     );
 
     return boosts;
@@ -1257,922 +1256,1030 @@
   }
 </script>
 
-<div style="display: flex; flex-direction: row">
-  <!-- PORTAIT, HP, Level, XP, Hero Points -->
-  <div style="display: flex; flex-direction: column">
-    <div
-      style="
-        width: 130px;
-        min-width: 130px;
-        max-width: 130px;
-        min-height: 130px;
-        max-height: 130px;
-      "
-    >
-      <portrait width="130px" height="130px"></portrait>
-    </div>
-  </div>
+<!-- PF2e two-page spread. Left page: portrait + identity, abilities, saves.
+     Right page: vitals (HP/AC/Hero Points), shield strip, conditions strip,
+     perception strip, identity row, languages/traits. Field bindings,
+     list types, and on* handlers are unchanged from the prior layout. -->
+<div class="rvtt-sheet-spread-host sheet--spread" style="margin-top: 4px">
+  <div class="rvtt-sheet-spread">
+    <!-- ===== LEFT PAGE ===== -->
+    <div class="rvtt-sheet-page rvtt-sheet-corners">
+      <span class="rvtt-sheet-corner rvtt-sheet-corner--tl"></span>
+      <span class="rvtt-sheet-corner rvtt-sheet-corner--tr"></span>
+      <span class="rvtt-sheet-corner rvtt-sheet-corner--bl"></span>
+      <span class="rvtt-sheet-corner rvtt-sheet-corner--br"></span>
 
-  <div
-    style="
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
-      width: 100%;
-      margin-left: 4px;
-    "
-  >
-    <div style="width: 100%; display: flex; gap: 4px; align-items: flex-end">
-      <numberfield
-        width="60px"
-        placeholder="0"
-        size="xs"
-        field="level"
-        label="Level"
-        minvalue="0"
-        defaultvalue="0"
-        onchange="onLevelChange(value)"
-        onload="onLoadCharacter()"
-      >
-      </numberfield>
-
-      <numberfield
-        placeholder="0"
-        width="80px"
-        size="xs"
-        field="xp"
-        label="XP"
-        minvalue="0"
-        onchange="onXPChange(value)"
-      >
-      </numberfield>
-
-      <button
-        size="xs"
-        hidden="true"
-        field="levelUpBtn"
-        onclick="onLevelUp()"
-        label="Level Up"
-        color="primary"
-      ></button>
-
+      <!-- Header: portrait + identity stack -->
       <div
         style="
           display: flex;
-          flex-direction: row;
-          gap: 8px;
-          margin-left: auto;
           align-items: center;
+          gap: 12px;
+          margin-bottom: 8px;
         "
       >
-        <numberfield
-          placeholder="0"
-          width="60px"
-          size="xs"
-          field="classDC"
-          label="Class DC"
-          minvalue="0"
-          defaultvalue="0"
+        <portrait variant="fancy" width="120px" height="120px"></portrait>
+        <div
+          style="
+            flex: 1;
+            min-width: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+          "
         >
-        </numberfield>
-
-        <div>
-          <label
+          <label field="namefield" class="rvtt-sheet-display-name"></label>
+          <div style="display: flex; gap: 4px; align-items: center">
+            <stringfield
+              field="className"
+              placeholder="Class"
+              class="rvtt-sheet-class-line"
+              width="100%"
+            ></stringfield>
+            <list
+              width="fit-content"
+              height="32px"
+              hidden="true"
+              listtype="record_link_list"
+              field="classes"
+              onchange="onDeleteClass()"
+            ></list>
+          </div>
+          <div
+            style="
+              display: flex;
+              gap: 10px;
+              align-items: center;
+              margin-top: 2px;
+            "
+          >
+            <span class="rvtt-sheet-mono-dim">LVL</span>
+            <numberfield
+              field="level"
+              size="xs"
+              hidecontrols="true"
+              width="44px"
+              placeholder="0"
+              minvalue="0"
+              defaultvalue="0"
+              onchange="onLevelChange(value)"
+              onload="onLoadCharacter()"
+            ></numberfield>
+            <span class="rvtt-sheet-mono-dim">XP</span>
+            <numberfield
+              field="xp"
+              size="xs"
+              hidecontrols="true"
+              width="64px"
+              placeholder="0"
+              minvalue="0"
+              onchange="onXPChange(value)"
+            ></numberfield>
+            <span class="rvtt-sheet-mono-dim">DC</span>
+            <numberfield
+              field="classDC"
+              size="xs"
+              hidecontrols="true"
+              width="44px"
+              placeholder="10"
+              minvalue="0"
+              defaultvalue="0"
+            ></numberfield>
+            <button
+              size="xs"
+              label="Level Up"
+              hidden="true"
+              field="levelUpBtn"
+              variant="filled"
+              onclick="onLevelUp()"
+            ></button>
+          </div>
+          <progressbar
+            field="nextLevelProgress"
+            label=""
+            width="100%"
+            maxvalue="1000"
+            currentvaluefield="xp"
+            color="primary"
             size="xs"
-            variant="bold"
-            field="heroPtsLabel"
+          ></progressbar>
+        </div>
+      </div>
+
+      <!-- Abilities -->
+      <div class="rvtt-sheet-divider">
+        <span class="rvtt-sheet-divider__label"
+          >&#10022; Abilities &#10022;</span
+        >
+        <popover position="bottom" offset="4" witharrow="true">
+          <popover.target>
+            <iconbutton
+              size="sm"
+              variant="subtle"
+              hideonlocked="true"
+              options='[{"icon": "IconEdit", "label": "Edit Ability Boosts", "value": "abilityBonus"}]'
+              field="Edit Ability Boosts"
+            ></iconbutton>
+          </popover.target>
+          <popover.dropdown>
+            <div style="display: flex; flex-direction: column; gap: 4px">
+              <label
+                class="rvtt-sheet-label rvtt-sheet-label--accent"
+                label="Ancestry Boosts"
+              ></label>
+              <label size="xs" field="ancestryBoostLabel" hidden="true"></label>
+              <label size="xs" field="ancestryFlawLabel" hidden="true"></label>
+              <label
+                size="xs"
+                field="ancestryBoostError"
+                hidden="true"
+                color="red"
+                label="Cannot Have Duplicate Ancestry Boosts!"
+              ></label>
+              <checkbox
+                field="alternateAncestryBoosts"
+                label="Use Alternate Ability Selection"
+                size="xs"
+                hidden="true"
+                color="primary"
+                onchange="onAlternateAncestryBoostsChange(value)"
+              ></checkbox>
+              <div style="display: flex; flex-direction: row; gap: 4px">
+                <dropdown
+                  size="xs"
+                  field="ancestryBoost1"
+                  placeholder="Choose Ability"
+                  icon="IconCirclePlus"
+                  optionsfunction="return getAncestryBoostOptions('ancestryBoost1');"
+                  onchange="updateAbilityBoosts(value, 'ancestryBoost1')"
+                ></dropdown>
+                <dropdown
+                  size="xs"
+                  field="ancestryBoost2"
+                  placeholder="Choose Ability"
+                  hidden="true"
+                  icon="IconCirclePlus"
+                  onload="setAncestryBoostFields()"
+                  optionsfunction="return getAncestryBoostOptions('ancestryBoost2');"
+                  onchange="updateAbilityBoosts(value, 'ancestryBoost2')"
+                ></dropdown>
+              </div>
+            </div>
+            <div style="display: flex; flex-direction: column; margin-top: 4px">
+              <label
+                class="rvtt-sheet-label rvtt-sheet-label--accent"
+                label="Background Boosts"
+              ></label>
+              <label
+                size="xs"
+                field="backgroundBoostError"
+                hidden="true"
+                color="red"
+                label="Cannot Have Duplicate Background Boosts!"
+              ></label>
+              <div style="display: flex; flex-direction: row; gap: 4px">
+                <dropdown
+                  size="xs"
+                  field="backgroundBoost1"
+                  placeholder="Choose Ability"
+                  icon="IconCirclePlus"
+                  optionsfunction="return getBackgroundBoostOptions('backgroundBoost1');"
+                  onchange="updateAbilityBoosts(value, 'backgroundBoost1')"
+                ></dropdown>
+                <dropdown
+                  size="xs"
+                  field="backgroundBoost2"
+                  placeholder="Choose Ability"
+                  icon="IconCirclePlus"
+                  optionsfunction="return getBackgroundBoostOptions('backgroundBoost2');"
+                  onchange="updateAbilityBoosts(value, 'backgroundBoost2')"
+                ></dropdown>
+              </div>
+            </div>
+            <div style="display: flex; flex-direction: column; margin-top: 4px">
+              <label
+                class="rvtt-sheet-label rvtt-sheet-label--accent"
+                label="Class Boosts"
+              ></label>
+              <div style="display: flex; flex-direction: row; gap: 4px">
+                <dropdown
+                  size="xs"
+                  field="keyAbility"
+                  placeholder="Choose Ability"
+                  icon="IconCirclePlus"
+                  optionsfunction="return getClassBoostOptions();"
+                  onchange="updateAbilityBoosts(value, 'classBoost')"
+                ></dropdown>
+              </div>
+            </div>
+            <div style="display: flex; flex-direction: column; margin-top: 4px">
+              <label
+                class="rvtt-sheet-label rvtt-sheet-label--accent"
+                label="Free Boosts"
+              ></label>
+              <dropdown
+                size="xs"
+                field="freeBoosts"
+                label="Level 1"
+                placeholder="Choose 4 Abilities"
+                icon="IconCirclePlus"
+                options='[{"label": "Strength", "value": "str"}, {"label": "Dexterity", "value": "dex"}, {"label": "Constitution", "value": "con"}, {"label": "Intelligence", "value": "int"}, {"label": "Wisdom", "value": "wis"}, {"label": "Charisma", "value": "cha"}]'
+                multiselect="4"
+                onchange="updateAbilityBoosts(value, 'freeBoosts')"
+              ></dropdown>
+              <dropdown
+                size="xs"
+                field="freeBoostsLevel5"
+                label="Level 5"
+                hidden="true"
+                placeholder="Choose 4 Abilities"
+                icon="IconCirclePlus"
+                options='[{"label": "Strength", "value": "str"}, {"label": "Dexterity", "value": "dex"}, {"label": "Constitution", "value": "con"}, {"label": "Intelligence", "value": "int"}, {"label": "Wisdom", "value": "wis"}, {"label": "Charisma", "value": "cha"}]'
+                multiselect="4"
+                onchange="updateAbilityBoosts(value, 'freeBoostsLevel5')"
+              ></dropdown>
+              <dropdown
+                size="xs"
+                field="freeBoostsLevel10"
+                label="Level 10"
+                hidden="true"
+                placeholder="Choose 4 Abilities"
+                icon="IconCirclePlus"
+                options='[{"label": "Strength", "value": "str"}, {"label": "Dexterity", "value": "dex"}, {"label": "Constitution", "value": "con"}, {"label": "Intelligence", "value": "int"}, {"label": "Wisdom", "value": "wis"}, {"label": "Charisma", "value": "cha"}]'
+                multiselect="4"
+                onchange="updateAbilityBoosts(value, 'freeBoostsLevel10')"
+              ></dropdown>
+              <dropdown
+                size="xs"
+                field="freeBoostsLevel15"
+                label="Level 15"
+                hidden="true"
+                placeholder="Choose 4 Abilities"
+                icon="IconCirclePlus"
+                options='[{"label": "Strength", "value": "str"}, {"label": "Dexterity", "value": "dex"}, {"label": "Constitution", "value": "con"}, {"label": "Intelligence", "value": "int"}, {"label": "Wisdom", "value": "wis"}, {"label": "Charisma", "value": "cha"}]'
+                multiselect="4"
+                onchange="updateAbilityBoosts(value, 'freeBoostsLevel15')"
+              ></dropdown>
+              <dropdown
+                size="xs"
+                field="freeBoostsLevel20"
+                label="Level 20"
+                hidden="true"
+                placeholder="Choose 4 Abilities"
+                icon="IconCirclePlus"
+                options='[{"label": "Strength", "value": "str"}, {"label": "Dexterity", "value": "dex"}, {"label": "Constitution", "value": "con"}, {"label": "Intelligence", "value": "int"}, {"label": "Wisdom", "value": "wis"}, {"label": "Charisma", "value": "cha"}]'
+                multiselect="4"
+                onchange="updateAbilityBoosts(value, 'freeBoostsLevel20')"
+              ></dropdown>
+            </div>
+          </popover.dropdown>
+        </popover>
+      </div>
+      <!-- Abilities grid: PF2e values ARE the modifier so we use the
+           attribute fancy variant without modifierfield. -->
+      <div class="rvtt-sheet-abilities-grid">
+        <attribute
+          field="str"
+          label="STR"
+          size="sm"
+          width="100%"
+          placeholder="0"
+          containervariant="fancy"
+          textalign="center"
+          bold="true"
+          editable="false"
+          showsign="true"
+        ></attribute>
+        <attribute
+          field="dex"
+          label="DEX"
+          size="sm"
+          width="100%"
+          placeholder="0"
+          containervariant="fancy"
+          textalign="center"
+          bold="true"
+          editable="false"
+          showsign="true"
+        ></attribute>
+        <attribute
+          field="con"
+          label="CON"
+          size="sm"
+          width="100%"
+          placeholder="0"
+          containervariant="fancy"
+          textalign="center"
+          bold="true"
+          editable="false"
+          showsign="true"
+        ></attribute>
+        <attribute
+          field="int"
+          label="INT"
+          size="sm"
+          width="100%"
+          placeholder="0"
+          containervariant="fancy"
+          textalign="center"
+          bold="true"
+          editable="false"
+          showsign="true"
+        ></attribute>
+        <attribute
+          field="wis"
+          label="WIS"
+          size="sm"
+          width="100%"
+          placeholder="0"
+          containervariant="fancy"
+          textalign="center"
+          bold="true"
+          editable="false"
+          showsign="true"
+        ></attribute>
+        <attribute
+          field="cha"
+          label="CHA"
+          size="sm"
+          width="100%"
+          placeholder="0"
+          containervariant="fancy"
+          textalign="center"
+          bold="true"
+          editable="false"
+          showsign="true"
+        ></attribute>
+      </div>
+
+      <div style="height: 8px"></div>
+      <div class="rvtt-sheet-divider">
+        <span class="rvtt-sheet-divider__label"
+          >&#10022; Saving Throws &#10022;</span
+        >
+      </div>
+
+      <!-- Saving Throws: 3 columns (Fortitude / Reflex / Will). -->
+      <div
+        style="
+          display: grid;
+          grid-template-columns: 1fr 1fr 1fr;
+          gap: 8px;
+          margin-top: 4px;
+        "
+      >
+        <!-- Fortitude -->
+        <div
+          style="
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 2px;
+            padding: 6px 4px;
+            border: 1px solid var(--border, var(--mantine-color-default-border));
+            background: var(--surface, transparent);
+          "
+        >
+          <label
+            class="rvtt-sheet-label rvtt-sheet-label--accent"
+            field="fortLabel"
+            label="Fortitude"
+          ></label>
+          <div style="display: flex; gap: 4px; align-items: center">
+            <numberfield
+              placeholder="0"
+              size="xs"
+              width="56px"
+              field="fortitudeMod"
+              showsign="true"
+              textalign="center"
+            ></numberfield>
+            <iconbutton
+              size="md"
+              variant="subtle"
+              options='[{"icon": "D20", "label": "Roll Fortitude Save", "value": "roll"}]'
+              field="Roll Fortitude Save"
+              onclick="performSaveRoll('fortitude')"
+            ></iconbutton>
+          </div>
+          <dropdown
+            size="xs"
+            field="fortitude"
+            width="100px"
             textalign="center"
+            placeholder="None"
+            defaultvalue="none"
+            onchange="updateSaveProficiency(value, 'fortitude')"
+            options='[{"label": "None", "value": "0"}, {"label": "Trained", "value": "1"}, {"label": "Expert", "value": "2"}, {"label": "Master", "value": "3"}, {"label": "Legendary", "value": "4"}]'
+          ></dropdown>
+        </div>
+
+        <!-- Reflex -->
+        <div
+          style="
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 2px;
+            padding: 6px 4px;
+            border: 1px solid var(--border, var(--mantine-color-default-border));
+            background: var(--surface, transparent);
+          "
+        >
+          <label
+            class="rvtt-sheet-label rvtt-sheet-label--accent"
+            field="reflexLabel"
+            label="Reflex"
+          ></label>
+          <div style="display: flex; gap: 4px; align-items: center">
+            <numberfield
+              placeholder="0"
+              size="xs"
+              width="56px"
+              field="reflexMod"
+              showsign="true"
+              textalign="center"
+            ></numberfield>
+            <iconbutton
+              size="md"
+              variant="subtle"
+              options='[{"icon": "D20", "label": "Roll Reflex Save", "value": "roll"}]'
+              field="Roll Reflex Save"
+              onclick="performSaveRoll('reflex')"
+            ></iconbutton>
+          </div>
+          <dropdown
+            size="xs"
+            field="reflex"
+            width="100px"
+            textalign="center"
+            placeholder="None"
+            defaultvalue="none"
+            onchange="updateSaveProficiency(value, 'reflex')"
+            options='[{"label": "None", "value": "0"}, {"label": "Trained", "value": "1"}, {"label": "Expert", "value": "2"}, {"label": "Master", "value": "3"}, {"label": "Legendary", "value": "4"}]'
+          ></dropdown>
+        </div>
+
+        <!-- Will -->
+        <div
+          style="
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 2px;
+            padding: 6px 4px;
+            border: 1px solid var(--border, var(--mantine-color-default-border));
+            background: var(--surface, transparent);
+          "
+        >
+          <label
+            class="rvtt-sheet-label rvtt-sheet-label--accent"
+            field="willLabel"
+            label="Will"
+          ></label>
+          <div style="display: flex; gap: 4px; align-items: center">
+            <numberfield
+              placeholder="0"
+              size="xs"
+              width="56px"
+              field="willMod"
+              showsign="true"
+              textalign="center"
+            ></numberfield>
+            <iconbutton
+              size="md"
+              variant="subtle"
+              options='[{"icon": "D20", "label": "Roll Will Save", "value": "roll"}]'
+              field="Roll Will Save"
+              onclick="performSaveRoll('will')"
+            ></iconbutton>
+          </div>
+          <dropdown
+            size="xs"
+            field="will"
+            width="100px"
+            placeholder="None"
+            textalign="center"
+            defaultvalue="none"
+            onchange="updateSaveProficiency(value, 'will')"
+            options='[{"label": "None", "value": "0"}, {"label": "Trained", "value": "1"}, {"label": "Expert", "value": "2"}, {"label": "Master", "value": "3"}, {"label": "Legendary", "value": "4"}]'
+          ></dropdown>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== RIGHT PAGE ===== -->
+    <div class="rvtt-sheet-page rvtt-sheet-corners">
+      <span class="rvtt-sheet-corner rvtt-sheet-corner--tl"></span>
+      <span class="rvtt-sheet-corner rvtt-sheet-corner--tr"></span>
+      <span class="rvtt-sheet-corner rvtt-sheet-corner--bl"></span>
+      <span class="rvtt-sheet-corner rvtt-sheet-corner--br"></span>
+
+      <!-- Vitals -->
+      <div class="rvtt-sheet-divider">
+        <span class="rvtt-sheet-divider__label">&#10022; Vitals &#10022;</span>
+      </div>
+
+      <!-- Vitals row: HP card (1.6fr) | AC card (1fr) | Hero Points (0.8fr) -->
+      <div
+        style="
+          display: grid;
+          grid-template-columns: 1.6fr 1fr 0.8fr;
+          gap: 8px;
+          margin-bottom: 8px;
+        "
+      >
+        <!-- HP card -->
+        <div class="rvtt-sheet-hp-card">
+          <label
+            class="rvtt-sheet-label rvtt-sheet-label--accent"
+            label="Hit Points"
+          ></label>
+          <div class="rvtt-sheet-hp-row">
+            <numberfield
+              class="rvtt-sheet-hp-current"
+              field="curhp"
+              size="xs"
+              hidecontrols="true"
+              width="48px"
+              placeholder="0"
+              inputcolor="red"
+            ></numberfield>
+            <span class="rvtt-sheet-hp-divider">/</span>
+            <numberfield
+              class="rvtt-sheet-hp-max"
+              field="hitpoints"
+              size="xs"
+              hidecontrols="true"
+              width="36px"
+              placeholder="0"
+              inputcolor="green"
+            ></numberfield>
+            <span class="rvtt-sheet-hp-temp-label">TMP</span>
+            <numberfield
+              class="rvtt-sheet-hp-temp"
+              field="tempHp"
+              size="xs"
+              hidecontrols="true"
+              width="32px"
+              placeholder="0"
+              inputcolor="blue"
+            ></numberfield>
+          </div>
+          <progressbar
+            class="rvtt-sheet-hp-bar"
+            field="curhp"
+            currentvaluefield="curhp"
+            maxvaluefield="hitpoints"
+            color="health"
+            size="xs"
+          ></progressbar>
+        </div>
+        <!-- AC card: shield SVG behind the AC number. -->
+        <div class="rvtt-sheet-ac-card">
+          <label
+            class="rvtt-sheet-label rvtt-sheet-label--accent rvtt-sheet-label--wrap"
+            label="Armor Class"
+          ></label>
+          <div class="rvtt-sheet-ac-shield">
+            <numberfield
+              class="rvtt-sheet-ac-value"
+              field="ac"
+              size="xs"
+              variant="unstyled"
+              hidecontrols="true"
+              placeholder="10"
+            ></numberfield>
+          </div>
+        </div>
+        <!-- Hero Points card -->
+        <div
+          style="
+            padding: 6px 8px;
+            border: 1px dashed
+              var(--border-strong, var(--mantine-color-default-border));
+            background: var(--surface, transparent);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            gap: 4px;
+          "
+        >
+          <label
+            class="rvtt-sheet-label rvtt-sheet-label--accent rvtt-sheet-label--wrap"
+            field="heroPtsLabel"
             label="Hero Points"
           ></label>
           <counter
             field="heroPoints"
             size="md"
             icon="IconCrown"
+            color="yellow"
             maxvalue="3"
             minvalue="0"
           ></counter>
         </div>
       </div>
-    </div>
 
-    <div style="width: 100%">
-      <progressbar
-        field="nextLevelProgress"
-        label=""
-        width="100%"
-        maxvalue="1000"
-        currentvaluefield="xp"
-        color="primary"
-      ></progressbar>
-    </div>
-
-    <div style="width: 100%; display: flex; gap: 4px">
-      <numberfield
-        icon="IconHeart"
-        width="50%"
-        placeholder="0"
-        field="curhp"
-        label="Current HP"
-        color="pink"
-      >
-      </numberfield>
-
-      <numberfield
-        icon="IconHeartFilled"
-        width="50%"
-        placeholder="0"
-        field="hitpoints"
-        label="Max HP"
-        color="green"
-      ></numberfield>
-
-      <numberfield
-        width="50%"
-        placeholder="0"
-        field="tempHp"
-        label="Temp HP"
-        color="blue"
-      >
-      </numberfield>
-    </div>
-  </div>
-</div>
-
-<div style="display: flex; flex-direction: row; gap: 4px; width: 100%">
-  <div style="display: flex; flex-direction: column; gap: 2px; width: 100%">
-    <label
-      field="perceptionLabel"
-      size="xs"
-      variant="bold"
-      label="Perception"
-    ></label>
-    <div
-      style="
-        display: flex;
-        flex-direction: row;
-        gap: 4px;
-        align-items: flex-end;
-      "
-    >
-      <numberfield
-        placeholder="0"
-        size="xs"
-        width="68px"
-        field="perceptionMod"
-        showsign="true"
-        textalign="center"
-      ></numberfield>
-      <iconbutton
-        size="md"
-        variant="light"
-        options='[{"icon": "D20", "label": "Roll Perception", "value": "roll"}]'
-        field="Roll Perception"
-        onclick="rollPerception()"
-      ></iconbutton>
-    </div>
-    <dropdown
-      size="xs"
-      field="perception"
-      width="100px"
-      textalign="center"
-      placeholder="Trained"
-      defaultvalue="1"
-      onchange="updatePerceptionProficiency(value)"
-      options='[{"label": "None", "value": "0"}, {"label": "Trained", "value": "1"}, {"label": "Expert", "value": "2"}, {"label": "Master", "value": "3"}, {"label": "Legendary", "value": "4"}]'
-    ></dropdown>
-  </div>
-
-  <!-- Armor, Shield, Dying / Wounded / Recovery Check and Rest -->
-  <div style="display: flex; flex-direction: column; gap: 4px; width: 100%">
-    <div
-      style="
-        display: flex;
-        flex-direction: row;
-        gap: 4px;
-        margin-top: 4px;
-        align-items: flex-end;
-        justify-content: center;
-      "
-    >
-      <numberfield
-        placeholder="0"
-        width="70px"
-        icon="IconShirt"
-        size="xs"
-        field="ac"
-        label="AC"
-      ></numberfield>
-
-      <numberfield
-        placeholder="0"
-        width="70px"
-        icon="IconShield"
-        size="xs"
-        field="shieldHp"
-        minvalue="0"
-        label="Shield HP"
-        onchange="onChangeShieldHp(value)"
-      ></numberfield>
-
-      <numberfield
-        placeholder="0"
-        width="70px"
-        size="xs"
-        field="shieldMaxHp"
-        label="Max Sh. HP"
-        onchange="onChangeShieldMaxHp(value)"
-      ></numberfield>
-
-      <iconbutton
-        size="md"
-        variant="default"
-        options='[{"icon": "IconShield", "label": "Raise Shield", "value": "false"}, {"icon": "IconShieldFilled", "label": "Lower Shield", "value": "true"}]'
-        field="shieldRaised"
-        onchange="raiseShield(value)"
-      ></iconbutton>
-
-      <numberfield
-        placeholder="0"
-        width="30px"
-        hidecontrols="true"
-        size="xs"
-        field="shieldAC"
-        onchange="onChangeShieldValue(value, 'acBonus')"
-        label="AC"
-      ></numberfield>
-      <numberfield
-        placeholder="0"
-        width="30px"
-        hidecontrols="true"
-        size="xs"
-        field="shieldHardness"
-        onchange="onChangeShieldValue(value, 'hardness')"
-        label="H"
-      ></numberfield>
-      <numberfield
-        placeholder="0"
-        width="40px"
-        hidecontrols="true"
-        size="xs"
-        field="shieldBt"
-        label="BT"
-      ></numberfield>
+      <!-- Shield strip -->
       <div
         style="
           display: flex;
-          flex-direction: column;
-          gap: 4px;
-          justify-content: center;
           align-items: center;
-          align-self: center;
+          gap: 6px;
+          padding: 6px 10px;
+          border: 1px solid var(--border, var(--mantine-color-default-border));
+          background: var(--surface, transparent);
+          margin-bottom: 8px;
         "
       >
-        <label size="xs" variant="bold" label="Broken"></label>
-        <checkbox field="shieldBroken" size="xs" color="secondary"></checkbox>
-      </div>
-    </div>
-
-    <div
-      style="
-        display: flex;
-        flex-direction: row;
-        gap: 8px;
-        justify-content: flex-end;
-        align-items: flex-end;
-        margin-bottom: 4px;
-      "
-    >
-      <div
-        style="
-          display: flex;
-          flex-direction: row;
-          gap: 4px;
-          align-items: center;
-        "
-        ;
-      >
-        <label size="xs" variant="bold" label="Recovery Check"></label>
+        <label
+          class="rvtt-sheet-label rvtt-sheet-label--accent"
+          label="Shield"
+        ></label>
+        <numberfield
+          placeholder="0"
+          width="70px"
+          icon="IconShield"
+          size="xs"
+          field="shieldHp"
+          minvalue="0"
+          label="HP"
+          onchange="onChangeShieldHp(value)"
+        ></numberfield>
+        <numberfield
+          placeholder="0"
+          width="70px"
+          size="xs"
+          field="shieldMaxHp"
+          label="Max"
+          onchange="onChangeShieldMaxHp(value)"
+        ></numberfield>
         <iconbutton
           size="md"
-          variant="light"
-          color="red"
-          options='[{"icon": "D20", "label": "Roll Recovery Check", "value": "roll"}]'
-          field="Roll Recovery Check"
-          onclick="rollRecoveryCheck()"
+          variant="default"
+          options='[{"icon": "IconShield", "label": "Raise Shield", "value": "false"}, {"icon": "IconShieldFilled", "label": "Lower Shield", "value": "true"}]'
+          field="shieldRaised"
+          onchange="raiseShield(value)"
         ></iconbutton>
+        <numberfield
+          placeholder="0"
+          width="36px"
+          hidecontrols="true"
+          size="xs"
+          field="shieldAC"
+          onchange="onChangeShieldValue(value, 'acBonus')"
+          label="AC"
+        ></numberfield>
+        <numberfield
+          placeholder="0"
+          width="36px"
+          hidecontrols="true"
+          size="xs"
+          field="shieldHardness"
+          onchange="onChangeShieldValue(value, 'hardness')"
+          label="H"
+        ></numberfield>
+        <numberfield
+          placeholder="0"
+          width="40px"
+          hidecontrols="true"
+          size="xs"
+          field="shieldBt"
+          label="BT"
+        ></numberfield>
+        <div
+          style="
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+            justify-content: center;
+            align-items: center;
+            margin-left: auto;
+          "
+        >
+          <label class="rvtt-sheet-label" label="Broken"></label>
+          <checkbox field="shieldBroken" size="xs" color="secondary"></checkbox>
+        </div>
       </div>
 
-      <counter
-        field="dying"
-        size="xs"
-        label="Dying"
-        color="red"
-        icon="IconSkull"
-        maxvalue="4"
-        textalign="center"
-        minvalue="0"
-      ></counter>
-
-      <counter
-        field="wounded"
-        size="xs"
-        label="Wounded"
-        color="red"
-        icon="IconDroplet"
-        maxvalue="3"
-        textalign="center"
-        minvalue="0"
-      ></counter>
-
-      <iconbutton
-        size="md"
-        variant="default"
-        options='[{"icon": "IconCampfire", "label": "Refocus", "value": "refocus"}]'
-        field="Refocus"
-        onclick="shortRest()"
-      ></iconbutton>
-
-      <iconbutton
-        size="md"
-        variant="default"
-        options='[{"icon": "IconBed", "label": "Rest", "value": "rest"}]'
-        field="Rest"
-        onclick="rest()"
-      ></iconbutton>
-    </div>
-  </div>
-</div>
-
-<div style="width: 100%; gap: 4px; display: flex; align-items: flex-end">
-  <div style="width: 100%; gap: 4px; display: flex; align-items: flex-end">
-    <stringfield
-      placeholder="Drag and drop an Ancestry"
-      field="ancestryName"
-      width="100%"
-      label="Ancestry"
-      size="sm"
-    ></stringfield>
-    <list
-      width="fit-content"
-      height="32px"
-      hidden="true"
-      listtype="record_link_list"
-      field="ancestries"
-      onchange="onDeleteAncestry();"
-    >
-    </list>
-  </div>
-  <div style="width: 100%; gap: 4px; display: flex; align-items: flex-end">
-    <stringfield
-      placeholder="Drag and drop a Heritage"
-      field="heritageName"
-      width="100%"
-      label="Heritage"
-      size="sm"
-    ></stringfield>
-    <list
-      width="fit-content"
-      height="32px"
-      hidden="true"
-      listtype="record_link_list"
-      field="heritages"
-      onchange="onDeleteHeritage();"
-    >
-    </list>
-  </div>
-</div>
-
-<div style="width: 100%; gap: 4px; display: flex; align-items: flex-end">
-  <div style="width: 100%; gap: 4px; display: flex; align-items: flex-end">
-    <stringfield
-      placeholder="Drag and drop a Class"
-      field="className"
-      width="100%"
-      label="Class"
-      size="sm"
-    ></stringfield>
-    <list
-      width="fit-content"
-      height="32px"
-      hidden="true"
-      listtype="record_link_list"
-      field="classes"
-      onchange="onDeleteClass();"
-    >
-    </list>
-  </div>
-  <div style="width: 100%; gap: 4px; display: flex; align-items: flex-end">
-    <stringfield
-      placeholder="Drag and drop a Background"
-      field="backgroundName"
-      width="100%"
-      label="Background"
-      size="sm"
-    ></stringfield>
-    <list
-      width="fit-content"
-      height="32px"
-      hidden="true"
-      listtype="record_link_list"
-      field="backgrounds"
-      onchange="onDeleteBackground();"
-    >
-    </list>
-  </div>
-</div>
-
-<divider
-  field="attributesDivider"
-  label="Attribute Modifiers"
-  size="sm"
-  color="primary"
-></divider>
-
-<!-- STATS -->
-<div
-  style="
-    display: flex;
-    flex-direction: row;
-    gap: 8px;
-    margin-top: 4px;
-    justify-content: center;
-    align-items: flex-end;
-    width: 100%;
-    margin-bottom: 4px;
-  "
->
-  <numberfield
-    placeholder="0"
-    size="md"
-    width="70px"
-    field="str"
-    showsign="true"
-    label="STR"
-    hidecontrols="true"
-    editable="false"
-    textalign="center"
-  ></numberfield>
-
-  <numberfield
-    placeholder="0"
-    size="md"
-    width="70px"
-    field="dex"
-    label="DEX"
-    showsign="true"
-    hidecontrols="true"
-    editable="false"
-    textalign="center"
-  ></numberfield>
-
-  <numberfield
-    placeholder="0"
-    size="md"
-    width="70px"
-    field="con"
-    label="CON"
-    showsign="true"
-    hidecontrols="true"
-    editable="false"
-    textalign="center"
-  ></numberfield>
-
-  <numberfield
-    placeholder="0"
-    size="md"
-    width="70px"
-    field="int"
-    label="INT"
-    hidecontrols="true"
-    editable="false"
-    showsign="true"
-    textalign="center"
-  ></numberfield>
-
-  <numberfield
-    placeholder="0"
-    size="md"
-    width="70px"
-    field="wis"
-    label="WIS"
-    hidecontrols="true"
-    editable="false"
-    showsign="true"
-    textalign="center"
-  ></numberfield>
-
-  <numberfield
-    placeholder="0"
-    size="md"
-    width="70px"
-    field="cha"
-    label="CHA"
-    hidecontrols="true"
-    editable="false"
-    showsign="true"
-    textalign="center"
-  ></numberfield>
-
-  <popover position="bottom" offset="4" witharrow="true">
-    <popover.target>
-      <iconbutton
-        size="md"
-        variant="light"
-        hideonlocked="true"
-        options='[{"icon": "IconEdit", "label": "Edit Ability Boosts", "value": "abilityBonus"}]'
-        field="Edit Ability Boosts"
-      ></iconbutton>
-    </popover.target>
-    <popover.dropdown>
-      <div style="display: flex; flex-direction: column; gap: 4px">
-        <label size="xs" variant="bold" label="Ancestry Boosts"></label>
-        <label size="xs" field="ancestryBoostLabel" hidden="true"></label>
-        <label size="xs" field="ancestryFlawLabel" hidden="true"></label>
-        <label
+      <!-- Recovery / Conditions strip -->
+      <div
+        style="
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          padding: 6px 10px;
+          border: 1px solid
+            var(--border-strong, var(--mantine-color-default-border));
+          background: var(--surface, transparent);
+          margin-bottom: 8px;
+        "
+      >
+        <counter
+          field="dying"
           size="xs"
-          field="ancestryBoostError"
-          hidden="true"
+          label="Dying"
           color="red"
-          label="Cannot Have Duplicate Ancestry Boosts!"
-        ></label>
-        <!-- Checkbox for non-human ancestries to use alternate ability selection -->
-        <checkbox
-          field="alternateAncestryBoosts"
-          label="Use Alternate Ability Selection"
+          icon="IconSkull"
+          maxvalue="4"
+          textalign="center"
+          minvalue="0"
+        ></counter>
+        <counter
+          field="wounded"
           size="xs"
-          hidden="true"
-          color="primary"
-          onchange="onAlternateAncestryBoostsChange(value)"
-        ></checkbox>
-        <div style="display: flex; flex-direction: row; gap: 4px">
-          <dropdown
+          label="Wounded"
+          color="red"
+          icon="IconDroplet"
+          maxvalue="3"
+          textalign="center"
+          minvalue="0"
+        ></counter>
+        <div
+          style="
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            margin-left: auto;
+          "
+        >
+          <label
+            class="rvtt-sheet-label rvtt-sheet-label--accent"
+            label="Recovery"
+          ></label>
+          <iconbutton
+            size="md"
+            variant="subtle"
+            color="red"
+            options='[{"icon": "D20", "label": "Roll Recovery Check", "value": "roll"}]'
+            field="Roll Recovery Check"
+            onclick="rollRecoveryCheck()"
+          ></iconbutton>
+          <span class="rvtt-sheet-mono-dim" style="margin-left: 6px"
+            >&#9670;</span
+          >
+          <iconbutton
+            size="md"
+            variant="subtle"
+            options='[{"icon": "IconCampfire", "label": "Refocus", "value": "refocus"}]'
+            field="Refocus"
+            onclick="shortRest()"
+          ></iconbutton>
+          <iconbutton
+            size="md"
+            variant="subtle"
+            options='[{"icon": "IconBed", "label": "Rest", "value": "rest"}]'
+            field="Rest"
+            onclick="rest()"
+          ></iconbutton>
+        </div>
+      </div>
+
+      <!-- Perception strip -->
+      <div
+        style="
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          padding: 6px 10px;
+          border: 1px solid var(--border, var(--mantine-color-default-border));
+          background: var(--surface, transparent);
+          margin-bottom: 8px;
+        "
+      >
+        <label
+          class="rvtt-sheet-label rvtt-sheet-label--accent"
+          field="perceptionLabel"
+          label="Perception"
+        ></label>
+        <numberfield
+          placeholder="0"
+          size="xs"
+          width="56px"
+          field="perceptionMod"
+          showsign="true"
+          textalign="center"
+          hidecontrols="true"
+        ></numberfield>
+        <iconbutton
+          size="md"
+          variant="subtle"
+          options='[{"icon": "D20", "label": "Roll Perception", "value": "roll"}]'
+          field="Roll Perception"
+          onclick="rollPerception()"
+        ></iconbutton>
+        <dropdown
+          size="xs"
+          field="perception"
+          width="120px"
+          textalign="center"
+          placeholder="Trained"
+          defaultvalue="1"
+          onchange="updatePerceptionProficiency(value)"
+          options='[{"label": "None", "value": "0"}, {"label": "Trained", "value": "1"}, {"label": "Expert", "value": "2"}, {"label": "Master", "value": "3"}, {"label": "Legendary", "value": "4"}]'
+        ></dropdown>
+      </div>
+
+      <div class="rvtt-sheet-divider">
+        <span class="rvtt-sheet-divider__label"
+          >&#10022; Identity &#10022;</span
+        >
+      </div>
+
+      <div style="display: flex; flex-direction: column; gap: 6px">
+        <div
+          style="
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 6px;
+            align-items: flex-end;
+          "
+        >
+          <div style="display: flex; gap: 4px; align-items: flex-end">
+            <stringfield
+              width="100%"
+              size="xs"
+              field="ancestryName"
+              placeholder="Drag an Ancestry&#8230;"
+              label="Ancestry"
+            ></stringfield>
+            <list
+              width="fit-content"
+              height="32px"
+              hidden="true"
+              listtype="record_link_list"
+              field="ancestries"
+              onchange="onDeleteAncestry()"
+            ></list>
+          </div>
+          <div style="display: flex; gap: 4px; align-items: flex-end">
+            <stringfield
+              width="100%"
+              size="xs"
+              field="heritageName"
+              placeholder="Drag a Heritage&#8230;"
+              label="Heritage"
+            ></stringfield>
+            <list
+              width="fit-content"
+              height="32px"
+              hidden="true"
+              listtype="record_link_list"
+              field="heritages"
+              onchange="onDeleteHeritage()"
+            ></list>
+          </div>
+        </div>
+
+        <div style="display: flex; gap: 4px; align-items: flex-end">
+          <stringfield
+            width="100%"
             size="xs"
-            field="ancestryBoost1"
-            placeholder="Choose Ability"
-            icon="IconCirclePlus"
-            optionsfunction="return getAncestryBoostOptions('ancestryBoost1');"
-            onchange="updateAbilityBoosts(value, 'ancestryBoost1')"
-          ></dropdown>
-          <dropdown
-            size="xs"
-            field="ancestryBoost2"
-            placeholder="Choose Ability"
+            field="backgroundName"
+            placeholder="Drag a Background&#8230;"
+            label="Background"
+          ></stringfield>
+          <list
+            width="fit-content"
+            height="32px"
             hidden="true"
-            icon="IconCirclePlus"
-            onload="setAncestryBoostFields()"
-            optionsfunction="return getAncestryBoostOptions('ancestryBoost2');"
-            onchange="updateAbilityBoosts(value, 'ancestryBoost2')"
-          ></dropdown>
+            listtype="record_link_list"
+            field="backgrounds"
+            onchange="onDeleteBackground()"
+          ></list>
         </div>
-      </div>
-      <div style="display: flex; flex-direction: column; margin-top: 4px">
-        <label size="xs" variant="bold" label="Background Boosts"></label>
-        <label
-          size="xs"
-          field="backgroundBoostError"
-          hidden="true"
-          color="red"
-          label="Cannot Have Duplicate Background Boosts!"
-        ></label>
-        <div style="display: flex; flex-direction: row; gap: 4px">
-          <dropdown
-            size="xs"
-            field="backgroundBoost1"
-            placeholder="Choose Ability"
-            icon="IconCirclePlus"
-            optionsfunction="return getBackgroundBoostOptions('backgroundBoost1');"
-            onchange="updateAbilityBoosts(value, 'backgroundBoost1')"
-          ></dropdown>
-          <dropdown
-            size="xs"
-            field="backgroundBoost2"
-            placeholder="Choose Ability"
-            icon="IconCirclePlus"
-            optionsfunction="return getBackgroundBoostOptions('backgroundBoost2');"
-            onchange="updateAbilityBoosts(value, 'backgroundBoost2')"
-          ></dropdown>
-        </div>
-      </div>
-      <div style="display: flex; flex-direction: column; margin-top: 4px">
-        <label size="xs" variant="bold" label="Class Boosts"></label>
-        <div style="display: flex; flex-direction: row; gap: 4px">
-          <dropdown
-            size="xs"
-            field="keyAbility"
-            placeholder="Choose Ability"
-            icon="IconCirclePlus"
-            optionsfunction="return getClassBoostOptions();"
-            onchange="updateAbilityBoosts(value, 'classBoost')"
-          ></dropdown>
-        </div>
-      </div>
-      <div style="display: flex; flex-direction: column; margin-top: 4px">
-        <label size="xs" variant="bold" label="Free Boosts"></label>
-        <dropdown
-          size="xs"
-          field="freeBoosts"
-          label="Level 1"
-          placeholder="Choose 4 Abilities"
-          icon="IconCirclePlus"
-          options='[{"label": "Strength", "value": "str"}, {"label": "Dexterity", "value": "dex"}, {"label": "Constitution", "value": "con"}, {"label": "Intelligence", "value": "int"}, {"label": "Wisdom", "value": "wis"}, {"label": "Charisma", "value": "cha"}]'
-          multiselect="4"
-          onchange="updateAbilityBoosts(value, 'freeBoosts')"
-        ></dropdown>
-        <dropdown
-          size="xs"
-          field="freeBoostsLevel5"
-          label="Level 5"
-          hidden="true"
-          placeholder="Choose 4 Abilities"
-          icon="IconCirclePlus"
-          options='[{"label": "Strength", "value": "str"}, {"label": "Dexterity", "value": "dex"}, {"label": "Constitution", "value": "con"}, {"label": "Intelligence", "value": "int"}, {"label": "Wisdom", "value": "wis"}, {"label": "Charisma", "value": "cha"}]'
-          multiselect="4"
-          onchange="updateAbilityBoosts(value, 'freeBoostsLevel5')"
-        ></dropdown>
-        <dropdown
-          size="xs"
-          field="freeBoostsLevel10"
-          label="Level 10"
-          hidden="true"
-          placeholder="Choose 4 Abilities"
-          icon="IconCirclePlus"
-          options='[{"label": "Strength", "value": "str"}, {"label": "Dexterity", "value": "dex"}, {"label": "Constitution", "value": "con"}, {"label": "Intelligence", "value": "int"}, {"label": "Wisdom", "value": "wis"}, {"label": "Charisma", "value": "cha"}]'
-          multiselect="4"
-          onchange="updateAbilityBoosts(value, 'freeBoostsLevel10')"
-        ></dropdown>
-        <dropdown
-          size="xs"
-          field="freeBoostsLevel15"
-          label="Level 15"
-          hidden="true"
-          placeholder="Choose 4 Abilities"
-          icon="IconCirclePlus"
-          options='[{"label": "Strength", "value": "str"}, {"label": "Dexterity", "value": "dex"}, {"label": "Constitution", "value": "con"}, {"label": "Intelligence", "value": "int"}, {"label": "Wisdom", "value": "wis"}, {"label": "Charisma", "value": "cha"}]'
-          multiselect="4"
-          onchange="updateAbilityBoosts(value, 'freeBoostsLevel15')"
-        ></dropdown>
-        <dropdown
-          size="xs"
-          field="freeBoostsLevel20"
-          label="Level 20"
-          hidden="true"
-          placeholder="Choose 4 Abilities"
-          icon="IconCirclePlus"
-          options='[{"label": "Strength", "value": "str"}, {"label": "Dexterity", "value": "dex"}, {"label": "Constitution", "value": "con"}, {"label": "Intelligence", "value": "int"}, {"label": "Wisdom", "value": "wis"}, {"label": "Charisma", "value": "cha"}]'
-          multiselect="4"
-          onchange="updateAbilityBoosts(value, 'freeBoostsLevel20')"
-        ></dropdown>
-      </div>
-    </popover.dropdown>
-  </popover>
-</div>
 
-<!-- SAVING THROWS -->
-<divider
-  field="savingThrowsDivider"
-  label="Saving Throws"
-  size="sm"
-  color="primary"
-></divider>
-
-<div
-  style="
-    display: flex;
-    flex-direction: row;
-    gap: 8px;
-    margin-top: 4px;
-    width: 100%;
-    justify-content: center;
-    align-items: flex-end;
-  "
->
-  <div
-    style="display: flex; flex-direction: column; gap: 2px; text-align: center"
-  >
-    <label field="fortLabel" size="xs" variant="bold" label="Fortitude"></label>
-    <div
-      style="
-        display: flex;
-        flex-direction: row;
-        gap: 4px;
-        align-items: flex-end;
-      "
-    >
-      <numberfield
-        placeholder="0"
-        size="xs"
-        width="68px"
-        field="fortitudeMod"
-        showsign="true"
-        textalign="center"
-      ></numberfield>
-      <iconbutton
-        size="md"
-        variant="light"
-        options='[{"icon": "D20", "label": "Roll Fortitude Save", "value": "roll"}]'
-        field="Roll Fortitude Save"
-        onclick="performSaveRoll('fortitude')"
-      ></iconbutton>
-    </div>
-    <dropdown
-      size="xs"
-      field="fortitude"
-      width="100px"
-      textalign="center"
-      placeholder="None"
-      defaultvalue="none"
-      onchange="updateSaveProficiency(value, 'fortitude')"
-      options='[{"label": "None", "value": "0"}, {"label": "Trained", "value": "1"}, {"label": "Expert", "value": "2"}, {"label": "Master", "value": "3"}, {"label": "Legendary", "value": "4"}]'
-    ></dropdown>
-  </div>
-
-  <div
-    style="display: flex; flex-direction: column; gap: 2px; text-align: center"
-  >
-    <label field="reflexLabel" size="xs" variant="bold" label="Reflex"></label>
-    <div
-      style="
-        display: flex;
-        flex-direction: row;
-        gap: 4px;
-        align-items: flex-end;
-      "
-    >
-      <numberfield
-        placeholder="0"
-        size="xs"
-        width="68px"
-        field="reflexMod"
-        showsign="true"
-        textalign="center"
-      ></numberfield>
-      <iconbutton
-        size="md"
-        variant="light"
-        options='[{"icon": "D20", "label": "Roll Reflex Save", "value": "roll"}]'
-        field="Roll Reflex Save"
-        onclick="performSaveRoll('reflex')"
-      ></iconbutton>
-    </div>
-    <dropdown
-      size="xs"
-      field="reflex"
-      width="100px"
-      textalign="center"
-      placeholder="None"
-      defaultvalue="none"
-      onchange="updateSaveProficiency(value, 'reflex')"
-      options='[{"label": "None", "value": "0"}, {"label": "Trained", "value": "1"}, {"label": "Expert", "value": "2"}, {"label": "Master", "value": "3"}, {"label": "Legendary", "value": "4"}]'
-    ></dropdown>
-  </div>
-
-  <div
-    style="display: flex; flex-direction: column; gap: 2px; text-align: center"
-  >
-    <label field="willLabel" size="xs" variant="bold" label="Will"></label>
-    <div
-      style="
-        display: flex;
-        flex-direction: row;
-        gap: 4px;
-        align-items: flex-end;
-      "
-    >
-      <numberfield
-        placeholder="0"
-        size="xs"
-        width="68px"
-        field="willMod"
-        showsign="true"
-        textalign="center"
-      ></numberfield>
-      <iconbutton
-        size="md"
-        variant="light"
-        options='[{"icon": "D20", "label": "Roll Will Save", "value": "roll"}]'
-        field="Roll Will Save"
-        onclick="performSaveRoll('will')"
-      ></iconbutton>
-    </div>
-    <dropdown
-      size="xs"
-      field="will"
-      width="100px"
-      placeholder="None"
-      textalign="center"
-      defaultvalue="none"
-      onchange="updateSaveProficiency(value, 'will')"
-      options='[{"label": "None", "value": "0"}, {"label": "Trained", "value": "1"}, {"label": "Expert", "value": "2"}, {"label": "Master", "value": "3"}, {"label": "Legendary", "value": "4"}]'
-    ></dropdown>
-  </div>
-</div>
-
-<div
-  style="
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-    width: 100%;
-    margin-top: 8px;
-  "
->
-  <divider field="otherDivider" size="sm" color="primary"></divider>
-
-  <div style="display: flex; flex-direction: row; gap: 4px; width: 100%">
-    <dropdown
-      width="100%"
-      size="xs"
-      field="size"
-      label="Size"
-      placeholder="Medium"
-      defaultvalue="medium"
-      options='[{"label": "Tiny", "value": "tiny"}, {"label": "Small", "value": "small"}, {"label": "Medium", "value": "medium"}, {"label": "Large", "value": "large"}, {"label": "Huge", "value": "huge"}, {"label": "Gargantuan", "value": "gargantuan"}]'
-    ></dropdown>
-    <stringfield
-      width="100%"
-      field="speed"
-      label="Speed"
-      placeholder="Speed"
-      size="xs"
-    ></stringfield>
-    <stringfield
-      width="100%"
-      field="senses"
-      label="Senses"
-      placeholder="None"
-      size="xs"
-    ></stringfield>
-  </div>
-
-  <div style="display: flex; flex-direction: row; gap: 4px; width: 100%">
-    <div style="display: flex; flex-direction: column; gap: 2px; width: 100%">
-      <label size="xs" variant="bold" label="Languages"></label>
-      <list field="languagesList" listtype="language_list" size="xs"></list>
-    </div>
-    <popover position="bottom" offset="4" witharrow="true">
-      <popover.target>
-        <iconbutton
-          size="sm"
-          variant="light"
-          hideonlocked="true"
-          options='[{"icon": "IconEdit", "label": "Edit Languages", "value": "languages"}]'
-          field="Edit Languages"
-        ></iconbutton>
-      </popover.target>
-      <popover.dropdown>
         <div
-          style="display: flex; flex-direction: column; gap: 4px; width: 300px"
+          style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 6px"
         >
           <dropdown
             size="xs"
-            field="languages"
-            placeholder="Enter Languages..."
-            multiselect="100"
-            width="100%"
-            combo="true"
-            label="Languages"
-            onchange="updateLanguages(value)"
-            optionsfunction="return getLanguageOptions();"
+            field="size"
+            label="Size"
+            placeholder="Medium"
+            defaultvalue="medium"
+            options='[{"label": "Tiny", "value": "tiny"}, {"label": "Small", "value": "small"}, {"label": "Medium", "value": "medium"}, {"label": "Large", "value": "large"}, {"label": "Huge", "value": "huge"}, {"label": "Gargantuan", "value": "gargantuan"}]'
           ></dropdown>
-        </div>
-      </popover.dropdown>
-    </popover>
-    <div style="display: flex; flex-direction: column; gap: 2px; width: 100%">
-      <label size="xs" variant="bold" label="Traits"></label>
-      <list
-        field="traitsList"
-        listtype="traits_list"
-        size="xs"
-        emptylisttext="None"
-      ></list>
-    </div>
-    <popover position="bottom" offset="4" witharrow="true">
-      <popover.target>
-        <iconbutton
-          size="sm"
-          variant="light"
-          hideonlocked="true"
-          options='[{"icon": "IconEdit", "label": "Edit Traits", "value": "traits"}]'
-          field="Edit Traits"
-        ></iconbutton>
-      </popover.target>
-      <popover.dropdown>
-        <div
-          style="display: flex; flex-direction: column; gap: 4px; width: 300px"
-        >
-          <dropdown
+          <stringfield
             size="xs"
-            field="traits"
-            placeholder="Enter Traits..."
-            multiselect="100"
-            width="100%"
-            combo="true"
-            label="Traits"
-            onchange="setTraits(value)"
-            optionsfunction="return getTraitOptions();"
-          ></dropdown>
+            field="speed"
+            label="Speed"
+            placeholder="Speed"
+          ></stringfield>
+          <stringfield
+            size="xs"
+            field="senses"
+            label="Senses"
+            placeholder="None"
+          ></stringfield>
         </div>
-      </popover.dropdown>
-    </popover>
+
+        <div
+          style="
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 6px;
+            align-items: flex-start;
+            margin-top: 4px;
+          "
+        >
+          <div style="display: flex; flex-direction: column; gap: 2px">
+            <div style="display: flex; align-items: center; gap: 4px">
+              <label
+                class="rvtt-sheet-label rvtt-sheet-label--accent"
+                label="Languages"
+              ></label>
+              <popover position="bottom" offset="4" witharrow="true">
+                <popover.target>
+                  <iconbutton
+                    size="sm"
+                    variant="subtle"
+                    hideonlocked="true"
+                    options='[{"icon": "IconEdit", "label": "Edit Languages", "value": "languages"}]'
+                    field="Edit Languages"
+                  ></iconbutton>
+                </popover.target>
+                <popover.dropdown>
+                  <div
+                    style="
+                      display: flex;
+                      flex-direction: column;
+                      gap: 4px;
+                      width: 300px;
+                    "
+                  >
+                    <dropdown
+                      size="xs"
+                      field="languages"
+                      placeholder="Enter Languages..."
+                      multiselect="100"
+                      width="100%"
+                      combo="true"
+                      label="Languages"
+                      onchange="updateLanguages(value)"
+                      optionsfunction="return getLanguageOptions();"
+                    ></dropdown>
+                  </div>
+                </popover.dropdown>
+              </popover>
+            </div>
+            <list
+              field="languagesList"
+              listtype="language_list"
+              size="xs"
+            ></list>
+          </div>
+          <div style="display: flex; flex-direction: column; gap: 2px">
+            <div style="display: flex; align-items: center; gap: 4px">
+              <label
+                class="rvtt-sheet-label rvtt-sheet-label--accent"
+                label="Traits"
+              ></label>
+              <popover position="bottom" offset="4" witharrow="true">
+                <popover.target>
+                  <iconbutton
+                    size="sm"
+                    variant="subtle"
+                    hideonlocked="true"
+                    options='[{"icon": "IconEdit", "label": "Edit Traits", "value": "traits"}]'
+                    field="Edit Traits"
+                  ></iconbutton>
+                </popover.target>
+                <popover.dropdown>
+                  <div
+                    style="
+                      display: flex;
+                      flex-direction: column;
+                      gap: 4px;
+                      width: 300px;
+                    "
+                  >
+                    <dropdown
+                      size="xs"
+                      field="traits"
+                      placeholder="Enter Traits..."
+                      multiselect="100"
+                      width="100%"
+                      combo="true"
+                      label="Traits"
+                      onchange="setTraits(value)"
+                      optionsfunction="return getTraitOptions();"
+                    ></dropdown>
+                  </div>
+                </popover.dropdown>
+              </popover>
+            </div>
+            <list
+              field="traitsList"
+              listtype="traits_list"
+              size="xs"
+              emptylisttext="None"
+            ></list>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </div>

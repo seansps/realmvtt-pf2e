@@ -11,141 +11,178 @@
   }
 </script>
 
-<div>
-  <label variant="bold" textalign="center" label="Feats"></label>
-</div>
-
-<div style="display: flex; flex-direction: column; width: 100%; gap: 4px">
+<div class="sheet--spread">
   <div
-    style="
-      display: flex;
-      flex-direction: row;
-      width: 100%;
-      gap: 4px;
-      background-color: rgb(from var(--mantine-color-red-filled) r g b / 0.25);
-      border-radius: 4px;
-      margin-bottom: 4px;
-      padding: 0px 4px;
-    "
+    class="rvtt-sheet-section rvtt-sheet-corners"
+    style="background: var(--bg, transparent)"
   >
-    <label label="Class Feats" size="sm" variant="bold"></label>
+    <span class="rvtt-sheet-corner rvtt-sheet-corner--tl"></span>
+    <span class="rvtt-sheet-corner rvtt-sheet-corner--tr"></span>
+    <span class="rvtt-sheet-corner rvtt-sheet-corner--bl"></span>
+    <span class="rvtt-sheet-corner rvtt-sheet-corner--br"></span>
+
+    <div class="rvtt-sheet-divider">
+      <span class="rvtt-sheet-divider__label">&#10022; Feats &#10022;</span>
+    </div>
+
+    <div style="display: flex; flex-direction: column; width: 100%; gap: 4px">
+      <div
+        style="
+          display: flex;
+          flex-direction: row;
+          width: 100%;
+          gap: 4px;
+          background-color: rgb(from var(--mantine-color-red-filled) r g b / 0.25);
+          border-radius: 4px;
+          margin-bottom: 4px;
+          padding: 0px 4px;
+        "
+      >
+        <label
+          class="rvtt-sheet-label rvtt-sheet-label--accent"
+          label="Class Feats"
+        ></label>
+      </div>
+
+      <list
+        listtype="feats_list"
+        field="feats"
+        getfilters="return getSlotFilters('class');"
+        emptylisttext="No Class Feat Slots"
+      ></list>
+
+      <div
+        style="
+          display: flex;
+          flex-direction: row;
+          width: 100%;
+          gap: 4px;
+          background-color: rgb(from var(--mantine-color-blue-filled) r g b / 0.25);
+          border-radius: 4px;
+          margin-bottom: 4px;
+          padding: 0px 4px;
+        "
+      >
+        <label
+          class="rvtt-sheet-label rvtt-sheet-label--accent"
+          label="General Feats"
+        ></label>
+      </div>
+
+      <list
+        listtype="feats_list"
+        field="feats"
+        getfilters="return getSlotFilters('general');"
+        emptylisttext="No General Feat Slots"
+      ></list>
+
+      <div
+        style="
+          display: flex;
+          flex-direction: row;
+          width: 100%;
+          gap: 4px;
+          background-color: rgb(from var(--mantine-color-cyan-filled) r g b / 0.25);
+          border-radius: 4px;
+          margin-bottom: 4px;
+          padding: 0px 4px;
+        "
+      >
+        <label
+          class="rvtt-sheet-label rvtt-sheet-label--accent"
+          label="Skill Feats"
+        ></label>
+      </div>
+
+      <list
+        listtype="feats_list"
+        field="feats"
+        emptylisttext="No Skill Feat Slots"
+        getfilters="return getSlotFilters('skill');"
+      ></list>
+
+      <div
+        style="
+          display: flex;
+          flex-direction: row;
+          width: 100%;
+          gap: 4px;
+          background-color: rgb(from var(--mantine-color-teal-filled) r g b / 0.25);
+          border-radius: 4px;
+          margin-bottom: 4px;
+          padding: 0px 4px;
+        "
+      >
+        <label
+          class="rvtt-sheet-label rvtt-sheet-label--accent"
+          label="Ancestry Feats"
+        ></label>
+      </div>
+
+      <list
+        listtype="feats_list"
+        field="feats"
+        emptylisttext="No Ancestry Feat Slots"
+        getfilters="return getSlotFilters('ancestry');"
+      ></list>
+
+      <div
+        style="
+          display: flex;
+          flex-direction: row;
+          width: 100%;
+          gap: 4px;
+          background-color: rgb(
+            from var(--mantine-color-green-filled) r g b / 0.25
+          );
+          border-radius: 4px;
+          margin-bottom: 4px;
+          padding: 0px 4px;
+        "
+      >
+        <label
+          class="rvtt-sheet-label rvtt-sheet-label--accent"
+          label="Bonus Feats"
+        ></label>
+      </div>
+
+      <list
+        listtype="bonus_feats_list"
+        field="bonusFeats"
+        onchange="onAddDeleteFeat();"
+      ></list>
+    </div>
   </div>
 
-  <list
-    listtype="feats_list"
-    field="feats"
-    getfilters="return getSlotFilters('class');"
-    emptylisttext="No Class Feat Slots"
-  ></list>
-
   <div
-    style="
-      display: flex;
-      flex-direction: row;
-      width: 100%;
-      gap: 4px;
-      background-color: rgb(from var(--mantine-color-blue-filled) r g b / 0.25);
-      border-radius: 4px;
-      margin-bottom: 4px;
-      padding: 0px 4px;
-    "
+    class="rvtt-sheet-section rvtt-sheet-corners"
+    style="background: var(--bg, transparent)"
   >
-    <label label="General Feats" size="sm" variant="bold"></label>
+    <span class="rvtt-sheet-corner rvtt-sheet-corner--tl"></span>
+    <span class="rvtt-sheet-corner rvtt-sheet-corner--tr"></span>
+    <span class="rvtt-sheet-corner rvtt-sheet-corner--bl"></span>
+    <span class="rvtt-sheet-corner rvtt-sheet-corner--br"></span>
+
+    <div class="rvtt-sheet-divider">
+      <span class="rvtt-sheet-divider__label">&#10022; Features &#10022;</span>
+    </div>
+
+    <div style="width: 100%; display: flex; flex-direction: column; gap: 4px">
+      <list
+        listtype="character_feature_list"
+        field="classes"
+        emptylisttext="No Class Features"
+      ></list>
+      <list
+        listtype="character_feature_list"
+        field="ancestries"
+        emptylisttext="No Ancestry Features"
+      ></list>
+      <list
+        listtype="character_feature_list"
+        field="heritages"
+        emptylisttext="No Heritage Features"
+      ></list>
+    </div>
   </div>
-
-  <list
-    listtype="feats_list"
-    field="feats"
-    getfilters="return getSlotFilters('general');"
-    emptylisttext="No General Feat Slots"
-  ></list>
-
-  <div
-    style="
-      display: flex;
-      flex-direction: row;
-      width: 100%;
-      gap: 4px;
-      background-color: rgb(from var(--mantine-color-cyan-filled) r g b / 0.25);
-      border-radius: 4px;
-      margin-bottom: 4px;
-      padding: 0px 4px;
-    "
-  >
-    <label label="Skill Feats" size="sm" variant="bold"></label>
-  </div>
-
-  <list
-    listtype="feats_list"
-    field="feats"
-    emptylisttext="No Skill Feat Slots"
-    getfilters="return getSlotFilters('skill');"
-  ></list>
-
-  <div
-    style="
-      display: flex;
-      flex-direction: row;
-      width: 100%;
-      gap: 4px;
-      background-color: rgb(from var(--mantine-color-teal-filled) r g b / 0.25);
-      border-radius: 4px;
-      margin-bottom: 4px;
-      padding: 0px 4px;
-    "
-  >
-    <label label="Ancestry Feats" size="sm" variant="bold"></label>
-  </div>
-
-  <list
-    listtype="feats_list"
-    field="feats"
-    emptylisttext="No Ancestry Feat Slots"
-    getfilters="return getSlotFilters('ancestry');"
-  ></list>
-
-  <div
-    style="
-      display: flex;
-      flex-direction: row;
-      width: 100%;
-      gap: 4px;
-      background-color: rgb(
-        from var(--mantine-color-green-filled) r g b / 0.25
-      );
-      border-radius: 4px;
-      margin-bottom: 4px;
-      padding: 0px 4px;
-    "
-  >
-    <label label="Bonus Feats" size="sm" variant="bold"></label>
-  </div>
-
-  <list
-    listtype="bonus_feats_list"
-    field="bonusFeats"
-    onchange="onAddDeleteFeat();"
-  ></list>
-</div>
-
-<div style="margin-top: 8px">
-  <label variant="bold" textalign="center" label="Features"></label>
-</div>
-
-<div style="width: 100%; display: flex; flex-direction: column; gap: 4px">
-  <list
-    listtype="character_feature_list"
-    field="classes"
-    emptylisttext="No Class Features"
-  ></list>
-  <list
-    listtype="character_feature_list"
-    field="ancestries"
-    emptylisttext="No Ancestry Features"
-  ></list>
-  <list
-    listtype="character_feature_list"
-    field="heritages"
-    emptylisttext="No Heritage Features"
-  ></list>
 </div>
