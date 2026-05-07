@@ -31,7 +31,12 @@
       <span class="rvtt-sheet-divider__label">&#10022; Attacks &#10022;</span>
     </div>
 
-    <list listtype="toggle_list" variant="striped" field="toggles"></list>
+    <list
+      listtype="toggle_list"
+      variant="striped"
+      field="toggles"
+      emptylisttext=" "
+    ></list>
 
     <div
       style="
@@ -86,6 +91,7 @@
       listtype="polymorph_actions_list"
       variant="striped"
       field="attacks"
+      emptylisttext=" "
     ></list>
 
     <!-- For effects that grant strikes -->
@@ -93,7 +99,7 @@
       listtype="attack_list"
       variant="striped"
       field="granted_inventory"
-      emptylisttext=""
+      emptylisttext=" "
     ></list>
     <!-- For actual attacks -->
     <list listtype="attack_list" variant="striped" field="inventory"></list>
