@@ -77,7 +77,7 @@
         icon="D20"
         label="Initiative"
         variant="outline"
-        onclick="rollInitiative();"
+        onclick="rollInitiative()"
       ></button>
     </div>
 
@@ -93,6 +93,7 @@
       listtype="attack_list"
       variant="striped"
       field="granted_inventory"
+      emptylisttext="&nbsp;"
     ></list>
     <!-- For actual attacks -->
     <list listtype="attack_list" variant="striped" field="inventory"></list>
@@ -126,7 +127,7 @@
       <list
         listtype="character_action_list"
         field="actions"
-        onchange="onAddAction();"
+        onchange="onAddAction()"
         variant="striped"
       ></list>
     </div>
@@ -176,54 +177,54 @@
               class="rvtt-sheet-label rvtt-sheet-label--accent"
               label="Spellcasting Entry Settings"
             ></label>
-        <dropdown
-          size="xs"
-          field="addType"
-          placeholder="Select Type..."
-          defaultvalue="prepared"
-          width="100%"
-          disablediflocked="false"
-          label="Spellcasting Type"
-          options='[{"label": "Prepared", "value": "prepared"},
+            <dropdown
+              size="xs"
+              field="addType"
+              placeholder="Select Type..."
+              defaultvalue="prepared"
+              width="100%"
+              disablediflocked="false"
+              label="Spellcasting Type"
+              options='[{"label": "Prepared", "value": "prepared"},
         {"label": "Spontaneous", "value": "spontaneous"},
         {"label": "Innate", "value": "innate"},
         {"label": "Focus", "value": "focus"},
         {"label": "Item Only", "value": "item"}]'
-        ></dropdown>
-        <divider></divider>
-        <dropdown
-          size="xs"
-          field="addProficiency"
-          placeholder="Select Proficiency..."
-          width="100%"
-          disablediflocked="false"
-          defaultvalue="spell"
-          label="Proficiency"
-          options='[{"label": "Spell Attack Modifiers & DCs", "value": "spell"},
+            ></dropdown>
+            <divider></divider>
+            <dropdown
+              size="xs"
+              field="addProficiency"
+              placeholder="Select Proficiency..."
+              width="100%"
+              disablediflocked="false"
+              defaultvalue="spell"
+              label="Proficiency"
+              options='[{"label": "Spell Attack Modifiers & DCs", "value": "spell"},
         {"label": "Class DC", "value": "class"}]'
-        ></dropdown>
-        <dropdown
-          size="xs"
-          field="addTradition"
-          placeholder="Select Magic Tradition..."
-          width="100%"
-          disablediflocked="false"
-          defaultvalue="Arcane"
-          label="Magic Tradition"
-          options='[{"label": "Arcane", "value": "Arcane"},
+            ></dropdown>
+            <dropdown
+              size="xs"
+              field="addTradition"
+              placeholder="Select Magic Tradition..."
+              width="100%"
+              disablediflocked="false"
+              defaultvalue="Arcane"
+              label="Magic Tradition"
+              options='[{"label": "Arcane", "value": "Arcane"},
             {"label": "Divine", "value": "Divine"},
             {"label": "Occult", "value": "Occult"},
             {"label": "Primal", "value": "Primal"}]'
-        ></dropdown>
-        <dropdown
-          size="xs"
-          field="addAttribute"
-          placeholder="Select Attribute..."
-          defaultvalue="int"
-          width="100%"
-          label="Key Attribute"
-          disablediflocked="false"
-          options='[{"label": "Strength", "value": "str"},
+            ></dropdown>
+            <dropdown
+              size="xs"
+              field="addAttribute"
+              placeholder="Select Attribute..."
+              defaultvalue="int"
+              width="100%"
+              label="Key Attribute"
+              disablediflocked="false"
+              options='[{"label": "Strength", "value": "str"},
       {"label": "Dexterity", "value": "dex"},
       {"label": "Constitution", "value": "con"},
       {"label": "Intelligence", "value": "int"},
@@ -234,7 +235,7 @@
               size="xs"
               variant="outline"
               label="Add"
-              onclick="onAddSpellcastingEntry();"
+              onclick="onAddSpellcastingEntry()"
             ></button>
           </div>
         </popover.dropdown>
