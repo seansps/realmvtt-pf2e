@@ -10608,11 +10608,12 @@ function getIWR(target, armorSpecDetails = null) {
   const immunityArray = target.data?.immunities || [];
   immunityArray.forEach((immunity) => {
     if (immunity?.data?.type) {
-      const type = immunity.data.type
-        .toLowerCase()
-        .trim()
-        .replace(/-/g, "")
-        .replace(/ /g, "");
+      // Normalize only with lowercase + trim (matching weaknesses/resistances
+      // and the dynamic-modifier path below). Stripping spaces/hyphens here
+      // would turn "all damage"/"all-damage" into "alldamage", which the
+      // applyDamage lookups for "all damage"/"all-damage" would never match;
+      // the per-type and damage-category lookups normalize on their own side.
+      const type = immunity.data.type.toLowerCase().trim();
       const doubleVs = immunity.data?.doubleVs || null;
       const exceptions = immunity.data?.exceptions || null;
 
@@ -11227,6 +11228,114 @@ function applyDamage(
         }
       }
 
+      // Apply precision-specific IWR (immunity/resistance/weakness) to the
+      // precision portion BEFORE the main IWR loop. Precision damage shares the
+      // base damage type, so it was folded into that type's bucket above and
+      // will be subject to that type's resistance in the main loop. Applying
+      // precision IWR here — and removing the affected amount from the base
+      // type bucket — ensures the precision portion isn't reduced twice (once
+      // by its damage type's resistance and again by precision immunity/
+      // resistance). See the "all damage except force + precision immunity"
+      // case: force is excepted, the precision is removed by immunity, and the
+      // base type resistance no longer double-dips the already-removed
+      // precision.
+      if (precisionIndices.length > 0 && !isApplyingSplash) {
+        // Reconstruct the precision amount at the same (post-critical) scale as
+        // it currently sits inside the base damage type bucket.
+        let precisionInBucket = totalPrecisionDamage;
+        if (isCritical && !immuneToCritical) {
+          precisionInBucket *= 2;
+        }
+
+        let survivingPrecision = precisionInBucket;
+
+        const precisionImmune =
+          IWR.immunities["precision"] &&
+          !damageIgnoresImmunities.includes("precision") &&
+          !(
+            IWR.immunities["precision"].exceptions &&
+            rollMatchesCondition(
+              roll,
+              IWR.immunities["precision"].exceptions,
+              "precision",
+            )
+          );
+
+        if (precisionImmune) {
+          // Immunity to precision negates the precision portion entirely.
+          survivingPrecision = 0;
+        } else {
+          // Precision weakness adds extra damage to the precision portion.
+          const precisionWeakness = IWR.weaknesses["precision"];
+          if (
+            precisionWeakness &&
+            !damageIgnoresWeaknesses.includes("precision") &&
+            !(
+              precisionWeakness.exceptions &&
+              rollMatchesCondition(
+                roll,
+                precisionWeakness.exceptions,
+                "precision",
+              )
+            )
+          ) {
+            let weaknessValue = precisionWeakness.value;
+            if (
+              precisionWeakness.doubleVs &&
+              rollMatchesCondition(roll, precisionWeakness.doubleVs, "precision")
+            ) {
+              weaknessValue *= 2;
+            }
+            survivingPrecision += weaknessValue;
+          }
+
+          // Precision resistance reduces the precision portion.
+          const precisionResistance = IWR.resistances["precision"];
+          if (
+            precisionResistance &&
+            !damageIgnoresResistances.includes("precision") &&
+            !(
+              precisionResistance.exceptions &&
+              rollMatchesCondition(
+                roll,
+                precisionResistance.exceptions,
+                "precision",
+              )
+            )
+          ) {
+            let resistanceValue = precisionResistance.value;
+            if (
+              precisionResistance.doubleVs &&
+              rollMatchesCondition(
+                roll,
+                precisionResistance.doubleVs,
+                "precision",
+              )
+            ) {
+              resistanceValue *= 2;
+            }
+            survivingPrecision = Math.max(
+              0,
+              survivingPrecision - resistanceValue,
+            );
+          }
+        }
+
+        // Remove the affected amount from the base type bucket so only the
+        // surviving precision is carried into the main IWR loop (a negative
+        // removal from weakness correctly adds to the bucket).
+        const precisionRemoved = precisionInBucket - survivingPrecision;
+        if (
+          precisionRemoved !== 0 &&
+          damageByType[baseDamageType] !== undefined
+        ) {
+          damageByType[baseDamageType] = Math.max(
+            0,
+            damageByType[baseDamageType] - precisionRemoved,
+          );
+        }
+      }
+
       // Check for vitality/void trait healing conversion
       // This must be done before we calculate baseDamage
       const targetTraits = target.data?.traits || [];
@@ -11637,97 +11746,9 @@ function applyDamage(
         0,
       );
 
-      // Now apply precision-specific IWR adjustments
-      // We've tracked which damage was precision and converted it to base damage type
-      // Now we need to apply precision-specific IWR to that portion
-      if (precisionIndices.length > 0 && !isApplyingSplash) {
-        // Calculate precision damage after critical and half damage adjustments
-        let adjustedPrecisionDamage = totalPrecisionDamage;
-
-        // Apply critical doubling if applicable
-        if (isCritical && !immuneToCritical) {
-          adjustedPrecisionDamage *= 2;
-        }
-
-        // Apply half damage if needed
-        if (halfDamage && adjustedPrecisionDamage > 0) {
-          adjustedPrecisionDamage = Math.floor(adjustedPrecisionDamage / 2);
-          adjustedPrecisionDamage = Math.max(1, adjustedPrecisionDamage);
-        }
-
-        // Now apply precision-specific IWR
-        let precisionDamageAfterIWR = adjustedPrecisionDamage;
-
-        // Check precision immunity
-        const precisionImmunity = IWR.immunities["precision"];
-        if (precisionImmunity) {
-          if (
-            precisionImmunity.exceptions &&
-            rollMatchesCondition(roll, precisionImmunity.exceptions)
-          ) {
-            // Exception applies - ignore immunity
-          } else {
-            // Immune to precision - negate all precision damage
-            precisionDamageAfterIWR = 0;
-          }
-        }
-
-        // Apply precision weakness (if not immune)
-        if (precisionDamageAfterIWR > 0) {
-          const precisionWeakness = IWR.weaknesses["precision"];
-          if (precisionWeakness) {
-            if (
-              precisionWeakness.exceptions &&
-              rollMatchesCondition(roll, precisionWeakness.exceptions)
-            ) {
-              // Exception applies - ignore weakness
-            } else {
-              let weaknessValue = precisionWeakness.value;
-              if (
-                precisionWeakness.doubleVs &&
-                rollMatchesCondition(roll, precisionWeakness.doubleVs)
-              ) {
-                weaknessValue = weaknessValue * 2;
-              }
-              precisionDamageAfterIWR += weaknessValue;
-            }
-          }
-        }
-
-        // Apply precision resistance (if not immune)
-        if (precisionDamageAfterIWR > 0) {
-          const precisionResistance = IWR.resistances["precision"];
-          if (precisionResistance) {
-            if (
-              precisionResistance.exceptions &&
-              rollMatchesCondition(roll, precisionResistance.exceptions)
-            ) {
-              // Exception applies - ignore resistance
-            } else {
-              let resistanceValue = precisionResistance.value;
-              if (
-                precisionResistance.doubleVs &&
-                rollMatchesCondition(roll, precisionResistance.doubleVs)
-              ) {
-                resistanceValue = resistanceValue * 2;
-              }
-              precisionDamageAfterIWR -= resistanceValue;
-            }
-          }
-        }
-
-        // Ensure precision damage doesn't go below 0
-        precisionDamageAfterIWR = Math.max(0, precisionDamageAfterIWR);
-
-        // Calculate the difference and apply it to total damage
-        // This is the adjustment caused by precision-specific IWR
-        const precisionIWRDifference =
-          precisionDamageAfterIWR - adjustedPrecisionDamage;
-        damage += precisionIWRDifference;
-
-        // Ensure total damage doesn't go below 0
-        damage = Math.max(0, damage);
-      }
+      // Precision-specific IWR (immunity/resistance/weakness) was already
+      // applied to the precision portion before the main IWR loop above, so
+      // there is nothing further to adjust here.
 
       // Subtract healing amount from damage (can make damage negative)
       damage -= healingAmount;
