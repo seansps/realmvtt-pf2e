@@ -10559,7 +10559,7 @@ function performDamageRoll(record, weapon, weaponDataPath, isCritical) {
  * @param {string[]} conditionsArray - The array of condition strings (e.g., ["fire", "undead"])
  * @returns {boolean} True if any trait matches the condition string
  */
-function rollMatchesCondition(roll, conditionsArray) {
+function rollMatchesCondition(roll, conditionsArray, damageType) {
   // Handle null, undefined, or empty arrays
   if (
     !conditionsArray ||
@@ -10576,20 +10576,26 @@ function rollMatchesCondition(roll, conditionsArray) {
   const traits = roll?.metadata?.traits || [];
   const damageCategories = roll?.metadata?.damageCategories || [];
 
-  // Check if any trait matches the condition
-  return conditionsToCheck.some(
-    (condition) =>
-      traits.some(
-        (trait) =>
-          trait.toLowerCase().trim().replace(/-/g, "").replace(/ /g, "") ===
-          condition.toLowerCase().trim().replace(/-/g, "").replace(/ /g, ""),
-      ) ||
+  const normalize = (str) =>
+    (str || "").toLowerCase().trim().replace(/-/g, "").replace(/ /g, "");
+
+  // An exception can be a damage type (e.g., "force"), a trait, or a material/
+  // damage category. Match against the current damage type first so that an
+  // IWR like "all damage resistance 5 (except force)" correctly ignores force
+  // damage, then fall back to trait and category matches.
+  const normalizedDamageType = normalize(damageType);
+
+  return conditionsToCheck.some((condition) => {
+    const normalizedCondition = normalize(condition);
+    return (
+      (normalizedDamageType !== "" &&
+        normalizedDamageType === normalizedCondition) ||
+      traits.some((trait) => normalize(trait) === normalizedCondition) ||
       damageCategories.some(
-        (category) =>
-          category.toLowerCase().trim().replace(/-/g, "").replace(/ /g, "") ===
-          condition.toLowerCase().trim().replace(/-/g, "").replace(/ /g, ""),
-      ),
-  );
+        (category) => normalize(category) === normalizedCondition,
+      )
+    );
+  });
 }
 
 // Helper function to get Immunities, Weaknesses, and Resistances for PF2e
@@ -11383,7 +11389,7 @@ function applyDamage(
             // Check if this immunity has an exception that matches the roll
             if (
               applicableImmunity.exceptions &&
-              rollMatchesCondition(roll, applicableImmunity.exceptions)
+              rollMatchesCondition(roll, applicableImmunity.exceptions, lowerType)
             ) {
               // Exception applies - ignore this immunity
             } else {
@@ -11418,7 +11424,7 @@ function applyDamage(
                 // Check if this immunity has an exception that matches the roll
                 if (
                   categoryImmunity.exceptions &&
-                  rollMatchesCondition(roll, categoryImmunity.exceptions)
+                  rollMatchesCondition(roll, categoryImmunity.exceptions, lowerType)
                 ) {
                   // Exception applies - ignore this immunity
                 } else {
@@ -11453,7 +11459,7 @@ function applyDamage(
             // Check if this weakness has an exception that matches the roll
             if (
               applicableWeakness.exceptions &&
-              rollMatchesCondition(roll, applicableWeakness.exceptions)
+              rollMatchesCondition(roll, applicableWeakness.exceptions, lowerType)
             ) {
               // Exception applies - ignore this weakness
             } else {
@@ -11461,7 +11467,7 @@ function applyDamage(
               let weaknessValue = applicableWeakness.value;
               if (
                 applicableWeakness.doubleVs &&
-                rollMatchesCondition(roll, applicableWeakness.doubleVs)
+                rollMatchesCondition(roll, applicableWeakness.doubleVs, lowerType)
               ) {
                 weaknessValue = weaknessValue * 2;
               }
@@ -11509,7 +11515,7 @@ function applyDamage(
               // Check if this weakness has an exception that matches the roll
               if (
                 categoryWeakness.exceptions &&
-                rollMatchesCondition(roll, categoryWeakness.exceptions)
+                rollMatchesCondition(roll, categoryWeakness.exceptions, lowerType)
               ) {
                 // Exception applies - ignore this weakness
               } else {
@@ -11517,7 +11523,7 @@ function applyDamage(
                 let weaknessValue = categoryWeakness.value;
                 if (
                   categoryWeakness.doubleVs &&
-                  rollMatchesCondition(roll, categoryWeakness.doubleVs)
+                  rollMatchesCondition(roll, categoryWeakness.doubleVs, lowerType)
                 ) {
                   weaknessValue = weaknessValue * 2;
                 }
@@ -11545,7 +11551,7 @@ function applyDamage(
             // Check if this resistance has an exception that matches the roll
             if (
               applicableResistance.exceptions &&
-              rollMatchesCondition(roll, applicableResistance.exceptions)
+              rollMatchesCondition(roll, applicableResistance.exceptions, lowerType)
             ) {
               // Exception applies - ignore this resistance
             } else {
@@ -11553,7 +11559,7 @@ function applyDamage(
               let resistanceValue = applicableResistance.value;
               if (
                 applicableResistance.doubleVs &&
-                rollMatchesCondition(roll, applicableResistance.doubleVs)
+                rollMatchesCondition(roll, applicableResistance.doubleVs, lowerType)
               ) {
                 resistanceValue = resistanceValue * 2;
               }
@@ -11601,7 +11607,7 @@ function applyDamage(
               // Check if this resistance has an exception that matches the roll
               if (
                 categoryResistance.exceptions &&
-                rollMatchesCondition(roll, categoryResistance.exceptions)
+                rollMatchesCondition(roll, categoryResistance.exceptions, lowerType)
               ) {
                 // Exception applies - ignore this resistance
               } else {
@@ -11609,7 +11615,7 @@ function applyDamage(
                 let resistanceValue = categoryResistance.value;
                 if (
                   categoryResistance.doubleVs &&
-                  rollMatchesCondition(roll, categoryResistance.doubleVs)
+                  rollMatchesCondition(roll, categoryResistance.doubleVs, lowerType)
                 ) {
                   resistanceValue = resistanceValue * 2;
                 }
