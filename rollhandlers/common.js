@@ -7183,14 +7183,26 @@ function isOffGuardDueToFlanking({
     targetToken?.data?.size || targetToken?.record?.data?.size || "medium";
   const targetSizeSquares = getSizeInSquares(targetSize);
 
-  // Compute the center of a token's bounding box from its position and size.
-  // Odd-sized tokens (1x1, 3x3): position is the center square.
-  // Even-sized tokens (2x2, 4x4): position is offset inward from top-right corner.
+  // The 3D renderer stores a multi-cell token's position as its footprint ANCHOR,
+  // with the visual centre offset by (span - 1) / 2 cells on BOTH axes. The 2D
+  // engine uses a different convention (odd sizes: position IS the centre; even
+  // sizes: position is offset inward from a corner). `api.is3D` (undefined on
+  // older 2D-only clients) tells us which convention the positions follow so the
+  // flanking geometry lands on the real token centre in both renderers.
+  const is3D = !!(typeof api !== "undefined" && api && api.is3D);
+
+  // Compute the center of a token's space from its position and size.
   function getTokenCenter(token) {
     const pos = token.position;
     const size = token?.data?.size || token?.record?.data?.size || "medium";
     const sizeSquares = getSizeInSquares(size);
     if (sizeSquares <= 1) return pos;
+    if (is3D) {
+      // 3D: position is the footprint anchor; centre is offset on both axes.
+      const offset = (sizeSquares - 1) / 2;
+      return { x: pos.x + offset, y: pos.y + offset };
+    }
+    // 2D conventions:
     if (sizeSquares % 2 === 1) {
       return pos; // Odd: position is already the center
     }
@@ -7292,35 +7304,16 @@ function isOffGuardDueToFlanking({
 
   // Helper function to check if line between two allies passes through opposite sides
   function doesLineCrossOppositeSides(pos1, pos2) {
-    // Define the target's bounding box based on its size and grid system rules
-    // Odd-sized tokens (1x1, 3x3, 5x5): position IS the center square
-    // Even-sized tokens (2x2, 4x4, 6x6): position is offset inward from top-right corner
-
-    let left, right, top, bottom;
-
-    if (targetSizeSquares % 2 === 1) {
-      // Odd-sized token: position is the center
-      // For grid-based flanking, we need the edges of the squares, not just grid positions
-      // Each square extends 0.5 units in each direction from its grid position
-      const halfSize = Math.floor(targetSizeSquares / 2);
-      left = targetPos.x - halfSize - 0.5;
-      right = targetPos.x + halfSize + 0.5;
-      top = targetPos.y - halfSize - 0.5;
-      bottom = targetPos.y + halfSize + 0.5;
-    } else {
-      // Even-sized token: position is offset inward from the actual top-right corner
-      // For a 2x2 token, position is at the top-right corner
-      // For a 4x4 token, position is 1 square inward from top-right (at row 1, col 2 from right)
-      // The offset is (size/2 - 1) squares from the actual corner
-      const offset = targetSizeSquares / 2 - 1;
-
-      // Position is offset inward, so actual top-right corner is at:
-      // pos.x + offset (right), pos.y - offset (top)
-      right = targetPos.x + offset + 0.5;
-      left = right - targetSizeSquares;
-      top = targetPos.y - offset - 0.5;
-      bottom = top + targetSizeSquares;
-    }
+    // The target's bounding box is its space: centred on the token centre and
+    // extending half its size in each direction. Deriving it from the centre (via
+    // getTokenCenter, which is renderer-aware) reproduces the 2D box exactly AND
+    // works for the 3D anchor convention — no per-convention edge math here.
+    const targetCenter = getTokenCenter(targetToken);
+    const half = targetSizeSquares / 2;
+    const left = targetCenter.x - half;
+    const right = targetCenter.x + half;
+    const top = targetCenter.y - half;
+    const bottom = targetCenter.y + half;
 
     // Define the four corners of the target's bounding box
     const topLeft = { x: left, y: top };
