@@ -3779,10 +3779,30 @@ function addFeatsToCharacter(record, feats, callback = undefined) {
   collectFeats(feats);
 }
 
-// Helper function to process query strings with actor template patterns like {actor|system.details.class.trait}
-// If the actor has a class, replaces the pattern with the class trait (e.g., "fighter")
-// If the actor has no class, removes the entire query filter containing the pattern
+// Helper function to process query strings with actor template patterns for
+// character level and class trait. Supports both the Realm-native and the
+// original Foundry token spellings so imported content works without conversion:
+// - Level cap ("impulse feat of your level or lower"): {"$lte": "{actor|level}"}
+//   OR the Foundry token {"$lte": "parent:granter:level"} -> {"$lte": 3}
+// - {actor|system.details.class.trait}: if the actor has a class, replaces the
+//   pattern with the class trait (e.g., "fighter"); if not, removes the filter.
 function processQueryActorTemplates(queryString, record) {
+  // Resolve level tokens first. Replace the *quoted* token with a bare number so
+  // the JSON stays valid and numeric comparisons work (a string RHS would make
+  // every level comparison fail). Both the Realm-native {actor|level} and the
+  // Foundry parent:granter:level tokens resolve to the character's level.
+  const levelTokens = ["{actor|level}", "parent:granter:level"];
+  if (levelTokens.some((t) => queryString.includes(t))) {
+    const actorLevel = parseInt(record?.data?.level ?? "1", 10) || 1;
+    for (const token of levelTokens) {
+      queryString = queryString
+        .split(`"${token}"`)
+        .join(String(actorLevel))
+        .split(token)
+        .join(String(actorLevel));
+    }
+  }
+
   const actorClassPattern = /\{actor\|system\.details\.class\.trait\}/g;
 
   // Check if the pattern exists in the query
