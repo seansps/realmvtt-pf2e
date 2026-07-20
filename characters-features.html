@@ -25,6 +25,19 @@
     const parentField = isAncestryFeature ? "ancestries" : "classes";
 
     api.getRecord("characters", record._id, (updatedRecord) => {
+      // Reject features above the character's level (a feature with no level set
+      // is always allowed, matching the feature list's level filter).
+      const characterLevel = parseInt(updatedRecord.data?.level || "1", 10);
+      const featureLevel = parseInt(feature.data?.level, 10);
+      if (!isNaN(featureLevel) && featureLevel > characterLevel) {
+        api.showNotification(
+          `${feature.name} is level ${featureLevel}, but this character is only level ${characterLevel}.`,
+          "yellow",
+          "Feature Level Too High"
+        );
+        return;
+      }
+
       const parents = updatedRecord.data?.[parentField] || [];
 
       // No class/ancestry to attach to — tell the user instead of silently

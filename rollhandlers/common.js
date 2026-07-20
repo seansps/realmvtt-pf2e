@@ -3789,9 +3789,16 @@ function addFeatsToCharacter(record, feats, callback = undefined) {
 function processQueryActorTemplates(queryString, record) {
   // Resolve level tokens first. Replace the *quoted* token with a bare number so
   // the JSON stays valid and numeric comparisons work (a string RHS would make
-  // every level comparison fail). Both the Realm-native {actor|level} and the
-  // Foundry parent:granter:level tokens resolve to the character's level.
-  const levelTokens = ["{actor|level}", "parent:granter:level"];
+  // every level comparison fail). The Realm-native {actor|level}, the predicate
+  // tokens self:level / actor:level (as emitted by the Foundry importer for
+  // choice queries), and the Foundry parent:granter:level token all resolve to
+  // the character's level.
+  const levelTokens = [
+    "{actor|level}",
+    "self:level",
+    "actor:level",
+    "parent:granter:level",
+  ];
   if (levelTokens.some((t) => queryString.includes(t))) {
     const actorLevel = parseInt(record?.data?.level ?? "1", 10) || 1;
     for (const token of levelTokens) {
