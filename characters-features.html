@@ -9,6 +9,72 @@
       onAddEditFeature(updatedRecord);
     });
   }
+
+  // Dropping a feature record anywhere on the Feats tab adds it to the
+  // character's features. Ancestry features go on the first ancestry, everything
+  // else on the first class (mirrors setProvidedItems' routing). Feats are still
+  // handled by their own feat-slot drop handlers, so we ignore non-feature drops.
+  function onDrop(type, recordLink) {
+    if (type !== "features") return;
+
+    const feature = recordLink?.value;
+    if (!feature) return;
+
+    const featureType = (feature.data?.type || "classfeature").toLowerCase();
+    const isAncestryFeature = featureType === "ancestryfeature";
+    const parentField = isAncestryFeature ? "ancestries" : "classes";
+
+    api.getRecord("characters", record._id, (updatedRecord) => {
+      const parents = updatedRecord.data?.[parentField] || [];
+
+      // No class/ancestry to attach to — tell the user instead of silently
+      // dropping the feature.
+      if (parents.length === 0) {
+        api.showNotification(
+          isAncestryFeature
+            ? "Add an ancestry before adding ancestry features."
+            : "Add a class before adding class features.",
+          "yellow",
+          "Nothing to Attach To"
+        );
+        return;
+      }
+
+      const featuresPath = `data.${parentField}.0.data.features`;
+      const existing =
+        api.getValueOnRecord(updatedRecord, featuresPath) || [];
+
+      // Skip if this feature is already present (by source id or name).
+      const alreadyExists = existing.some(
+        (f) => f.data?.fromId === feature._id || f.name === feature.name
+      );
+      if (alreadyExists) {
+        api.showNotification(
+          `${feature.name} is already on this character.`,
+          "yellow",
+          "Duplicate Feature"
+        );
+        return;
+      }
+
+      const newFeature = {
+        ...feature,
+        _id: generateUuid(),
+        data: {
+          ...feature.data,
+          fromId: feature._id, // Track source for dedup/removal
+        },
+      };
+
+      api.setValuesOnRecord(
+        updatedRecord,
+        { [featuresPath]: [...existing, newFeature] },
+        (recordUpdated) => {
+          onAddEditFeature(recordUpdated);
+        }
+      );
+    });
+  }
 </script>
 
 <div class="sheet--spread">

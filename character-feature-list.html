@@ -1,4 +1,13 @@
 <script>
+  // Fires when a feature is added, deleted, or reordered in this list (e.g. the
+  // delete button) so proficiencies / modifiers granted by that feature are
+  // recalculated off the current feature set.
+  function onFeatureListChange() {
+    api.getRecord(record.recordType, record._id, (updatedRecord) => {
+      onAddEditFeature(updatedRecord);
+    });
+  }
+
   function getFeatureFilters() {
     const level = record.data?.level || 0;
     if (level > 0) {
@@ -54,5 +63,6 @@
     field="features"
     variant="outline-striped"
     getfilters="return getFeatureFilters();"
+    onchange="onFeatureListChange();"
   ></list>
 </div>

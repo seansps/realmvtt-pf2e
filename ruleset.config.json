@@ -1070,7 +1070,7 @@
       "hideFromCompendium": false,
       "icon": "",
       "showAddButton": false,
-      "showDeleteButton": false,
+      "showDeleteButton": true,
       "addButtonText": "",
       "allowedListTypes": [],
       "newItemName": "",
@@ -2808,7 +2808,40 @@
         "leapMonth": 10,
         "leapDayName": "Shieldmeet",
         "repeatDays": true,
-        "eraName": "DR"
+        "eraName": "DR",
+        "moons": [
+          {
+            "name": "Selûne",
+            "cycleDays": 30.4375,
+            "offset": 16.9375
+          }
+        ],
+        "seasons": [
+          {
+            "name": "Spring",
+            "color": "#7ec850",
+            "startDay": 80,
+            "endDay": 171
+          },
+          {
+            "name": "Summer",
+            "color": "#f5a623",
+            "startDay": 172,
+            "endDay": 263
+          },
+          {
+            "name": "Autumn",
+            "color": "#d4622a",
+            "startDay": 264,
+            "endDay": 354
+          },
+          {
+            "name": "Winter",
+            "color": "#6fb3d2",
+            "startDay": 355,
+            "endDay": 79
+          }
+        ]
       },
       {
         "default": true,
@@ -2898,7 +2931,40 @@
         "leapYear": 8,
         "leapMonth": 2,
         "leapDayName": "",
-        "repeatDays": false
+        "repeatDays": false,
+        "moons": [
+          {
+            "name": "Moon",
+            "cycleDays": 29.5,
+            "offset": 20
+          }
+        ],
+        "seasons": [
+          {
+            "name": "Spring",
+            "color": "#7ec850",
+            "startDay": 60,
+            "endDay": 151
+          },
+          {
+            "name": "Summer",
+            "color": "#f5a623",
+            "startDay": 152,
+            "endDay": 243
+          },
+          {
+            "name": "Fall",
+            "color": "#d4622a",
+            "startDay": 244,
+            "endDay": 334
+          },
+          {
+            "name": "Winter",
+            "color": "#6fb3d2",
+            "startDay": 335,
+            "endDay": 59
+          }
+        ]
       }
     ],
     "effects": [
