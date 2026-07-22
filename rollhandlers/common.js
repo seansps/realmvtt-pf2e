@@ -2385,17 +2385,27 @@ function getEffectsAndModifiersForToken(
     }
   });
 
-  // For each type, keep only the highest value
+  // For each type, keep only the highest value. Prefer active modifiers so a
+  // predicate-failed (inactive) modifier can't shadow an active one of the same type
+  // - e.g. Swashbuckler's Speed grants +10 with panache OR +5 without (mutually
+  // exclusive predicates); the inactive higher value must not win the dedup and then
+  // get dropped by the consumer's active check. Fall back to inactive only when
+  // nothing in the group is active, so roll prompts still show a toggleable option.
   Object.keys(bonusGroups).forEach((type) => {
     if (bonusGroups[type].length > 0) {
-      const highestBonus = bonusGroups[type].reduce((highest, current) =>
+      const activeBonuses = bonusGroups[type].filter((m) => m.active);
+      const pool = activeBonuses.length > 0 ? activeBonuses : bonusGroups[type];
+      const highestBonus = pool.reduce((highest, current) =>
         (current.value || 0) > (highest.value || 0) ? current : highest,
       );
       filteredResults.push(highestBonus);
     }
 
     if (penaltyGroups[type].length > 0) {
-      const highestPenalty = penaltyGroups[type].reduce((highest, current) =>
+      const activePenalties = penaltyGroups[type].filter((m) => m.active);
+      const pool =
+        activePenalties.length > 0 ? activePenalties : penaltyGroups[type];
+      const highestPenalty = pool.reduce((highest, current) =>
         (current.value || 0) < (highest.value || 0) ? current : highest,
       );
       filteredResults.push(highestPenalty);
