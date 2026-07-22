@@ -1912,8 +1912,11 @@ function getEffectsAndModifiersForToken(
     });
   });
 
-  // Now collect all modifiers from Features and Items
-  const features = target?.data?.features || [];
+  // Now collect all modifiers from Features and Items.
+  // Copy into a fresh array - never alias target.data.features, or the pushes below
+  // mutate the stored record and double-count modifiers on repeated calls (e.g. the
+  // 6 successive updateAttribute calls in updateAllAttributes).
+  const features = [...(target?.data?.features || [])];
   const feats = target?.data?.feats || [];
   const bonusFeats = target?.data?.bonusFeats || [];
   features.push(...feats);
@@ -3532,24 +3535,26 @@ function updateAttribute({
 
   valuesToSet[`data.ac`] = ac;
 
-  // Check for speed penalty
+  // Check for speed penalty. Note: getBestEquippedArmor returns speedPenalty: null
+  // (not undefined) when unarmored, so guard against a non-positive base penalty -
+  // otherwise the strength-requirement reduction below turns 0 into -5.
   let totalSpeedPenalty = 0;
-  const armorStrength =
-    bestArmor?.armor?.strength !== undefined ? bestArmor.armor.strength : 0;
-  if (
-    bestArmor?.armor?.speedPenalty !== undefined &&
-    armorStrength !== undefined
-  ) {
-    totalSpeedPenalty = bestArmor.armor.speedPenalty;
-    // If we meet the strength requirement, reduce speed penalty by 5
+  const armorSpeedPenalty = parseInt(bestArmor?.armor?.speedPenalty, 10) || 0;
+  const armorStrength = parseInt(bestArmor?.armor?.strength, 10) || 0;
+  if (armorSpeedPenalty > 0) {
+    totalSpeedPenalty = armorSpeedPenalty;
+    // If we meet the strength requirement, reduce speed penalty by 5 (min 0)
     if (strength >= armorStrength) {
       totalSpeedPenalty -= 5;
     }
   }
   // If the shield has a speed penalty always add it
-  if (bestArmor?.shield?.speedPenalty !== undefined) {
-    totalSpeedPenalty += bestArmor.shield.speedPenalty;
+  const shieldSpeedPenalty = parseInt(bestArmor?.shield?.speedPenalty, 10) || 0;
+  if (shieldSpeedPenalty > 0) {
+    totalSpeedPenalty += shieldSpeedPenalty;
   }
+  // A speed penalty can never be negative (the strength reduction floors at 0).
+  totalSpeedPenalty = Math.max(0, totalSpeedPenalty);
 
   // Collect speed bonus/penalty modifiers from feats, features, items, and effects.
   // getEffectsAndModifiersForToken already negates penalty values and returns the
