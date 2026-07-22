@@ -79,6 +79,11 @@
       showFieldField = false;
       showValueField = false;
       showActiveEffectField = true;
+    } else if (typeValue === "speedBonus") {
+      // Flat speed adjustment (e.g., Nimble Elf +5 status bonus to Speed)
+      showFieldField = false;
+    } else if (typeValue === "speedPenalty") {
+      showFieldField = false;
     } else if (typeValue === "weaponProficiency") {
       // Weapon proficiency uses predicate to match weapons, value is the rank (1=trained, 2=expert, etc.)
       showFieldField = false;
@@ -163,6 +168,7 @@
     size="xs"
     field="type"
     placeholder="Select Modifier"
+    searchable="true"
     onchange="showHideFields()"
     onload="showHideFields()"
     label="Modifier"
@@ -196,6 +202,8 @@
       {"label": "Armor Class Bonus", "value": "armorClassBonus"},
       {"label": "Armor Class Penalty", "value": "armorClassPenalty"},
       {"label": "Hit Point Maximum", "value": "hitpoints"},
+      {"label": "Speed Bonus", "value": "speedBonus"},
+      {"label": "Speed Penalty", "value": "speedPenalty"},
       {"label": "Add Resistance", "value": "resistance"},
       {"label": "Add Weakness", "value": "weakness"},
       {"label": "Add Immunity", "value": "immunity"},

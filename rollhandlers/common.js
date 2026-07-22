@@ -3551,25 +3551,40 @@ function updateAttribute({
     totalSpeedPenalty += bestArmor.shield.speedPenalty;
   }
 
+  // Collect speed bonus/penalty modifiers from feats, features, items, and effects.
+  // getEffectsAndModifiersForToken already negates penalty values and returns the
+  // highest of each stacking type (status/item/circumstance), so summing is correct.
+  const speedMods = getEffectsAndModifiersForToken(record, [
+    "speedBonus",
+    "speedPenalty",
+  ]);
+  let totalSpeedModifier = 0;
+  speedMods.forEach((mod) => {
+    if (mod.active) {
+      totalSpeedModifier += parseInt(mod.value || 0, 10) || 0;
+    }
+  });
+
   const speed = record.data?.speed || "";
   valuesToSet[`data.speedPenalty`] = totalSpeedPenalty;
 
-  // Update speed display to show penalty in parentheses
+  // Update speed display to show the effective speed in parentheses.
   let speedDisplay = speed;
-  // Remove any existing parenthetical note first
+  // Remove any existing parenthetical note first (keeps re-computation idempotent).
   speedDisplay = speedDisplay.replace(/\s*\([^)]*\)\s*$/, "").trim();
 
-  // Add penalty note if there is a penalty
-  if (totalSpeedPenalty > 0 && speedDisplay) {
+  // Net adjustment: feat/effect/item speed modifiers minus the armor speed penalty.
+  const netSpeedAdjustment = totalSpeedModifier - totalSpeedPenalty;
+  if (netSpeedAdjustment !== 0 && speedDisplay) {
     // Extract the numeric value from the base speed
     const speedMatch = speedDisplay.match(/(\d+)/);
     if (speedMatch) {
       const baseSpeed = parseInt(speedMatch[1]);
-      const penalizedSpeed = Math.max(0, baseSpeed - totalSpeedPenalty);
+      const effectiveSpeed = Math.max(0, baseSpeed + netSpeedAdjustment);
       // Extract the unit (e.g., "feet")
       const unitMatch = speedDisplay.match(/\d+\s+(\w+)/);
       const unit = unitMatch ? unitMatch[1] : "feet";
-      speedDisplay = `${speedDisplay} (${penalizedSpeed} ${unit} due to armor)`;
+      speedDisplay = `${speedDisplay} (${effectiveSpeed} ${unit})`;
     }
   }
 
