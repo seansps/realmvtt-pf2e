@@ -3568,28 +3568,30 @@ function updateAttribute({
   const speed = record.data?.speed || "";
   valuesToSet[`data.speedPenalty`] = totalSpeedPenalty;
 
-  // Update speed display to show the effective speed in parentheses.
-  let speedDisplay = speed;
-  // Remove any existing parenthetical note first (keeps re-computation idempotent).
-  speedDisplay = speedDisplay.replace(/\s*\([^)]*\)\s*$/, "").trim();
+  // Derive the base speed from the ancestry (an immutable source) so recomputation
+  // never compounds - adding a speed bonus must not read back a value that already
+  // includes a previously-applied bonus. Fall back to the current speed field (minus
+  // any parenthetical note) for characters without an ancestry speed (e.g. NPCs).
+  const ancestrySpeed = record.data?.ancestries?.[0]?.data?.speed;
+  const baseSpeedStr = String(ancestrySpeed || speed || "")
+    .replace(/\s*\([^)]*\)\s*$/, "")
+    .trim();
 
-  // Net adjustment: feat/effect/item speed modifiers minus the armor speed penalty.
-  const netSpeedAdjustment = totalSpeedModifier - totalSpeedPenalty;
-  if (netSpeedAdjustment !== 0 && speedDisplay) {
-    // Extract the numeric value from the base speed
-    const speedMatch = speedDisplay.match(/(\d+)/);
-    if (speedMatch) {
-      const baseSpeed = parseInt(speedMatch[1]);
-      const effectiveSpeed = Math.max(0, baseSpeed + netSpeedAdjustment);
-      // Extract the unit (e.g., "feet")
-      const unitMatch = speedDisplay.match(/\d+\s+(\w+)/);
-      const unit = unitMatch ? unitMatch[1] : "feet";
-      speedDisplay = `${speedDisplay} (${effectiveSpeed} ${unit})`;
+  const speedMatch = baseSpeedStr.match(/(\d+)/);
+  if (speedMatch) {
+    const baseSpeed = parseInt(speedMatch[1], 10);
+    // Net: feat/effect/item speed modifiers minus the armor speed penalty.
+    const effectiveSpeed = Math.max(
+      0,
+      baseSpeed + totalSpeedModifier - totalSpeedPenalty,
+    );
+    // Preserve the unit from the base speed (e.g., "feet").
+    const unitMatch = baseSpeedStr.match(/\d+\s+(\w+)/);
+    const unit = unitMatch ? unitMatch[1] : "feet";
+    const newSpeed = `${effectiveSpeed} ${unit}`;
+    if (newSpeed !== speed) {
+      valuesToSet[`data.speed`] = newSpeed;
     }
-  }
-
-  if (speedDisplay !== speed) {
-    valuesToSet[`data.speed`] = speedDisplay;
   }
 
   if (bestArmor?.shield?.hp?.value !== undefined) {
