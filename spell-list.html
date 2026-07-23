@@ -103,7 +103,7 @@
     const dataPathToSpell = getNearestParentDataPath(dataPath);
     const spellSlot = api.getValue(dataPathToSpell);
     const spellCastingEntry = api.getValue(
-      getNearestParentDataPath(dataPathToSpell)
+      getNearestParentDataPath(dataPathToSpell),
     );
     const spell = recordLink?.value;
 
@@ -131,7 +131,7 @@
         api.showNotification(
           `This slot only accepts Cantrips.`,
           "red",
-          "Not a Cantrip"
+          "Not a Cantrip",
         );
         return;
       }
@@ -140,7 +140,7 @@
         api.showNotification(
           `Cantrips can only be placed in Cantrip slots.`,
           "red",
-          "Spell Type Mismatch"
+          "Spell Type Mismatch",
         );
         return;
       }
@@ -150,7 +150,7 @@
         api.showNotification(
           `This slot requires a spell of Rank ${slotLevel} or lower.`,
           "red",
-          "Spell Level Mismatch"
+          "Spell Level Mismatch",
         );
         return;
       }
@@ -257,7 +257,7 @@
         `Are you sure you want to remove ${spellSlot.name}?`,
         "Yes",
         "No",
-        onDeleteSpell
+        onDeleteSpell,
       );
     } else {
       onDeleteSpell();
@@ -280,7 +280,7 @@
         if (typeof spell === "string") {
           // It's the id from knownSpells
           const knownSpell = spellList?.data?.knownSpells?.find(
-            (knownSpell) => knownSpell._id === spell
+            (knownSpell) => knownSpell._id === spell,
           );
           if (knownSpell) {
             onDrop("spells", { value: knownSpell, tooltip: knownSpell.name });
@@ -355,7 +355,10 @@
         // For cantrips, filter for spells WITH the cantrip trait
         knownSpellsOfLevel = allKnownSpells.filter((spell) => {
           const traits = (spell?.data?.traits || []).map((trait) =>
-            (typeof trait === "string" ? trait : trait.name || "").toLowerCase()
+            (typeof trait === "string"
+              ? trait
+              : trait.name || ""
+            ).toLowerCase(),
           );
           return traits.includes("cantrip");
         });
@@ -365,7 +368,10 @@
         knownSpellsOfLevel = allKnownSpells.filter((spell) => {
           const spellLevel = parseInt(spell?.data?.level, 10) || 0;
           const traits = (spell?.data?.traits || []).map((trait) =>
-            (typeof trait === "string" ? trait : trait.name || "").toLowerCase()
+            (typeof trait === "string"
+              ? trait
+              : trait.name || ""
+            ).toLowerCase(),
           );
           const isCantrip = traits.includes("cantrip");
           return !isCantrip && spellLevel <= spellSlotLevel;
@@ -396,7 +402,7 @@
       spellSlotLevel === 0 ? "Select a Cantrip..." : "Select a Spell...",
       options,
       optionsQuery,
-      optionSelection
+      optionSelection,
     );
   }
 </script>
@@ -600,13 +606,23 @@
     {"label": "2 to 3 Actions", "value": "twoToThreeActions", "icon": "2-to-3"},
     {"label": "Reaction", "value": "reaction", "icon": "reaction"}]'
       ></iconbutton>
-      <div style="margin-left: auto">
+      <div
+        style="margin-left: auto; display: flex; align-items: center; gap: 8px"
+      >
         <label
           hidden="true"
           field="levelLabel"
           size="sm"
           variant="bold"
         ></label>
+        <button
+          size="xxs"
+          variant="subtle"
+          color="primary"
+          label="CAST"
+          radius="xs"
+          onclick="onCastSpell()"
+        ></button>
       </div>
     </div>
 
