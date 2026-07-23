@@ -315,6 +315,64 @@
       });
     }, 300);
   }
+
+  // Toggle between the row list and the grid of item tiles. The column-header
+  // row only makes sense for rows, so hide it in grid mode.
+  function onViewModeChange() {
+    const mode = api.getValue("data.inventoryViewMode") || "rows";
+    const headerFields = api.getValue("fields.listHeaderRow") || {};
+    api.setValues({
+      "fields.listHeaderRow": { ...headerFields, hidden: mode === "grid" },
+    });
+  }
+
+  // "Use" an inventory item from the grid popover. Delegates to the shared
+  // useInventoryItem (commonScript) so the grid and the item-row Use button run
+  // identical logic. `index` comes from the grid's celluse data context.
+  function useGridItem(index) {
+    useInventoryItem("data.inventory." + index);
+  }
+
+  // Invest / divest an item from the grid popover. Sets data.invested (string
+  // "true"/"false", matching the row's invested iconbutton) then re-runs the
+  // character recalc, exactly like the row's onItemInvested().
+  function investGridItem(index, invested) {
+    api.setValue(
+      "data.inventory." + index + ".data.invested",
+      invested ? "true" : "false",
+      function () {
+        onAddEditFeature(record, undefined, true);
+      },
+    );
+  }
+
+  // Equip/carry/drop from the grid: set the state, then run the shared equip
+  // handler (commonScript) so bulk, field visibility and recalc match the row's
+  // carried dropdown.
+  function equipGridItem(index, newValue) {
+    const itemDataPath = "data.inventory." + index;
+    api.setValue(itemDataPath + ".data.carried", newValue, function () {
+      onItemEquippedFor(itemDataPath, newValue);
+    });
+  }
+
+  // Zero-arg grid action wrappers — the state string lives here (JS), not in the
+  // cellactions JSON, so the attribute needs no nested quotes.
+  function gridEquip(index) {
+    equipGridItem(index, "equipped");
+  }
+  function gridCarry(index) {
+    equipGridItem(index, "carried");
+  }
+  function gridDrop(index) {
+    equipGridItem(index, "dropped");
+  }
+  function gridInvest(index) {
+    investGridItem(index, true);
+  }
+  function gridDivest(index) {
+    investGridItem(index, false);
+  }
 </script>
 
 <div class="sheet--spread">
@@ -331,7 +389,7 @@
       <span class="rvtt-sheet-divider__label">&#10022; Inventory &#10022;</span>
     </div>
 
-    <div style="display: flex; flex-direction: row; gap: 4px">
+    <div style="display: flex; flex-direction: row; gap: 4px; align-items: flex-end">
       <dropdown
         field="filterByType"
         label="Filter by Type"
@@ -348,8 +406,20 @@
                 {"label": "Weapon", "value": "weapon"}]'
       >
       </dropdown>
+      <div style="display: flex; align-items: flex-end; margin-left: auto">
+        <iconbutton
+          size="md"
+          variant="default"
+          field="inventoryViewMode"
+          defaultvalue="rows"
+          disablediflocked="false"
+          options='[{"icon": "IconLayoutList", "label": "List View", "value": "rows"}, {"icon": "IconLayoutGrid", "label": "Grid View", "value": "grid"}]'
+          onchange="onViewModeChange()"
+        ></iconbutton>
+      </div>
     </div>
 
+    <box field="listHeaderRow">
     <div style="display: flex; flex-direction: row; margin-top: 4px">
       <div style="margin-left: 34px">
         <label class="rvtt-sheet-label" label="Count"></label>
@@ -364,6 +434,7 @@
         <div style="width: 16px"></div>
       </box>
     </div>
+    </box>
 
     <div style="display: flex; flex-direction: column; flex-grow: 1">
       <list
@@ -373,6 +444,25 @@
         field="inventory"
         onchange="onItemDeleted()"
         onload="updateTotalBulk(record)"
+        layout="rows"
+        layoutfield="data.inventoryViewMode"
+        cellsize="56"
+        countfield="data.count"
+        equipfield="data.carried"
+        equippedvalue="equipped"
+        droppedvalue="dropped"
+        descriptionfield="data.description"
+        usesfield="data.uses.value"
+        maxusesfield="data.uses.max"
+        usesformat="{current}/{max}"
+        usesposition="tr"
+        cellbadges='[{"field": "fields.invested.hidden", "eq": "false", "activeField": "data.invested", "activeEq": "true", "icon": "IconDiamond", "inactiveIcon": "IconDiamondOff", "position": "bl", "label": "Investment"}]'
+        celltooltipfields='[{"label": "Type", "field": "data.type", "capitalize": true}, {"label": "Category", "field": "data.itemCategory", "capitalize": true}, {"label": "Bulk", "field": "data.bulk.value"}]'
+        cellactions='[{"label": "Equip", "fn": "gridEquip(data.itemIndex)", "icon": "IconShirt"}, {"label": "Carry (Unequip)", "fn": "gridCarry(data.itemIndex)", "icon": "IconBackpack"}, {"label": "Drop", "fn": "gridDrop(data.itemIndex)", "icon": "IconArrowDown"}, {"label": "Invest", "fn": "gridInvest(data.itemIndex)", "icon": "IconDiamond", "showField": "fields.invested.hidden", "showEq": "false"}, {"label": "Divest", "fn": "gridDivest(data.itemIndex)", "icon": "IconDiamondOff", "showField": "fields.invested.hidden", "showEq": "false"}]'
+        celluse="useGridItem(data.itemIndex)"
+        celluselabel="Use"
+        celluseshowfield="fields.useBtn.hidden"
+        celluseshowvalue="false"
       >
       </list>
       <div class="rvtt-sheet-divider" style="margin-top: 8px">

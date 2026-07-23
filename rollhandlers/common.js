@@ -2688,10 +2688,17 @@ api.addEffectById('${effectID}', target, undefined, ourToken);
 }
 
 function useItem() {
-  // Deduct count by 1, delete item if count is 0,
-  // and output the description to Chat
-  // If it is a scoll with a spell set, output a link to the spell
-  const itemDataPath = dataPath.replace(".data.useBtn", "");
+  // Shared with the grid popover's Use button; implementation is
+  // useInventoryItem below.
+  useInventoryItem(dataPath.replace(".data.useBtn", ""));
+}
+
+// Shared inventory "Use" logic. Outputs the item's description (plus any linked
+// spell and damage/healing macros) to chat, then, for consumables, deducts uses
+// then count (auto-destroying at 0 when configured). Shared by the item-row Use
+// button (useItem) and the grid popover's Use button (useGridItem).
+// `itemDataPath` is the path to the item, e.g. "data.inventory.3".
+function useInventoryItem(itemDataPath) {
   const itemName = api.getValue(`${itemDataPath}.name`);
   const itemCount = api.getValue(`${itemDataPath}.data.count`);
   const item = api.getValue(itemDataPath);
@@ -3078,12 +3085,19 @@ function setItemFields(item, itemDataPath, valuesToSet) {
 }
 
 function onItemEquipped() {
-  const itemDataPath = dataPath.replace(".data.carried", "");
+  onItemEquippedFor(dataPath.replace(".data.carried", ""), value);
+}
+
+// Shared equip/carry/drop handler. Applies/removes equip effects, recomputes
+// bulk, refreshes per-item field visibility, and re-runs the character recalc.
+// Shared by the item-row carried dropdown (onItemEquipped) and the grid
+// Equip/Carry/Drop actions (equipGridItem).
+function onItemEquippedFor(itemDataPath, newValue) {
   const item = api.getValue(itemDataPath);
 
   // Some items add/remove effects when equipped
   const equipEffect = api.getValue(`${itemDataPath}.data.equipEffect`);
-  const isEquipEffect = value === "equipped";
+  const isEquipEffect = newValue === "equipped";
 
   if (equipEffect) {
     const effect = JSON.parse(equipEffect);
