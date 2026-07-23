@@ -173,6 +173,14 @@
       valuesToSet[`${fieldsPath}.consumableCategory.hidden`] = true;
     }
 
+    // Show/hide count field for ammunition (consumable with Ammo category)
+    const isAmmo = item.data?.itemCategory?.toLowerCase() === "ammo";
+    if (isAmmo && item.fields?.countBox?.hidden !== false) {
+      valuesToSet[`${fieldsPath}.countBox.hidden`] = false;
+    } else if (!isAmmo && item.fields?.countBox?.hidden !== true) {
+      valuesToSet[`${fieldsPath}.countBox.hidden`] = true;
+    }
+
     // Show/hide backpack properties for backpack type
     if (
       item.data?.type === "backpack" &&
@@ -354,6 +362,21 @@
             {"label": "Weapon", "value": "weapon"}]'
         >
         </dropdown>
+        <box
+          field="countBox"
+          hidden="true"
+          hidewhenidentified="false"
+          width="80px"
+        >
+          <numberfield
+            field="count"
+            label="Count"
+            width="100%"
+            minvalue="0"
+            placeholder="1"
+            hidewhenidentified="false"
+          ></numberfield>
+        </box>
       </div>
       <div style="display: flex; gap: 4px; flex-direction: row; width: 100%">
         <div style="min-width: 70px; width: 70px">
@@ -424,6 +447,7 @@
             field="itemCategory"
             label="Consumable Category"
             placeholder="Select Category..."
+            onchange="showHideFields()"
             combo="true"
             options='[
             {"label": "Ammo", "value": "Ammo"},
