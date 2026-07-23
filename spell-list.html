@@ -607,14 +607,13 @@
     {"label": "Reaction", "value": "reaction", "icon": "reaction"}]'
       ></iconbutton>
       <div
-        style="margin-left: auto; display: flex; align-items: center; gap: 8px"
+        style="
+          margin-left: auto;
+          display: flex;
+          align-items: center;
+          gap: 8px;
+        "
       >
-        <label
-          hidden="true"
-          field="levelLabel"
-          size="sm"
-          variant="bold"
-        ></label>
         <button
           size="xxs"
           variant="subtle"
@@ -623,6 +622,12 @@
           radius="xs"
           onclick="onCastSpell()"
         ></button>
+        <label
+          hidden="true"
+          field="levelLabel"
+          size="sm"
+          variant="bold"
+        ></label>
       </div>
     </div>
 
