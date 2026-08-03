@@ -14,7 +14,11 @@ const processPersistentDamage = (value, partIndex = 0) => {
     // Has dice - roll it
     api.roll(
       value,
-      { isPersistant: true, persistentPartIndex: partIndex },
+      {
+        isPersistant: true,
+        persistentPartIndex: partIndex,
+        tokenId: token?._id,
+      },
       "damage"
     );
   } else {
