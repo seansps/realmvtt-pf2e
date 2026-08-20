@@ -337,13 +337,15 @@
   // "true"/"false", matching the row's invested iconbutton) then re-runs the
   // character recalc, exactly like the row's onItemInvested().
   function investGridItem(index, invested) {
-    api.setValue(
-      "data.inventory." + index + ".data.invested",
-      invested ? "true" : "false",
-      function () {
-        onAddEditFeature(record, undefined, true);
-      },
-    );
+    const itemDataPath = "data.inventory." + index;
+    const newValue = invested ? "true" : "false";
+    api.setValue(itemDataPath + ".data.invested", newValue, function () {
+      // Same stale-snapshot problem as equipGridItem — investiture gates a
+      // magic item's bonuses, so the recalc has to see the new state rather
+      // than the one this callback's `record` snapshot still holds.
+      syncInventoryItemValue(itemDataPath, "invested", newValue);
+      onAddEditFeature(record, undefined, true);
+    });
   }
 
   // Equip/carry/drop from the grid: set the state, then run the shared equip
@@ -352,6 +354,12 @@
   function equipGridItem(index, newValue) {
     const itemDataPath = "data.inventory." + index;
     api.setValue(itemDataPath + ".data.carried", newValue, function () {
+      // The in-memory `record` this script closes over is a snapshot — unlike a
+      // component onchange (which re-renders against a fresh one), this callback
+      // still sees the PREVIOUS carried state, so total bulk and AC would land one step
+      // behind: still counting the item just unequipped, or missing the one just
+      // equipped. Mirror the new value across before handing off.
+      syncInventoryItemValue(itemDataPath, "carried", newValue);
       onItemEquippedFor(itemDataPath, newValue);
     });
   }
