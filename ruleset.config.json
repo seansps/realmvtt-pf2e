@@ -74,7 +74,15 @@
         "enabled": false,
         "steps": []
       },
-      "hideFromCompendium": false
+      "hideFromCompendium": false,
+      "pdfExport": {
+        "enabled": true,
+        "label": "Export to PDF",
+        "filename": "{name}.pdf",
+        "script": {
+          "file": "exporters/characters.js"
+        }
+      }
     },
     {
       "name": "NPCs",
