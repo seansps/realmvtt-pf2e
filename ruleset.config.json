@@ -2391,6 +2391,15 @@
           "width": 60,
           "editable": true,
           "onChange": ""
+        },
+        {
+          "field": "ac",
+          "label": "AC",
+          "type": "number",
+          "width": 50,
+          "editable": false,
+          "expandedOnly": true,
+          "onChange": ""
         }
       ],
       "onTokenAdd": "",
