@@ -44,13 +44,14 @@ function armorProficiencyFeat() {
   };
 }
 
-function character(level, feats, defenses = {}) {
+function character(level, feats, classDefenses = {}, defenses = {}) {
   return {
     _id: id(),
     recordType: "characters",
     data: {
       level,
-      classes: [{ data: { defenses } }],
+      classes: [{ data: { defenses: classDefenses } }],
+      defenses,
       feats,
       bonusFeats: [],
       features: [],
@@ -62,9 +63,9 @@ function armorRanks(record) {
   const valuesToSet = {};
   ctx.updateProficiencies(record, valuesToSet);
   return {
-    light: valuesToSet["data.defenses.light"],
-    medium: valuesToSet["data.defenses.medium"],
-    heavy: valuesToSet["data.defenses.heavy"],
+    light: valuesToSet["data.defenses.light"] ?? Number(record.data.defenses?.light || 0),
+    medium: valuesToSet["data.defenses.medium"] ?? Number(record.data.defenses?.medium || 0),
+    heavy: valuesToSet["data.defenses.heavy"] ?? Number(record.data.defenses?.heavy || 0),
   };
 }
 
@@ -90,6 +91,11 @@ assert(
   "level 13 Armor Proficiency grants Expert in its next armor type",
   armorRanks(character(13, [armorProficiencyFeat()], { light: "1" })),
   { light: 1, medium: 2, heavy: 0 },
+);
+assert(
+  "a manually entered higher armor rank is preserved",
+  armorRanks(character(1, [], {}, { light: "2" })),
+  { light: 2, medium: 0, heavy: 0 },
 );
 
 process.exitCode = summary();

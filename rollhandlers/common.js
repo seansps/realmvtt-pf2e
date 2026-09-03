@@ -5448,25 +5448,22 @@ function updateProficiencies(record, valuesToSet) {
     record.data?.defenses?.unarmored || "0",
     10,
   );
-  if (
-    currentUnarmored < proficiencies.unarmored ||
-    proficiencies.unarmored === 0
-  ) {
+  if (currentUnarmored < proficiencies.unarmored) {
     valuesToSet["data.defenses.unarmored"] = proficiencies.unarmored;
   }
 
   const currentLight = parseInt(record.data?.defenses?.light || "0", 10);
-  if (currentLight < proficiencies.light || proficiencies.light === 0) {
+  if (currentLight < proficiencies.light) {
     valuesToSet["data.defenses.light"] = proficiencies.light;
   }
 
   const currentMedium = parseInt(record.data?.defenses?.medium || "0", 10);
-  if (currentMedium < proficiencies.medium || proficiencies.medium === 0) {
+  if (currentMedium < proficiencies.medium) {
     valuesToSet["data.defenses.medium"] = proficiencies.medium;
   }
 
   const currentHeavy = parseInt(record.data?.defenses?.heavy || "0", 10);
-  if (currentHeavy < proficiencies.heavy || proficiencies.heavy === 0) {
+  if (currentHeavy < proficiencies.heavy) {
     valuesToSet["data.defenses.heavy"] = proficiencies.heavy;
   }
 
