@@ -1301,7 +1301,8 @@ function parseModifierPredicate(predicateInput) {
 }
 
 /**
- * Resolves dynamic predicate values like "actor:level", "item:level", "item:proficiency:rank"
+ * Resolves dynamic predicate values like "actor:level", "actor:armor:light:rank",
+ * "item:level", and "item:proficiency:rank"
  * @param {string} value - The value to resolve
  * @param {Object} target - The target record (actor/token)
  * @param {Object} context - Context object containing item, weapon, spell, etc.
@@ -1321,6 +1322,21 @@ function resolvePredicateValue(value, target, context, traits) {
   // actor:level or self:level - get level from target record
   if (value === "actor:level" || value === "self:level") {
     return target?.data?.level || 0;
+  }
+
+  // actor:armor:{category}:rank - get the character's current armor rank.
+  // updateProficiencies supplies its in-progress map in context so a predicate
+  // can correctly inspect ranks granted by an earlier feature in the same pass.
+  const armorRankMatch = value.match(
+    /^(?:actor|self):armor:(unarmored|light|medium|heavy):rank$/,
+  );
+  if (armorRankMatch) {
+    const armorCategory = armorRankMatch[1];
+    const calculatedRank = context?.proficiencies?.[armorCategory];
+    if (calculatedRank !== undefined) {
+      return parseInt(calculatedRank, 10) || 0;
+    }
+    return parseInt(target?.data?.defenses?.[armorCategory] || "0", 10) || 0;
   }
 
   // item:level - get level from the item in context
@@ -4950,6 +4966,13 @@ function updateProficiencies(record, valuesToSet) {
     features.push(...(classObj.data?.features || []));
   }
 
+  // Feats and standalone character features can grant proficiencies directly.
+  // This is especially important for general feats whose effect is not tied to
+  // a class feature, such as Armor Proficiency.
+  features.push(...(record.data?.feats || []));
+  features.push(...(record.data?.bonusFeats || []));
+  features.push(...(record.data?.features || []));
+
   // First create a map of all proficiencies, 0=untrained, 1=trained, 2=expert, 3=master, 4=legendary
   const proficiencies = {
     // class dc is always trained by default
@@ -5117,7 +5140,34 @@ function updateProficiencies(record, valuesToSet) {
     }
 
     const featureProficiencies = feature.data?.proficiencies || [];
+    // Every grant in a feature evaluates against the ranks that existed before
+    // that feature applied. Otherwise, a conditional grant for Light armor
+    // would immediately make the same Armor Proficiency feat also satisfy its
+    // Medium armor predicate.
+    const proficienciesBeforeFeature = {
+      ...proficiencies,
+      lore: { ...proficiencies.lore },
+    };
+    const proficiencyPredicateContext = {
+      proficiencies: proficienciesBeforeFeature,
+    };
+    const traitsSet = collectTraitsAndProperties(record, {});
     featureProficiencies.forEach((proficiency) => {
+      const predicate = proficiency?.data?.predicate;
+      if (predicate) {
+        const parsedPredicate = parseModifierPredicate(predicate);
+        if (
+          !evaluateEffectPredicate(
+            parsedPredicate,
+            traitsSet,
+            record,
+            proficiencyPredicateContext,
+          )
+        ) {
+          return;
+        }
+      }
+
       const name = (proficiency?.data?.name || "").toLowerCase();
       const rank = parseInt(proficiency?.data?.rank || "0", 10);
       // Some proficiencies apply only to a specific group *by field* so we will not
