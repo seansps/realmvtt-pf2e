@@ -7329,6 +7329,9 @@ function onAddEditFeature(
   setFeatSlots(record, valuesToSet);
   updateVariantRuleFields(record, valuesToSet);
 
+  // Uses left on actions and feats with a frequency (limited-uses.js)
+  syncLimitedUses(record, valuesToSet);
+
   // Create and size the class's spellcasting entries for the current level,
   // then check all spellcasting entries and update DC and Mod
   const spellcastingEntries = syncSpellcastingEntries(record, valuesToSet);
@@ -9231,10 +9234,13 @@ function getAnimationFor({
 function useFeat() {
   const featDataPath = getNearestParentDataPath(dataPath);
   const feat = api.getValue(featDataPath);
-  useAction(feat);
+  useAction(feat, featDataPath);
 }
 
-function useAction(action) {
+// `actionDataPath`: where the action or feat is on the sheet's record, so a
+// use of one with a frequency is spent (limited-uses.js)
+function useAction(action, actionDataPath = null) {
+  const usesLine = spendLimitedUse(action, actionDataPath);
   const actionName = action?.name || "Unknown Action";
   const actions = action?.data?.actions || "";
   const actionType = action?.data?.actionType || "";
@@ -9296,7 +9302,7 @@ function useAction(action) {
 
   const message = `
 #### ${portrait}${actionName}${actionIcon ? "&nbsp;" : ""}${actionIcon}
-
+${usesLine ? `${usesLine}\n` : ""}
 ---
 ${actionDescription}
 ${effectMacros}${getFirstAidActionMacro(action)}${getSkillActionMacros(action)}
@@ -17459,16 +17465,20 @@ function getTokenDisplayName(token) {
   return name || "Unknown";
 }
 
-// The encounter's tokens, once per record: tokens linked to the same record
-// share its effects and data
+// Which creature a token is: tokens linked to the same record share its
+// effects and data
+function getEncounterTokenKey(token) {
+  return token?.linked === true && token?.recordId
+    ? `record:${token.recordId}`
+    : `token:${token?._id}`;
+}
+
+// The encounter's tokens, once per record (getEncounterTokenKey)
 function getEncounterTokens(tokens) {
   const seen = new Set();
   return (tokens || []).filter((token) => {
     if (!token) return false;
-    const key =
-      token.linked === true && token.recordId
-        ? `record:${token.recordId}`
-        : `token:${token._id}`;
+    const key = getEncounterTokenKey(token);
     if (seen.has(key)) return false;
     seen.add(key);
     return true;

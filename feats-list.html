@@ -285,8 +285,19 @@
     {"label": "Reaction", "value": "reaction", "icon": "reaction"}]'
         ></iconbutton>
         <div
-          style="display: flex; gap: 4px; margin-right: 4px; margin-left: auto"
+          style="display: flex; gap: 4px; margin-right: 4px; margin-left: auto; align-items: center"
         >
+          <!-- Uses left, for a feat with a frequency (limited-uses.js) -->
+          <counter
+            field="usesLeft"
+            maxvaluefield="usesMax"
+            size="xs"
+            textalign="center"
+            color="cyan"
+            editable="true"
+            hidden="true"
+          ></counter>
+          <label field="usesLabel" size="xs" hidden="true"></label>
           <iconbutton
             size="sm"
             variant="filled"

@@ -5334,6 +5334,9 @@
         },
         "Dying": {
           "file": "rollhandlers/dying.js"
+        },
+        "LimitedUses": {
+          "file": "rollhandlers/limited-uses.js"
         }
       },
       "defaultDice": "default",

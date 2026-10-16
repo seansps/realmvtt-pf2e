@@ -125,12 +125,25 @@ function getHeroPoints(creature) {
 }
 
 // Whether a character can use Orc Ferocity now: once per day, or once per
-// hour with Incredible Ferocity, which the GM keeps track of
+// hour with Incredible Ferocity. The feat's uses count once the sheet keeps
+// them (limited-uses.js); before that, a flag the night's rest clears.
 function canUseOrcFerocity(creature) {
   if (!hasFeatNamed(creature, "Orc Ferocity")) {
     return false;
   }
+  const uses = getOrcFerocityUses(creature);
+  if (uses) {
+    return uses.left > 0;
+  }
   return !creature?.data?.orcFerocityUsed || hasFeatNamed(creature, "Incredible Ferocity");
+}
+
+// The uses Orc Ferocity keeps on a character's feat row, { path, left, max,
+// per, label }, or null when the sheet doesn't keep them (limited-uses.js)
+function getOrcFerocityUses(creature) {
+  const row = findFeatRow(creature, "Orc Ferocity");
+  const uses = getLimitedUses(row?.item);
+  return uses ? { ...uses, path: row.path } : null;
 }
 
 // What being reduced to 0 Hit Points does to a character or companion in
@@ -345,8 +358,15 @@ function useOrcFerocity(token, before = {}) {
     return;
   }
   const name = getCreatureName(token);
+  const uses = getOrcFerocityUses(token);
   if (!canUseOrcFerocity(token)) {
-    api.showNotification(`${name} already used Orc Ferocity today.`, "yellow", "Notice");
+    api.showNotification(
+      uses
+        ? `${name} has no uses of Orc Ferocity left (${describeLimitedUseLimit(uses)}).`
+        : `${name} already used Orc Ferocity today.`,
+      "yellow",
+      "Notice",
+    );
     return;
   }
   const wounded = Math.min(getWoundedValue(token) + 1, getWoundedMax(token));
@@ -354,9 +374,16 @@ function useOrcFerocity(token, before = {}) {
     "data.curhp": 1,
     "data.dying": parseInt(before.dying || "0", 10) || 0,
     "data.wounded": wounded,
-    "data.orcFerocityUsed": true,
   };
+  if (uses) {
+    valuesToSet[`${uses.path}.data.usesLeft`] = uses.left - 1;
+  } else {
+    valuesToSet["data.orcFerocityUsed"] = true;
+  }
   const lines = [`stays at 1 HP, wounded ${wounded}`];
+  if (uses) {
+    lines.push(describeLimitedUses(uses, uses.left - 1));
+  }
   if (hasFeatNamed(token, "Undying Ferocity")) {
     const level = parseInt(token.data?.level || "0", 10) || 0;
     const tempHp = parseInt(token.data?.tempHp || "0", 10) || 0;

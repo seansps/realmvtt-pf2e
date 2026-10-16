@@ -1006,14 +1006,32 @@ ${getLevelUpSummary(gains)}`,
     // (dying.js)
     const woundedChanges = getRestWoundedChanges(record, record.data?.curhp || 0);
     Object.assign(valuesToSet, woundedChanges);
+    // Uses per 10 minutes and less come back (limited-uses.js)
+    const recharges = getLimitedUseRecharges(record, "refocus");
+    Object.assign(valuesToSet, recharges);
     const focusText =
       focusPointsRecovered > 0
         ? `Recovered ${focusPointsRecovered} Focus Point${focusPointsRecovered !== 1 ? "s" : ""}.`
         : "No Focus Points to recover.";
     const woundedText = woundedChanges["data.wounded"] === 0 ? " No longer wounded." : "";
-    const text = `Refocusing (10 minutes). ${focusText}${woundedText}`;
+    const text = `Refocusing (10 minutes). ${focusText}${woundedText}${describeLimitedUseRecharges(record, recharges)}`;
     if (Object.keys(valuesToSet).length > 0) {
       api.setValues(valuesToSet, () => {
+        api.sendMessage(text, undefined, [], []);
+      });
+    } else {
+      api.sendMessage(text, undefined, [], []);
+    }
+  }
+
+  // An hour passes: uses per hour and less come back (limited-uses.js)
+  function passHour() {
+    const recharges = getLimitedUseRecharges(record, "hour");
+    const text = `An hour passes.${
+      describeLimitedUseRecharges(record, recharges) || " No uses to bring back."
+    }`;
+    if (Object.keys(recharges).length > 0) {
+      api.setValues(recharges, () => {
         api.sendMessage(text, undefined, [], []);
       });
     } else {
@@ -1053,6 +1071,10 @@ ${getLevelUpSummary(gains)}`,
     if (record.data?.orcFerocityUsed) {
       valuesToSet["data.orcFerocityUsed"] = false;
     }
+    // Uses per day, and per hour and less, come back (limited-uses.js)
+    const recharges = getLimitedUseRecharges(record, "dailyPreparations");
+    Object.assign(valuesToSet, recharges);
+    message += describeLimitedUseRecharges(record, recharges);
 
     // Detemine if any spells need to be reset
     const spellcastingEntries = record.data?.spells || [];
@@ -2449,6 +2471,13 @@ ${getLevelUpSummary(gains)}`,
             options='[{"icon": "IconCampfire", "label": "Refocus", "value": "refocus"}]'
             field="Refocus"
             onclick="shortRest()"
+          ></iconbutton>
+          <iconbutton
+            size="md"
+            variant="subtle"
+            options='[{"icon": "IconHourglass", "label": "1 Hour Passes", "value": "hour"}]'
+            field="PassHour"
+            onclick="passHour()"
           ></iconbutton>
           <iconbutton
             size="md"

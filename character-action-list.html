@@ -3,7 +3,7 @@
     // Get the action by path to ensure most up-to-date value
     const actionDataPath = dataPath.replace(".data.useBtn", "");
     const action = api.getValue(actionDataPath);
-    useAction(action);
+    useAction(action, actionDataPath);
   }
 </script>
 
@@ -28,7 +28,20 @@
           field="namefield"
           placeholder="Ability Name..."
         ></namefield>
-        <div style="margin-left: auto">
+        <div
+          style="margin-left: auto; display: flex; align-items: center; gap: 4px"
+        >
+          <!-- Uses left, for an action with a frequency (limited-uses.js) -->
+          <counter
+            field="usesLeft"
+            maxvaluefield="usesMax"
+            size="xs"
+            textalign="center"
+            color="cyan"
+            editable="true"
+            hidden="true"
+          ></counter>
+          <label field="usesLabel" size="xs" hidden="true"></label>
           <button
             size="xxs"
             radius="xs"

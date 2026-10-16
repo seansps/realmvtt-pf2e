@@ -58,6 +58,13 @@ if (isCharacter && getDyingValue(token) > 0 && !isTokenDead(token)) {
   });
 }
 
+// Uses per turn and per round come back at the creature's own turn, and
+// per turn at every other creature's turn, as in Foundry (limited-uses.js).
+// data.tokens is every token in the combat tracker.
+getTurnStartRecharges(token, data?.tokens).forEach((recharge) => {
+  api.setValuesOnTokenById(recharge.token._id, recharge.token.recordType, recharge.values);
+});
+
 // Condition upkeep: the actions the creature has this turn after stunned,
 // slowed and quickened, and the stunned it used up. Not again when Next after
 // Previous starts the same turn a second time.
