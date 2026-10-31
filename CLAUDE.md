@@ -286,6 +286,14 @@ Animal companions are characters, as Foundry's PF2e Companion Compendia builds t
 - Holding breath: `holdBreathSelected()` gives Holding Breath stacks for 5 + Con rounds (`getAirRounds`). `onTurnEnd.js` posts `getBreathTurnEndMessage`: the air left with Lose 1 and Lose 2 buttons (`loseAir`, one instance at a time), and at 0 air Unconscious and Suffocating. Suffocating's stacks count the saves: Fortitude DC 20 + 5 per earlier save, 1d10 per stack on a failure (`rollSuffocationSave` adds a stack). Breathes Again (`breatheAgain`) removes both.
 - Mounted, Underwater, Holding Breath, Suffocating and Adverse Subsist Situation are module effects applied by name; without them, the cards still say what applies.
 
+### Armor traits (check penalty exceptions, bulwark, ponderous)
+
+`rollhandlers/armor-traits.js` (global script `ArmorTraits`), following Foundry's character prepareSkills, prepareSaves and createPonderousPenalty.
+- Check penalty: `getCheckPenaltyForArmor(record, bestArmor, context)` asks `isCheckPenaltyApplied` with the roll's context (`context.statistic` is the skill, `context.action` the action). Never with the attack trait (`isAttackTraitCheck`: a SKILL_ACTIONS entry marked `attack`, or a source passing the trait); Acrobatics and Athletics only when Strength is short and the armor isn't flexible; Stealth always in noisy armor; other checks when Strength is short. Armor without a Strength value has no check penalty.
+- Bulwark: `rollSave` adds `getBulwarkModifier` on Reflex saves (+3 instead of the Dex modifier, as a difference): on for a basic save (damaging), unticked otherwise.
+- Ponderous (Treasure Vault): `getPonderousModifier` is an untyped `initiativePenalty` added with the check penalty in `getEffectsAndModifiersForToken`, so it stacks with item penalties: -1, or the check penalty when Strength is short and it's worse.
+- Hindering (the Speed calculation, `hasArmorTrait`) and comfort (the Rest prompt, healing-tools.js) were already in place.
+
 ### Data Structure
 
 - Character data is nested under `record.data`

@@ -3589,7 +3589,10 @@ function getEffectsAndModifiersForToken(
 
   // Add modifiers for armor penalties and runes
   const bestArmor = getBestEquippedArmor(target);
-  const checkPenalty = getCheckPenaltyForArmor(target, bestArmor);
+  const checkPenalty = getCheckPenaltyForArmor(target, bestArmor, context);
+  // Ponderous armor's initiative penalty (armor-traits.js)
+  const ponderous = getPonderousModifier(target, bestArmor);
+  if (ponderous) results.push(ponderous);
   // Automatic Bonus Progression replaces resilient runes with potency bonuses
   const resilientBonus = isAbpCharacter(target)
     ? null
@@ -5239,8 +5242,9 @@ function getArmorStrengthRequirement(value) {
 
 // Returns the penalty if necessary for the armor worn. Only characters take
 // it: NPC stat-block skills already include it. It is untyped, so it stacks
-// with item penalties such as shoddy.
-function getCheckPenaltyForArmor(record, bestArmor) {
+// with item penalties such as shoddy. The roll's context decides the
+// exceptions: the attack trait, flexible and noisy (armor-traits.js).
+function getCheckPenaltyForArmor(record, bestArmor, context = {}) {
   if (!record || record.recordType !== "characters") {
     return null;
   }
@@ -5251,11 +5255,13 @@ function getCheckPenaltyForArmor(record, bestArmor) {
   if (checkPenalty === 0) {
     return null;
   }
-  const strength = record.data?.str != undefined ? record.data?.str : 0;
   const armorStrengthRequired = getArmorStrengthRequirement(
     bestArmor?.armor?.strength,
   );
-  if (armorStrengthRequired !== null && strength < armorStrengthRequired) {
+  if (
+    armorStrengthRequired !== null &&
+    isCheckPenaltyApplied(record, bestArmor, context)
+  ) {
     return [
       {
         value: -checkPenalty,
@@ -5867,10 +5873,7 @@ function updateAttribute({
     totalSpeedPenalty += shieldSpeedPenalty;
   }
   // Hindering armor: a separate 5-foot penalty that Strength doesn't reduce
-  const armorTraits = bestArmor?.armor?.traits || [];
-  if (
-    armorTraits.some((trait) => String(trait).toLowerCase() === "hindering")
-  ) {
+  if (hasArmorTrait(bestArmor, "hindering")) {
     totalSpeedPenalty += 5;
   }
 
@@ -9021,6 +9024,11 @@ function rollSave(
       modifiers.push(mod);
     }
   });
+
+  // Bulwark armor: +3 instead of Dex against a damaging effect, on for a
+  // basic save (armor-traits.js)
+  const bulwark = getBulwarkModifier(record, saveType, options.basic);
+  if (bulwark) modifiers.push(bulwark);
 
   // Get degree of success adjustments for both the save type and its attribute
   const degreeOfSuccessAdjustments = getDegreeOfSuccessAdjustments(
