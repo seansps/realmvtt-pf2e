@@ -6,8 +6,8 @@
     useAction(action);
   }
 
-  // Remove this action; on a familiar, its Speeds and Familiar Focus button
-  // follow the abilities left (familiars.js)
+  // Remove this familiar ability (only its rows show the button): the
+  // Speeds and Familiar Focus button follow the abilities left (familiars.js)
   function removeAction() {
     const action = api.getValue(getNearestParentDataPath(dataPath));
     if (!action) return;
@@ -73,6 +73,8 @@
             size="xs"
             variant="default"
             color="red"
+            field="removeBtn"
+            hidden="true"
             hideonlocked="true"
             onclick="removeAction();"
             options='[{"label": "Remove Ability", "icon": "IconTrash", "value": "removeAbility"}]'

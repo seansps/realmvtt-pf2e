@@ -48,6 +48,13 @@ function getFamiliarAbilities(familiar) {
   return (familiar?.data?.actions || []).filter((action) => action?.data?.actionCategory === "familiar");
 }
 
+// A familiar ability's row shows its remove button (npc-actions-list.html);
+// other NPCs' actions keep the list's own delete. Unchanged when it shows.
+function showFamiliarRemoveButton(action) {
+  if (action?.data?.actionCategory !== "familiar" || action?.fields?.removeBtn?.hidden === false) return action;
+  return { ...action, fields: { ...(action.fields || {}), removeBtn: { hidden: false } } };
+}
+
 function hasFamiliarAbility(familiar, name) {
   return getFamiliarAbilities(familiar).some((ability) => familiarName(ability) === name);
 }
@@ -233,6 +240,10 @@ function getFamiliarSyncValues(familiar, master) {
   Object.assign(values, getFamiliarSpeedValues(familiar));
   values["data.numAbilities"] = getFamiliarAbilityLimit(familiar, master);
   values["fields.familiarFocusBtn.hidden"] = !hasFamiliarAbility(familiar, "familiar focus");
+  // Abilities picked before the remove button existed show it now
+  const actions = familiar?.data?.actions || [];
+  const shown = actions.map(showFamiliarRemoveButton);
+  if (shown.some((action, i) => action !== actions[i])) values["data.actions"] = shown;
   return values;
 }
 
@@ -306,8 +317,6 @@ function getFamiliarRestNote(master, familiar) {
   return note;
 }
 
-// Familiar Focus (once per day, 2 actions): the master gets 1 Focus Point
-// back, up to their maximum (spell-entries.js)
 // Removing an NPC action (the row's remove button; a list row's delete has no
 // hook). On a familiar, the Speeds and the Familiar Focus button follow the
 // abilities left, in the same write
@@ -335,6 +344,8 @@ function removeNpcAction(npc, actionId, callback) {
   });
 }
 
+// Familiar Focus (once per day, 2 actions): the master gets 1 Focus Point
+// back, up to their maximum (spell-entries.js)
 function useFamiliarFocus(familiar) {
   const masterId = getRecordIdFromValue(familiar?.data?.master);
   if (!masterId) {

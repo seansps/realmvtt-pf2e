@@ -945,7 +945,9 @@
       // they give in one write (familiars.js)
       const onSelect = (value) => {
         if (!value || value.length === 0) return;
-        const actions = [...(record.data?.actions || []), ...value];
+        // Each picked ability shows its remove button
+        const added = value.map(showFamiliarRemoveButton);
+        const actions = [...(record.data?.actions || []), ...added];
         const familiar = { ...record, data: { ...record.data, actions } };
         const write = () => {
           const values = {
@@ -959,7 +961,7 @@
           });
         };
         // Fast Movement raises one Speed; ask which when there's a choice
-        const fast = value.find((ability) => String(ability?.name || "").toLowerCase() === "fast movement");
+        const fast = added.find((ability) => String(ability?.name || "").toLowerCase() === "fast movement");
         const choices = fast ? getFastMovementChoices(familiar) : [];
         if (choices.length < 2) return write();
         api.showPrompt(

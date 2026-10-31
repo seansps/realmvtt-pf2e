@@ -155,6 +155,19 @@ section("Removing an ability");
   assert("one write, from the record read fresh", Object.keys(written).sort(), ["data.actions", "data.speed.value", "data.speeds", "fields.familiarFocusBtn.hidden"]);
 }
 
+section("The remove button shows on familiar abilities only");
+{
+  const picked = ctx.showFamiliarRemoveButton(ability("Flier"));
+  assert("a familiar ability shows it", picked.fields.removeBtn.hidden, false);
+  assert("... and isn't copied again once shown", ctx.showFamiliarRemoveButton(picked), picked);
+  const strike = { name: "Jaws", data: { actionCategory: "" } };
+  assert("another action keeps the list's delete", ctx.showFamiliarRemoveButton(strike), strike);
+  const older = familiar([ability("Flier")]);
+  assert("a sync shows it on abilities picked before", ctx.getFamiliarSyncValues(older, master())["data.actions"][0].fields.removeBtn.hidden, false);
+  const shown = familiar([picked]);
+  assert("... and doesn't rewrite the actions once they show it", "data.actions" in ctx.getFamiliarSyncValues(shown, master()), false);
+}
+
 section("Typing the allowance");
 {
   let written = null;
