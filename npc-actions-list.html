@@ -5,6 +5,20 @@
     const action = api.getValue(actionDataPath);
     useAction(action);
   }
+
+  // Remove this familiar ability (only its rows show the button): the
+  // Speeds and Familiar Focus button follow the abilities left (familiars.js)
+  function removeAction() {
+    const action = api.getValue(getNearestParentDataPath(dataPath));
+    if (!action) return;
+    api.showConfirm(
+      "Remove Ability",
+      `Are you sure you want to remove ${action.name}?`,
+      "Yes",
+      "No",
+      () => removeNpcAction(record, action._id)
+    );
+  }
 </script>
 
 <accordion
@@ -47,7 +61,7 @@
           field="namefield"
           placeholder="Ability Name..."
         ></namefield>
-        <div style="margin-left: auto">
+        <div style="margin-left: auto; display: flex; gap: 2px; align-items: center">
           <button
             size="xxs"
             radius="xs"
@@ -55,6 +69,16 @@
             label="Use"
             onclick="onUseAction();"
           ></button>
+          <iconbutton
+            size="xs"
+            variant="default"
+            color="red"
+            field="removeBtn"
+            hidden="true"
+            hideonlocked="true"
+            onclick="removeAction();"
+            options='[{"label": "Remove Ability", "icon": "IconTrash", "value": "removeAbility"}]'
+          ></iconbutton>
         </div>
       </div>
     </div>

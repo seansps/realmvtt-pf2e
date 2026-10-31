@@ -185,4 +185,4 @@ section("Debilitating Strike (Q24)");
   assert("Vicious Debilitations counts", ctx.hasDebilitationFeats({ data: { feats: [{ name: "Vicious Debilitations" }] } }), true);
 }
 
-summary();
+process.exitCode = summary() > 0 ? 1 : 0;

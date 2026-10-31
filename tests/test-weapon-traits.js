@@ -304,4 +304,4 @@ section("Switching off magazine ammo (attack-list.html)");
   assert("never on a magazine: nothing extra written", "data.inventory.0.data.uses.max" in select(pepperbox, "rounds"), false);
 }
 
-summary();
+process.exitCode = summary() > 0 ? 1 : 0;

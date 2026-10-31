@@ -294,6 +294,15 @@ Animal companions are characters, as Foundry's PF2e Companion Compendia builds t
 - Ponderous (Treasure Vault): `getPonderousModifier` is an untyped `initiativePenalty` added with the check penalty in `getEffectsAndModifiersForToken`, so it stacks with item penalties: -1, or the check penalty when Strength is short and it's worse.
 - Hindering (the Speed calculation, `hasArmorTrait`) and comfort (the Rest prompt, healing-tools.js) were already in place.
 
+### Familiars (master sync, ability Speeds, ability allowance, Familiar Focus)
+
+`rollhandlers/familiars.js` (global script `Familiars`). A familiar is an NPC of type familiar; its abilities are its actions with `actionCategory` familiar.
+- Sync: `getFamiliarSyncValues(familiar, master)` is everything the familiar takes from its master, in one write (`syncFamiliarWithMaster`): level, 5 HP per level plus `hitpoints` and `hitPointsBonus` modifiers worked out at the new level (Tough's "2 * @actor.level"), AC, saves, Perception and skills, Speeds, the ability allowance and the Familiar Focus button. The familiar's `data.master` and the master's `data.familiar` (Notes tab) link each other; the sync writes whichever is missing.
+- Speeds: Amphibious, Burrower, Climber and Flier add rows to `data.speeds` (marked `fromFamiliarAbility`, so they're replaced next time; typed rows stay). Fast Movement raises the Speed in its `data.fastMovementSpeed` (asked when it's added, default land) to 40.
+- Allowance: `getFamiliarAbilityAllowance(master)`, Foundry's familiarAbilities rules by name: the highest of 2, Basic Witchcraft 3, Enhanced Familiar 4, Incredible Familiar 6, plus the witch's Familiar (Witch) and Improved Familiar Attunement extras. A typed Total # of Familiar Abilities is kept in `numAbilitiesOverride`. Too many picks show a note; nothing is refused.
+- Hooks: the master's level up resyncs the familiar (`resyncFamiliarOf`, at the end of the level-up steps), Rest says the abilities can be picked again (`getFamiliarRestNote`, with Spell Battery's slot), and the Familiar Focus button gives the master 1 Focus Point (`useFamiliarFocus`).
+- Removing: a list row's delete has no hook, so a familiar ability's row has a remove button (`fields.removeBtn`, shown by `showFamiliarRemoveButton` when the picker adds it or a sync finds it hidden; other NPCs keep the list's delete). `removeNpcAction` reads fresh and writes once: it rewrites the Speeds and the Familiar Focus button from the abilities left (`getActionRemovalValues`). The module's Tough uses the `hitPointsBonus` modifier type, which is why HP reads it.
+
 ### Data Structure
 
 - Character data is nested under `record.data`

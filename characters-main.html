@@ -750,6 +750,8 @@ ${getLevelUpSummary(gains)}`,
       // Final pass, prompting for any class feature choices at this level
       api.getRecord("characters", record._id, (updatedRecord) => {
         onAddEditFeature(updatedRecord);
+        // The familiar takes the new level and feats (familiars.js)
+        resyncFamiliarOf(updatedRecord);
         api.showNotification(
           `${record.name || "Character"} is now level ${newLevel}.`,
           "green",
@@ -1260,7 +1262,15 @@ ${getLevelUpSummary(gains)}`,
     // The message once every effect change is done, then fatigue from armor
     const finishRest = () => {
       const notes = getRestOptionNotes(record, restOptions);
-      api.sendMessage(`${message}${notes.length > 0 ? `\n${notes.join(" ")}` : ""}`, undefined, [], []);
+      const send = (familiarNote = "") =>
+        api.sendMessage(`${message}${familiarNote}${notes.length > 0 ? `\n${notes.join(" ")}` : ""}`, undefined, [], []);
+      // The familiar's abilities can be picked again (familiars.js)
+      const familiarId = getRecordIdFromValue(record.data?.familiar);
+      if (familiarId) {
+        api.getRecord("npcs", familiarId, (familiar) => send(getFamiliarRestNote(record, familiar)));
+      } else {
+        send();
+      }
       if (wakesFatigued && !hadFatigued) {
         api.addEffect("Fatigued", record);
       }

@@ -334,4 +334,4 @@ section("Sickened and confused (Q25)");
   ctx.api.getToken = () => null;
 }
 
-summary();
+process.exitCode = summary() > 0 ? 1 : 0;

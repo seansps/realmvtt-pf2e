@@ -187,4 +187,4 @@ section("Cursebound (Q23)");
   assert("none: nothing", [ctx.removeCursebound(character()), calls], ["", []]);
 }
 
-summary();
+process.exitCode = summary() > 0 ? 1 : 0;

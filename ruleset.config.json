@@ -5448,6 +5448,9 @@
         },
         "ArmorTraits": {
           "file": "rollhandlers/armor-traits.js"
+        },
+        "Familiars": {
+          "file": "rollhandlers/familiars.js"
         }
       },
       "defaultDice": "default",
