@@ -303,6 +303,12 @@ Animal companions are characters, as Foundry's PF2e Companion Compendia builds t
 - Hooks: the master's level up resyncs the familiar (`resyncFamiliarOf`, at the end of the level-up steps), Rest says the abilities can be picked again (`getFamiliarRestNote`, with Spell Battery's slot), and the Familiar Focus button gives the master 1 Focus Point (`useFamiliarFocus`).
 - Removing: a list row's delete has no hook, so a familiar ability's row has a remove button (`fields.removeBtn`, shown by `showFamiliarRemoveButton` when the picker adds it or a sync finds it hidden; other NPCs keep the list's delete). `removeNpcAction` reads fresh and writes once: it rewrites the Speeds and the Familiar Focus button from the abilities left (`getActionRemovalValues`). The module's Tough uses the `hitPointsBonus` modifier type, which is why HP reads it.
 
+### Summons and minions (summon picker, initiative just below the master)
+
+`rollhandlers/summons.js` (global script `Summons`), with `rollhandlers/onTokenAdd.js` (the combat tracker's onTokenAdd).
+- A spell with the summon trait gets a Pick Creature button on its cast card (`getSummonButton`). `getSummonFilter` reads what it summons from its text ("has the animal trait", "a common celestial, fiend, or monitor of level", or one named creature), and the level cap comes from the summon trait's table by rank (`getSummonLevelCap`). `showSummonPicker` queries npcs with `api.getRecordsByQuery` (`$lte` level, case-insensitive trait regex), lists uncommon and rare ones with their rarity, opens the pick (`api.openRecord`) to drag onto the map, and posts a Mark Summoned button.
+- Mark Summoned, dropped on the token: `data.summonedBy` `{ tokenId, name }` on the token, the initiative just below the caster in the same write, and the Summoned effect by name with the caster as applier (a module effect; a campaign without it gets the link and the note only).
+- Minions (`getMinionMaster`): a summon's caster (`data.summonedBy`), a familiar's `data.master`, an animal companion's `data.companionMaster` (both matched to a token's `recordId`), or a mount's rider (the rider's Mounted applier). A minion added to the tracker goes to the master's initiative - 0.01 when the master is in it with an initiative; when a master rolls (`initiative.js`, alone or in a group), its minions in the tracker follow (`placeMinionsOf`). `api.getCombatTracker` gives `{ tokenIds, round, initiative, slot }`; scene tokens carry `data.initiative`.
 ### Data Structure
 
 - Character data is nested under `record.data`

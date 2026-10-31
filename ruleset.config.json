@@ -2581,7 +2581,9 @@
           "onChange": ""
         }
       ],
-      "onTokenAdd": "",
+      "onTokenAdd": {
+        "file": "rollhandlers/onTokenAdd.js"
+      },
       "onEncounterStart": "",
       "onEncounterEnd": {
         "file": "rollhandlers/onEncounterEnd.js"
@@ -5451,6 +5453,9 @@
         },
         "Familiars": {
           "file": "rollhandlers/familiars.js"
+        },
+        "Summons": {
+          "file": "rollhandlers/summons.js"
         }
       },
       "defaultDice": "default",
