@@ -433,7 +433,11 @@ function mountTarget() {
   const targets = (typeof api.getTargets === "function" && api.getTargets()) || [];
   const mount = targets.length === 1 ? targets[0]?.token || targets[0] : null;
   if (!rider || !mount) {
-    api.showNotification("Select the rider and target the mount.", "yellow", "Mount");
+    api.showNotification(
+      "Select the rider's token, then target the mount (one target only), and click Mount Target again.",
+      "yellow",
+      "Mount",
+    );
     return;
   }
   if (rider._id === mount._id) return;

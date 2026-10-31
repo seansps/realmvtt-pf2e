@@ -1173,34 +1173,50 @@
         onclick="chooseAbpSkillPotency()"
       ></button>
     </box>
-
-    <!-- Downtime: Earn Income and the cost of living (table-rules.js) -->
-    <div style="display: flex; gap: 4px; flex-wrap: wrap">
-      <button
-        size="xs"
-        label="Earn Income"
-        variant="subtle"
-        hideonlocked="true"
-        onclick="promptEarnIncome(record)"
-      ></button>
-      <button
-        size="xs"
-        label="Pay Cost of Living"
-        variant="subtle"
-        hideonlocked="true"
-        onclick="payCostOfLiving(record)"
-      ></button>
-    </div>
-
-    <!-- Retraining a skill increase, a downtime action (character-growth.js) -->
-    <button
-      size="xs"
-      label="Retrain a Skill Increase"
-      variant="subtle"
-      hideonlocked="true"
-      onclick="retrainSkillIncrease(record)"
-    ></button>
   </div>
+
+  <!-- Downtime, shown only while the sheet is unlocked: Earn Income and the
+       cost of living (table-rules.js), retraining (character-growth.js) -->
+  <box hideonlocked="true">
+    <div
+      class="rvtt-sheet-section rvtt-sheet-corners"
+      style="background: var(--bg, transparent)"
+    >
+      <span class="rvtt-sheet-corner rvtt-sheet-corner--tl"></span>
+      <span class="rvtt-sheet-corner rvtt-sheet-corner--tr"></span>
+      <span class="rvtt-sheet-corner rvtt-sheet-corner--bl"></span>
+      <span class="rvtt-sheet-corner rvtt-sheet-corner--br"></span>
+
+      <div class="rvtt-sheet-divider">
+        <span class="rvtt-sheet-divider__label"
+          >&#10022; Downtime &#10022;</span
+        >
+      </div>
+      <div style="display: flex; gap: 4px; flex-wrap: wrap">
+        <button
+          size="xs"
+          variant="light"
+          icon="IconCoins"
+          label="Earn Income"
+          onclick="promptEarnIncome(record)"
+        ></button>
+        <button
+          size="xs"
+          variant="light"
+          icon="IconHome"
+          label="Pay Cost of Living"
+          onclick="payCostOfLiving(record)"
+        ></button>
+        <button
+          size="xs"
+          variant="light"
+          icon="IconRefresh"
+          label="Retrain a Skill Increase"
+          onclick="retrainSkillIncrease(record)"
+        ></button>
+      </div>
+    </div>
+  </box>
 
   <div
     class="rvtt-sheet-section rvtt-sheet-corners"
