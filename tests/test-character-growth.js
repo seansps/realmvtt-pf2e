@@ -190,9 +190,11 @@ section("Sheet hooks");
   assert("the boost steps check Intelligence", (main.match(/promptIntIncreaseGains\(latestRecord/g) || []).length, 2);
   assertIncludes("the level up's feat step: Multilingual", main, "promptFeatLanguages(updated || latestRecord, feat, next)");
   assert("Retrain a Skill Increase: on the Skills tab, not the header", [skills.includes('onclick="retrainSkillIncrease(record)"'), main.includes("retrainSkillIncrease")], [true, false]);
-  assertIncludes("... hidden when locked", skills.slice(skills.indexOf('label="Retrain a Skill Increase"')), 'hideonlocked="true"');
+  // In a box hidden when locked (Sean's Downtime section)
+  const beforeRetrain = skills.slice(0, skills.indexOf('label="Retrain a Skill Increase"'));
+  assertIncludes("... hidden when locked", beforeRetrain.slice(beforeRetrain.lastIndexOf("<box")), 'hideonlocked="true"');
   assertIncludes("a feat placed in a slot: Multilingual", feats, "promptFeatLanguages(updatedRecord2 || updatedRecord, feat)");
   assertIncludes("the feat row's Retrain button", feats, 'onclick="retrainFeat()"');
 }
 
-summary();
+process.exitCode = summary() > 0 ? 1 : 0;

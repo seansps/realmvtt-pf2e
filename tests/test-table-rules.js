@@ -299,4 +299,4 @@ section("Sheet hooks");
   assertIncludes("the turn end's breath card", turnEnd, "getBreathTurnEndMessage(token)");
 }
 
-summary();
+process.exitCode = summary() > 0 ? 1 : 0;

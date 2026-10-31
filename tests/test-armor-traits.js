@@ -94,4 +94,4 @@ section("Ponderous");
   assert("no ponderous: none", initiative(pc([armor()], { str: 3 })), undefined);
 }
 
-summary();
+process.exitCode = summary() > 0 ? 1 : 0;

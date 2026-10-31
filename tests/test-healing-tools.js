@@ -256,4 +256,4 @@ section("Fast healing, regeneration and ferocity (Q10)");
   assertIncludes("... the chat says so", state.messages[0], "Orc Brute uses Ferocity");
 }
 
-summary();
+process.exitCode = summary() > 0 ? 1 : 0;

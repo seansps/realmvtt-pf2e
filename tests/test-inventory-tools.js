@@ -197,4 +197,4 @@ section("Bulk limits and Encumbered (Q16)");
   assert("an untyped speedPenalty effect (Foundry's Encumbered) reaches it too", untypedMods.map((m) => m.value), [-10]);
 }
 
-summary();
+process.exitCode = summary() > 0 ? 1 : 0;

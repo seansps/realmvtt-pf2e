@@ -188,4 +188,4 @@ section("DC helper (Q27)");
   assertIncludes("the helper posts Athletics DC 22", ctx.__state.messages[0], "[gm]DC 22 (Expert (simple DC 20), hard)[/gm]");
 }
 
-summary();
+process.exitCode = summary() > 0 ? 1 : 0;
