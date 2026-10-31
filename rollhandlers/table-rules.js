@@ -6,19 +6,19 @@
 //     worked. The check is against the task level's DC; the card gives the
 //     income for the days (the Income Earned table, level + 1 on a critical
 //     success, the failure column on a failure) with a Collect button.
-//     Experienced Professional makes a Lore's critical failure a failure and
-//     doubles a failure's income, as Foundry's
+//     Experienced Professional makes a Lore's critical failure a failure,
+//     and at expert Lore doubles a failure that wasn't a critical failure
 //   - Subsist: the environment's simple DC (or the GM's), -5 after a day of
 //     exploring and -2 after a critical failure as unticked modifiers, and
 //     the outcome with Fatigued and Adverse Subsist Situation buttons
 //   - Cost of living: pays a standard of living for a week, month or year
 //   - Mount and Dismount: the rider gets the Mounted effect, its applier
-//     recorded as the mount. With Ride, Command an Animal on the mount
-//     succeeds without a roll
+//     recorded as the mount. With Ride, commanding the mount to take a move
+//     action succeeds without a roll
 //   - Underwater: the Underwater effect, and off-guard for creatures without
 //     a swim Speed. A bludgeoning or slashing Strike underwater takes a -2
-//     circumstance penalty (not an underwater weapon, nor an aquatic or
-//     amphibious creature's unarmed attack)
+//     circumstance penalty (not with the underwater property rune, nor an
+//     aquatic or amphibious creature's unarmed attack)
 //   - Holding breath: Holding Breath stacks for 5 + Con rounds of air. Each
 //     turn's end posts the air left with buttons that spend it; out of air,
 //     Suffocating counts the Fortitude saves (DC 20, +5 and +1d10 each)
@@ -26,18 +26,6 @@
 // Mounted, Underwater, Holding Breath, Suffocating and Adverse Subsist
 // Situation are module effects: applied by name, so a campaign without them
 // gets the card's text only.
-
-const TABLE_RULE_SKILLS = [
-  "acrobatics", "arcana", "athletics", "crafting", "deception", "diplomacy",
-  "intimidation", "medicine", "nature", "occultism", "performance",
-  "religion", "society", "stealth", "survival", "thievery",
-];
-
-// A button that runs its code on one creature: that creature's token when it
-// is selected or the button is dropped on it (maneuvers.js)
-function getTableRuleButton(label, creatureId, creatureName, call) {
-  return getManeuverButton(label, creatureId, creatureName, call);
-}
 
 function getTableRuleRecordName(record) {
   return record?.name || getTokenDisplayName(record) || "The character";
@@ -52,21 +40,23 @@ const EARN_INCOME_FAILURE_CP = [
   600, 800, 0,
 ];
 
-// Income for one day of work, in copper, by the check's degree of success
+// Income for one day of work, in copper, by the check's degree of success.
+// Experienced Professional (a Lore only): a critical failure is a failure,
+// and at expert or better a failure earns double, unless it was a critical
+// failure (Player Core pg. 254; Foundry's code skips both conditions)
 function getEarnIncomePerDayCp(level, rank, degree, experienced = false) {
   const r = Math.min(4, parseInt(rank, 10) || 0);
   if (r < 1) return 0;
   const row = (l) => Math.max(0, Math.min(21, parseInt(l, 10) || 0));
-  const failure = EARN_INCOME_FAILURE_CP[row(level)] * (experienced ? 2 : 1);
+  const failure = EARN_INCOME_FAILURE_CP[row(level)];
   switch (degree) {
     case 2:
       return INCOME_EARNED_CP[row((parseInt(level, 10) || 0) + 1)][r - 1];
     case 1:
       return INCOME_EARNED_CP[row(level)][r - 1];
     case 0:
-      return failure;
+      return experienced && r >= 2 ? failure * 2 : failure;
     default:
-      // Experienced Professional: a critical failure is a failure
       return experienced ? failure : 0;
   }
 }
@@ -82,7 +72,7 @@ function getEarnIncomeDC(level, variants = getVariantRules()) {
 // trained Lore ("lore:<index>")
 function getEarnIncomeSkillOptions(record) {
   const rankName = (rank) => PROFICIENCY_RANK_NAMES[rank] || "";
-  const skills = TABLE_RULE_SKILLS.map((skill) => ({
+  const skills = Object.keys(getPathfinderSkills()).map((skill) => ({
     skill,
     rank: parseInt(record?.data?.[skill] || "0", 10) || 0,
   }))
@@ -109,7 +99,7 @@ function getEarnIncomeSkill(record, choice) {
       : null;
   }
   const skill = String(choice || "").toLowerCase();
-  if (!TABLE_RULE_SKILLS.includes(skill)) return null;
+  if (!Object.keys(getPathfinderSkills()).includes(skill)) return null;
   return { name: skill, rank: parseInt(record?.data?.[skill] || "0", 10) || 0 };
 }
 
@@ -243,8 +233,11 @@ function getEarnIncomeLines(earnIncome, degree) {
   return lines;
 }
 
-// The Collect button: adds the coins to the character, read fresh
+// The Collect button: strikes out its card, so it can't be collected twice
+// (as the healing card's Undo), then adds the coins to the character, read
+// fresh
 function collectIncome(recordType, recordId, amountCp) {
+  api.editMessage(null, `~**Earn Income:** ${formatCp(amountCp)}~ Collected.`);
   api.getRecord(recordType || "characters", recordId, (record) => {
     if (!record) return;
     const values = getCoinRefund(record, amountCp);
@@ -277,9 +270,8 @@ function getSubsistOptions() {
 }
 
 // Subsist: the environment, then the check. The penalties are unticked
-// modifiers: -5 after exploring that day, -2 for a week after a critical
-// failure (on unless the creature has the module's effect, which brings its
-// own)
+// modifiers the player ticks: -5 after exploring that day, -2 for a week
+// after a critical failure
 function promptSubsist(record, skill, isMacro = false) {
   if (!record) return;
   api.showPrompt(
@@ -319,7 +311,7 @@ function getSubsistModifiers() {
 // critical failure's penalty
 function getSubsistLines(subsist, degree) {
   if (!subsist) return [];
-  const button = (label, call) => getTableRuleButton(label, subsist.actorId, subsist.actorName, call);
+  const button = (label, call) => getManeuverButton(label, subsist.actorId, subsist.actorName, call);
   switch (degree) {
     case 2:
       return ["**Subsist:** a subsistence living for you and one more creature, or a comfortable living for you."];
@@ -366,7 +358,7 @@ function getCostOfLivingPayment(record, choice) {
   const cost = COST_OF_LIVING_CP[lifestyle]?.[period];
   if (!cost) return null;
   const values = getCoinPayment(record, cost);
-  return values ? { lifestyle, period, cost, values } : { lifestyle, period, cost, values: null };
+  return { lifestyle, period, cost, values };
 }
 
 // The Pay Cost of Living prompt: one write, then the card
@@ -426,7 +418,8 @@ function getMountMessage(rider, mount) {
   const mountSize = getTableRuleSize(mount);
   const lines = [
     `**${riderName} mounts ${mountName}.**`,
-    `${mountName} acts on ${riderName}'s initiative and spends its actions only when Commanded (Command an Animal; automatic with Ride). They share a multiple attack penalty. ${riderName} takes a -2 circumstance penalty to Reflex saves, and the only move action is Mount, to dismount.`,
+    `${mountName} acts on ${riderName}'s initiative and spends its actions only when Commanded (Command an Animal). They share a multiple attack penalty. ${riderName} takes a -2 circumstance penalty to Reflex saves, and the only move action is Mount, to dismount.`,
+    `With Ride, commanding ${mountName} to take a move action succeeds automatically, and it acts on ${riderName}'s turn like a minion; mounted in the middle of an encounter, it skips its next turn.`,
   ];
   if (riderSize >= 0 && mountSize >= 0 && mountSize <= riderSize) {
     lines.push(`[gm]${mountName} isn't at least one size larger than ${riderName}.[/gm]`);
@@ -477,12 +470,43 @@ function dismountSelected() {
   });
 }
 
-// With Ride, Command an Animal on the rider's own mount succeeds without a
-// roll. The card, or "" when it doesn't apply.
-function getRideCommandMessage(record, rider, target) {
-  if (!rider || !target || !hasFeatNamed(record, "Ride")) return "";
-  if (getMountId(rider) !== target._id) return "";
-  return `**${getTokenDisplayName(rider)} Commands an Animal: ${getTokenDisplayName(target)}.**\n[center][color=#2e7d32]Success[/color][/center]\nRide: Command an Animal on your mount succeeds automatically.`;
+// Whether Ride applies: the rider has the feat and commands its own mount
+function isRideCommand(record, rider, target) {
+  return !!rider && !!target && hasFeatNamed(record, "Ride") && getMountId(rider) === target._id;
+}
+
+// Ride's success card: commanding the mount to take a move action
+function getRideCommandMessage(rider, target) {
+  return `**${getTokenDisplayName(rider)} Commands an Animal: ${getTokenDisplayName(target)}.**\n[center][color=#2e7d32]Success[/color][/center]\nRide: commanding your mount to take a move action succeeds automatically.`;
+}
+
+// With Ride, Command an Animal on the rider's mount asks whether it's for a
+// move action (Ride: "such as Stride"): yes posts the success, no rolls as
+// usual (roll). False when Ride doesn't apply, so the caller rolls.
+function promptRideCommand(record, rider, target, roll) {
+  if (!isRideCommand(record, rider, target)) return false;
+  api.showPrompt(
+    "Ride",
+    `Command ${getTokenDisplayName(target)} to take a move action (such as Stride)? With Ride, that succeeds automatically.`,
+    "Select...",
+    [
+      { label: "Yes, a move action", value: "move" },
+      { label: "No, roll the check", value: "roll" },
+    ],
+    null,
+    (choice) => {
+      const value = Array.isArray(choice) ? choice[0] : choice;
+      if (value === "move") {
+        api.sendMessage(getRideCommandMessage(rider, target), undefined, [], [], rider);
+      } else if (value === "roll") {
+        roll();
+      }
+    },
+    "OK",
+    "Cancel",
+    1,
+  );
+  return true;
 }
 
 // The Mount action card's buttons
@@ -513,8 +537,12 @@ function isAquaticCreature(token) {
 // underwater, for a creature with the Underwater effect
 function getUnderwaterAttackModifiers(token, weapon) {
   if (!token || !weapon || !getTokenCondition(token, "Underwater")) return [];
+  // The underwater property rune (Foundry's item:rune:property:underwater)
+  const runes = Array.isArray(weapon.data?.runes?.property) ? weapon.data.runes.property : [];
+  if (runes.some((rune) => /^underwater$/i.test(String(typeof rune === "string" ? rune : rune?.name || "").trim()))) {
+    return [];
+  }
   const traits = getTraitNameList(weapon.data?.traits);
-  if (traits.includes("underwater")) return [];
   // A weapon's damage type, an NPC attack's damage rolls, or its damage text
   // ("1d6 slashing")
   const damage = Array.isArray(weapon.data?.damage) ? weapon.data.damage : [weapon.data?.damage];
@@ -590,7 +618,7 @@ function holdBreathSelected() {
 function getBreathTurnEndMessage(token) {
   if (!token) return "";
   const name = getTokenDisplayName(token);
-  const button = (label, call) => getTableRuleButton(label, token._id, name, call);
+  const button = (label, call) => getManeuverButton(label, token._id, name, call);
   const suffocating = getTokenCondition(token, "Suffocating")?.value || 0;
   if (suffocating > 0) {
     const dc = 20 + 5 * (suffocating - 1);

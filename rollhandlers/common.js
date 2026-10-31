@@ -9862,15 +9862,14 @@ function performSkillAction(record, skill, actionName, isMacro = false, options 
     );
     return;
   }
-  // With Ride, Command an Animal on the rider's mount succeeds without a
-  // roll (table-rules.js)
-  if (action.name === "Command an Animal") {
+  // With Ride, Command an Animal on the rider's mount asks whether it's for
+  // a move action, which succeeds without a roll (table-rules.js)
+  if (action.name === "Command an Animal" && !options.rideAsked) {
     const rider = record.recordId ? record : api.getToken();
-    const rideMessage = getRideCommandMessage(record, rider, target);
-    if (rideMessage) {
-      api.sendMessage(rideMessage, undefined, [], [], rider);
-      return;
-    }
+    const asked = promptRideCommand(record, rider, target, () =>
+      performSkillAction(record, skill, actionName, isMacro, { ...options, rideAsked: true }),
+    );
+    if (asked) return;
   }
   const dc = action.defense && target
     ? getDefenseDCForToken(target, action.defense, { action: { name: action.name }, escape: options.escape })
