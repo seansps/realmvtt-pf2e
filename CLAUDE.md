@@ -301,6 +301,7 @@ Animal companions are characters, as Foundry's PF2e Companion Compendia builds t
 - Speeds: Amphibious, Burrower, Climber and Flier add rows to `data.speeds` (marked `fromFamiliarAbility`, so they're replaced next time; typed rows stay). Fast Movement raises the Speed in its `data.fastMovementSpeed` (asked when it's added, default land) to 40.
 - Allowance: `getFamiliarAbilityAllowance(master)`, Foundry's familiarAbilities rules by name: the highest of 2, Basic Witchcraft 3, Enhanced Familiar 4, Incredible Familiar 6, plus the witch's Familiar (Witch) and Improved Familiar Attunement extras. A typed Total # of Familiar Abilities is kept in `numAbilitiesOverride`. Too many picks show a note; nothing is refused.
 - Hooks: the master's level up resyncs the familiar (`resyncFamiliarOf`, at the end of the level-up steps), Rest says the abilities can be picked again (`getFamiliarRestNote`, with Spell Battery's slot), and the Familiar Focus button gives the master 1 Focus Point (`useFamiliarFocus`).
+- Removing: a list row's delete has no hook, so NPC action rows have a remove button (`removeNpcAction`, read fresh, one write). On a familiar it rewrites the Speeds and the Familiar Focus button from the abilities left (`getActionRemovalValues`). The module's Tough uses the `hitPointsBonus` modifier type, which is why HP reads it.
 
 ### Data Structure
 

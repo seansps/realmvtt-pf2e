@@ -13,6 +13,8 @@
 //     feats and class features (getFamiliarAbilityAllowance). A typed number
 //     overrides it. Picking more than that shows a note; nothing is refused
 //   - Familiar Focus: a button on the familiar gives its master 1 Focus Point
+//   - Removing an ability (the action row's remove button) rewrites the
+//     Speeds and the Familiar Focus button from the abilities left
 //   - The master's level up resyncs the familiar, and Rest says the abilities
 //     can be picked again (and the Spell Battery slot)
 
@@ -282,7 +284,11 @@ function onFamiliarAbilityLimitChange(familiar, value, callback) {
   const masterId = getRecordIdFromValue(familiar?.data?.master);
   const write = (computed) => {
     const override = isNaN(typed) || typed === computed ? null : typed;
-    api.setValuesOnRecord(familiar, { "data.numAbilitiesOverride": override, "data.numAbilities": isNaN(typed) ? computed : typed }, callback);
+    const values = { "data.numAbilitiesOverride": override };
+    // A typed number is already saved by the field; a cleared one goes back
+    // to the computed allowance
+    if (isNaN(typed) && computed !== null) values["data.numAbilities"] = computed;
+    api.setValuesOnRecord(familiar, values, callback);
   };
   if (!masterId) return write(null);
   api.getRecord("characters", masterId, (master) => write(master ? getFamiliarAbilityAllowance(master).value : null));
@@ -302,6 +308,33 @@ function getFamiliarRestNote(master, familiar) {
 
 // Familiar Focus (once per day, 2 actions): the master gets 1 Focus Point
 // back, up to their maximum (spell-entries.js)
+// Removing an NPC action (the row's remove button; a list row's delete has no
+// hook). On a familiar, the Speeds and the Familiar Focus button follow the
+// abilities left, in the same write
+function getActionRemovalValues(npc, actionId) {
+  const actions = [...(npc?.data?.actions || [])];
+  const index = actions.findIndex((action) => action?._id === actionId);
+  if (index < 0) return null;
+  actions.splice(index, 1);
+  const values = { "data.actions": actions };
+  if (npc?.data?.type !== "familiar") return values;
+  const remaining = { ...npc, data: { ...npc.data, actions } };
+  return {
+    ...values,
+    ...getFamiliarSpeedValues(remaining),
+    "fields.familiarFocusBtn.hidden": !hasFamiliarAbility(remaining, "familiar focus"),
+  };
+}
+
+// Reads the NPC fresh, so a row removed by an earlier click isn't written back
+function removeNpcAction(npc, actionId, callback) {
+  api.getRecord(npc?.recordType || "npcs", npc?._id, (fresh) => {
+    const values = fresh ? getActionRemovalValues(fresh, actionId) : null;
+    if (!values) return;
+    api.setValuesOnRecord(fresh, values, callback);
+  });
+}
+
 function useFamiliarFocus(familiar) {
   const masterId = getRecordIdFromValue(familiar?.data?.master);
   if (!masterId) {

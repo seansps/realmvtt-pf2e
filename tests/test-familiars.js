@@ -131,4 +131,43 @@ section("Sync writes once, and links the master back");
   assert("links already in place aren't written again", [writes.length, writes[0][1].includes("data.master")], [1, false]);
 }
 
+section("Removing an ability");
+{
+  const flier = { ...ability("Flier"), _id: "flier" };
+  const focus = { ...ability("Familiar Focus"), _id: "focus" };
+  const withFly = familiar([flier, focus], { speeds: [{ data: { type: "fly", value: 25, fromFamiliarAbility: true } }] });
+  const values = ctx.getActionRemovalValues(withFly, "flier");
+  assert("the row goes", values["data.actions"].map((action) => action.name), ["Familiar Focus"]);
+  assert("... and its Speed with it", values["data.speeds"], []);
+  assert("Familiar Focus's button stays while it's picked", values["fields.familiarFocusBtn.hidden"], false);
+  assert("... and hides once it's removed", ctx.getActionRemovalValues(withFly, "focus")["fields.familiarFocusBtn.hidden"], true);
+  const monster = { ...familiar([flier]), data: { type: "creature", actions: [flier] } };
+  assert("another NPC: only its actions change", Object.keys(ctx.getActionRemovalValues(monster, "flier")), ["data.actions"]);
+  assert("an action that's already gone: no write", ctx.getActionRemovalValues(withFly, "gone"), null);
+
+  let written = null;
+  ctx.api.getRecord = (type, id, cb) => cb(withFly);
+  ctx.api.setValuesOnRecord = (record, values, cb) => {
+    written = values;
+    if (cb) cb();
+  };
+  ctx.removeNpcAction(withFly, "flier");
+  assert("one write, from the record read fresh", Object.keys(written).sort(), ["data.actions", "data.speed.value", "data.speeds", "fields.familiarFocusBtn.hidden"]);
+}
+
+section("Typing the allowance");
+{
+  let written = null;
+  ctx.api.getRecord = (type, id, cb) => cb(master());
+  ctx.api.setValuesOnRecord = (record, values, cb) => {
+    written = values;
+    if (cb) cb();
+  };
+  const linked = familiar([], { master: JSON.stringify({ _id: "wiz" }) });
+  ctx.onFamiliarAbilityLimitChange(linked, 5);
+  assert("a typed number is kept as the override, not written again", written, { "data.numAbilitiesOverride": 5 });
+  ctx.onFamiliarAbilityLimitChange(linked, "");
+  assert("cleared: back to the master's allowance", written, { "data.numAbilitiesOverride": null, "data.numAbilities": 2 });
+}
+
 process.exitCode = summary() > 0 ? 1 : 0;
