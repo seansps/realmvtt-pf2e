@@ -70,7 +70,7 @@ function createSandbox() {
   };
   const ctx = vm.createContext(sandbox);
 
-  for (const file of ["common.js", "PF2e.js", "spell-entries.js", "property-runes.js", "dying.js", "limited-uses.js", "maneuvers.js", "attack-log.js", "action-limits.js", "basic-saves.js", "item-spells.js", "concealment.js", "animal-companions.js", "gm-tools.js", "inventory-tools.js", "healing-tools.js", "check-tools.js", "combat-riders.js", "weapon-traits.js", "class-extras.js", "character-growth.js"]) {
+  for (const file of ["common.js", "PF2e.js", "spell-entries.js", "property-runes.js", "dying.js", "limited-uses.js", "maneuvers.js", "attack-log.js", "action-limits.js", "basic-saves.js", "item-spells.js", "concealment.js", "animal-companions.js", "gm-tools.js", "inventory-tools.js", "healing-tools.js", "check-tools.js", "combat-riders.js", "weapon-traits.js", "class-extras.js", "character-growth.js", "table-rules.js"]) {
     const code = fs.readFileSync(rollhandlersDir + "/" + file, "utf8");
     new vm.Script(code, { filename: file }).runInContext(ctx);
   }

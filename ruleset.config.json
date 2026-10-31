@@ -5442,6 +5442,9 @@
         },
         "CharacterGrowth": {
           "file": "rollhandlers/character-growth.js"
+        },
+        "TableRules": {
+          "file": "rollhandlers/table-rules.js"
         }
       },
       "defaultDice": "default",

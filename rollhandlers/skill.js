@@ -264,6 +264,14 @@ if (targets.length === 0) {
   }
 }
 
+// Earn Income and Subsist: the outcome, with Collect, Fatigued and penalty
+// buttons (table-rules.js)
+const downtimeLines = [
+  ...getEarnIncomeLines(data?.roll?.metadata?.earnIncome, noteDegree),
+  ...getSubsistLines(data?.roll?.metadata?.subsist, noteDegree),
+];
+if (downtimeLines.length > 0) message += `\n\n${downtimeLines.join("\n")}`;
+
 // Notes from the creature's features for this result (rollNote)
 message += getRollNotesText(data?.roll?.metadata?.notes, noteDegree);
 

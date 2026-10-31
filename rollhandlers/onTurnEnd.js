@@ -66,6 +66,13 @@ getTurnEndPersistentDamage(token).forEach(({ value, partIndex }) => {
   }
 });
 
+// Holding breath or suffocating: the air left, or the Fortitude save, with
+// buttons (table-rules.js)
+const breathMessage = getBreathTurnEndMessage(token);
+if (breathMessage) {
+  api.sendMessage(breathMessage, undefined, [], [], token);
+}
+
 // Condition upkeep: frightened goes down by 1 at the end of each of the
 // creature's turns, but not again when Next after Previous ends the same turn
 // a second time

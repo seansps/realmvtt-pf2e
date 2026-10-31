@@ -9838,6 +9838,16 @@ function performSkillAction(record, skill, actionName, isMacro = false, options 
     administerFirstAid();
     return;
   }
+  // Downtime: Earn Income asks the task's level and days, Subsist the
+  // environment (table-rules.js)
+  if (action.name === "Earn Income") {
+    promptEarnIncome(record, skill);
+    return;
+  }
+  if (action.name === "Subsist") {
+    promptSubsist(record, skill, isMacro);
+    return;
+  }
   // options.targetId: a given creature (a monster's Strike rider, against
   // the Strike's target), else the one targeted
   const targets = (typeof api.getTargets === "function" && api.getTargets()) || [];
@@ -9851,6 +9861,15 @@ function performSkillAction(record, skill, actionName, isMacro = false, options 
       performSkillAction(record, skill, actionName, isMacro, { ...options, escape }),
     );
     return;
+  }
+  // With Ride, Command an Animal on the rider's mount asks whether it's for
+  // a move action, which succeeds without a roll (table-rules.js)
+  if (action.name === "Command an Animal" && !options.rideAsked) {
+    const rider = record.recordId ? record : api.getToken();
+    const asked = promptRideCommand(record, rider, target, () =>
+      performSkillAction(record, skill, actionName, isMacro, { ...options, rideAsked: true }),
+    );
+    if (asked) return;
   }
   const dc = action.defense && target
     ? getDefenseDCForToken(target, action.defense, { action: { name: action.name }, escape: options.escape })
@@ -9926,6 +9945,8 @@ function getSkillActionMacros(action) {
       : "\n```Treat_Wounds\ntreatWounds();\n```";
   }
   if (!name || name === "Administer First Aid") return "";
+  // Mount and Dismount (table-rules.js)
+  if (name === "Mount") return getMountActionMacros();
   return getSkillsForAction(name)
     .map((skill) => {
       const label = `Roll_${capitalize(skill)}`;
@@ -12897,6 +12918,8 @@ function performAttackRoll(record, weapon, weaponDataPath, attackNumber) {
           damageDice: countWeaponDamageDice(weapon, getStrikingRuneForRecord(record, weapon)),
         });
   modifiers.push(...traitModifiers.attack);
+  // A bludgeoning or slashing Strike underwater (table-rules.js)
+  if (!isSpell) modifiers.push(...getUnderwaterAttackModifiers(attackerToken || record, weapon));
   const getSweepModifiers = (targetId) =>
     isSpell
       ? []

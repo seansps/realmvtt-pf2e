@@ -1174,6 +1174,24 @@
       ></button>
     </box>
 
+    <!-- Downtime: Earn Income and the cost of living (table-rules.js) -->
+    <div style="display: flex; gap: 4px; flex-wrap: wrap">
+      <button
+        size="xs"
+        label="Earn Income"
+        variant="subtle"
+        hideonlocked="true"
+        onclick="promptEarnIncome(record)"
+      ></button>
+      <button
+        size="xs"
+        label="Pay Cost of Living"
+        variant="subtle"
+        hideonlocked="true"
+        onclick="payCostOfLiving(record)"
+      ></button>
+    </div>
+
     <!-- Retraining a skill increase, a downtime action (character-growth.js) -->
     <button
       size="xs"
