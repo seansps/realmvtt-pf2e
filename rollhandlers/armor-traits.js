@@ -1,6 +1,6 @@
-// Armor check penalty exceptions and armor traits (Player Core pg. 272-275),
-// following Foundry PF2e's character prepareSkills, prepareSaves and
-// createPonderousPenalty.
+// Armor check penalty exceptions and armor traits (Player Core pg. 272-275;
+// ponderous is from Treasure Vault (Remastered) pg. 220), following Foundry
+// PF2e's character prepareSkills, prepareSaves and createPonderousPenalty.
 //
 //   - Check penalty: Strength- and Dexterity-based skill checks while the
 //     wearer's Strength is below the armor's, never on a check with the attack
@@ -11,8 +11,8 @@
 //   - Bulwark: on a Reflex save against a damaging effect, +3 instead of the
 //     Dexterity modifier. On by itself for a basic save; offered unticked on
 //     other Reflex saves
-//   - Ponderous: a -1 item penalty to initiative, or the check penalty when
-//     the Strength isn't met and that's worse
+//   - Ponderous: a -1 untyped penalty to initiative, or the check penalty
+//     when the Strength isn't met and that's worse
 //   - Hindering (the Speed calculation) and comfort (the Rest prompt) were
 //     already in place
 
@@ -81,9 +81,10 @@ function getBulwarkModifier(record, saveType, basic = false) {
   };
 }
 
-// Ponderous: a -1 item penalty to initiative, or the check penalty when the
-// Strength isn't met and it's worse. An initiativePenalty modifier, so the
-// initiative roll picks it up. Null without ponderous armor.
+// Ponderous: a -1 penalty to initiative, untyped (Treasure Vault, Foundry),
+// or the check penalty when the Strength isn't met and it's worse. An
+// initiativePenalty modifier, so the initiative roll picks it up. Null
+// without ponderous armor.
 function getPonderousModifier(record, bestArmor) {
   if (record?.recordType !== "characters" || !hasArmorTrait(bestArmor, "ponderous")) return null;
   const checkPenalty = Math.abs(parseInt(bestArmor?.armor?.checkPenalty, 10) || 0);
@@ -93,7 +94,7 @@ function getPonderousModifier(record, bestArmor) {
     isPenalty: true,
     valueType: "number",
     name: "Ponderous",
-    type: "item",
+    type: "",
     modifierType: "initiativePenalty",
     field: "",
     active: true,

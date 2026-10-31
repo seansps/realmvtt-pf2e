@@ -291,7 +291,7 @@ Animal companions are characters, as Foundry's PF2e Companion Compendia builds t
 `rollhandlers/armor-traits.js` (global script `ArmorTraits`), following Foundry's character prepareSkills, prepareSaves and createPonderousPenalty.
 - Check penalty: `getCheckPenaltyForArmor(record, bestArmor, context)` asks `isCheckPenaltyApplied` with the roll's context (`context.statistic` is the skill, `context.action` the action). Never with the attack trait (`isAttackTraitCheck`: a SKILL_ACTIONS entry marked `attack`, or a source passing the trait); Acrobatics and Athletics only when Strength is short and the armor isn't flexible; Stealth always in noisy armor; other checks when Strength is short. Armor without a Strength value has no check penalty.
 - Bulwark: `rollSave` adds `getBulwarkModifier` on Reflex saves (+3 instead of the Dex modifier, as a difference): on for a basic save (damaging), unticked otherwise.
-- Ponderous: `getPonderousModifier` is an `initiativePenalty` (item type) added with the check penalty in `getEffectsAndModifiersForToken`: -1, or the check penalty when Strength is short and it's worse.
+- Ponderous (Treasure Vault): `getPonderousModifier` is an untyped `initiativePenalty` added with the check penalty in `getEffectsAndModifiersForToken`, so it stacks with item penalties: -1, or the check penalty when Strength is short and it's worse.
 - Hindering (the Speed calculation, `hasArmorTrait`) and comfort (the Rest prompt, healing-tools.js) were already in place.
 
 ### Data Structure

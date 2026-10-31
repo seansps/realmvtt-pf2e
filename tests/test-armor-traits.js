@@ -79,7 +79,16 @@ section("Ponderous");
   const initiative = (record) =>
     capturePrompt(() => ctx.rollSkill(record, "perception", null, false, 0, 1, "int", false, true)).modifiers.find((m) => m.name === "Ponderous");
   const met = pc([armor(["Ponderous"], { checkPenalty: -3 })], { str: 3 });
-  assert("Strength met: -1 item penalty to initiative", [initiative(met)?.value, initiative(met)?.type], [-1, "item"]);
+  assert("Strength met: -1 untyped penalty to initiative", [initiative(met)?.value, initiative(met)?.type], [-1, ""]);
+  // Untyped, so it stacks with an item penalty to initiative
+  const shoddy = { type: "initiativePenalty", modifierType: "item", valueType: "number", value: "2", field: "", active: true };
+  const withItemPenalty = { ...met, data: { ...met.data, feats: [{ name: "Shoddy", data: { type: "general", modifiers: [{ data: shoddy }] } }] } };
+  const rolled = capturePrompt(() => ctx.rollSkill(withItemPenalty, "perception", null, false, 0, 1, "int", false, true)).modifiers;
+  assert(
+    "... and stacks with an item penalty in the initiative roll",
+    rolled.filter((m) => m.name === "Ponderous" || m.name === "Shoddy").map((m) => [m.name, m.value]),
+    [["Shoddy", -2], ["Ponderous", -1]],
+  );
   assert("Strength short: the check penalty", initiative(pc([armor(["Ponderous"], { checkPenalty: -3 })]))?.value, -3);
   assert("not on other checks", capturePrompt(() => ctx.rollSkill(met, "perception")).modifiers.some((m) => m.name === "Ponderous"), false);
   assert("no ponderous: none", initiative(pc([armor()], { str: 3 })), undefined);
