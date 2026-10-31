@@ -1,4 +1,14 @@
 <script>
+  // The Familiar field changed: the familiar takes this character as its
+  // master and syncs (familiars.js)
+  function onFamiliarChange(value) {
+    const familiarId = getRecordIdFromValue(value);
+    if (!familiarId) return;
+    api.getRecord("npcs", familiarId, (familiar) => {
+      if (familiar) syncFamiliarWithMaster(familiar, record._id);
+    });
+  }
+
   function onAddImmunity() {
     const immunities = record?.data?.immunities;
     const valuesToSet = {};
@@ -134,6 +144,19 @@
         label="Favored Weapon"
         placeholder="From deity"
       ></stringfield>
+    </div>
+
+    <!-- The character's familiar, kept in step with them (familiars.js) -->
+    <div style="margin-top: 8px; display: flex; flex-direction: row; gap: 4px">
+      <dropdown
+        field="familiar"
+        label="Familiar"
+        placeholder="Select Familiar..."
+        optionsquery='{"type": "npcs", "query": {"data.type": "familiar"}}'
+        size="xs"
+        width="100%"
+        onchange="onFamiliarChange(value);"
+      ></dropdown>
     </div>
 
     <!-- An animal companion's master and level (animal-companions.js) -->

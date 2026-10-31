@@ -941,13 +941,38 @@
 
   function onAddAction(type) {
     if (type === "familiar") {
-      // We prompt for familiar abilities
+      // We prompt for familiar abilities, then write them with the Speeds
+      // they give in one write (familiars.js)
       const onSelect = (value) => {
-        if (value && value.length > 0) {
-          value.forEach((ability) => {
-            api.addValue("data.actions", ability);
+        if (!value || value.length === 0) return;
+        const actions = [...(record.data?.actions || []), ...value];
+        const familiar = { ...record, data: { ...record.data, actions } };
+        const write = () => {
+          const values = {
+            "data.actions": actions,
+            ...getFamiliarSpeedValues(familiar),
+            "fields.familiarFocusBtn.hidden": !hasFamiliarAbility(familiar, "familiar focus"),
+          };
+          api.setValues(values, () => {
+            const note = getFamiliarAbilityExcessNote(familiar, getFamiliarAbilityLimit(familiar, null));
+            if (note) api.showNotification(note, "yellow", "Familiar Abilities");
           });
-        }
+        };
+        // Fast Movement raises one Speed; ask which when there's a choice
+        const fast = value.find((ability) => String(ability?.name || "").toLowerCase() === "fast movement");
+        const choices = fast ? getFastMovementChoices(familiar) : [];
+        if (choices.length < 2) return write();
+        api.showPrompt(
+          "Fast Movement",
+          "Which Speed goes from 25 to 40 feet?",
+          "Select...",
+          choices.map((choice) => ({ label: capitalize(choice), value: choice })),
+          null,
+          (choice) => {
+            fast.data = { ...(fast.data || {}), fastMovementSpeed: (Array.isArray(choice) ? choice[0] : choice) || "land" };
+            write();
+          }
+        );
       };
       const optionsQuery = {
         type: "actions",
@@ -1041,168 +1066,14 @@
     api.setValues({ "data.ac": newAC });
   }
 
+  // The familiar's master changed, or Refresh Stats: it takes the master's
+  // level, HP, AC, saves, skills, Speeds and ability allowance (familiars.js)
   function onSelectMaster() {
-    const master = record.data?.master;
-    if (!master) return;
+    syncFamiliarWithMaster(record, getRecordIdFromValue(record.data?.master));
+  }
 
-    try {
-      const masterObj = JSON.parse(master);
-      api.getRecord("characters", masterObj._id, (masterRecord) => {
-        if (!masterRecord) return;
-
-        const valuesToSet = {};
-        const masterLevel = parseInt(masterRecord.data?.level || "0", 10);
-
-        // Level: Pet's level equals master's level
-        valuesToSet["data.level"] = masterLevel;
-
-        // Hit Points: 5 HP per level, plus any hitpoints modifiers
-        let baseHP = 5 * masterLevel;
-
-        // Get hitpoints modifiers for the familiar
-        const hpMods = getEffectsAndModifiersForToken(record, ["hitpoints"]);
-
-        hpMods.forEach((mod) => {
-          if (mod.active === false) return;
-          const modValue = parseInt(mod.value || "0", 10);
-          if (!isNaN(modValue)) {
-            baseHP += modValue;
-          }
-        });
-
-        valuesToSet["data.hitpoints"] = Math.max(baseHP, 1);
-
-        // Set current HP to max if not already set or if max changed
-        if (!record.data?.curhp || record.data?.curhp > baseHP) {
-          valuesToSet["data.curhp"] = Math.max(baseHP, 1);
-        }
-
-        // AC: Equal to master's AC (before circumstance/status bonuses)
-        const masterAC = parseInt(masterRecord.data?.ac || "10", 10);
-        valuesToSet["data.ac"] = masterAC;
-
-        // Saves: Equal to master's saves (before circumstance/status bonuses)
-        const masterFortitude = parseInt(
-          masterRecord.data?.fortitudeMod || "0",
-          10
-        );
-        const masterReflex = parseInt(masterRecord.data?.reflexMod || "0", 10);
-        const masterWill = parseInt(masterRecord.data?.willMod || "0", 10);
-
-        valuesToSet["data.fortitudeMod"] = masterFortitude;
-        valuesToSet["data.reflexMod"] = masterReflex;
-        valuesToSet["data.willMod"] = masterWill;
-
-        // Get master's spellcasting attribute modifier for special skills
-        // Use the masterAttribute field to determine which attribute to use
-        const masterAttribute = record.data?.masterAttribute || "none";
-        let spellcastingMod = 0;
-
-        if (masterAttribute !== "none") {
-          // Get the specified attribute modifier from the master
-          spellcastingMod = parseInt(
-            masterRecord.data?.[masterAttribute] || "0",
-            10
-          );
-        }
-
-        // Perception, Acrobatics, and Stealth: 3 + level, or spellcasting mod + level if higher
-        const baseSkillMod = 3 + masterLevel;
-        const spellcastingSkillMod = spellcastingMod + masterLevel;
-        const specialSkillMod = Math.max(baseSkillMod, spellcastingSkillMod);
-
-        valuesToSet["data.perceptionMod"] = specialSkillMod;
-
-        // Define all default PF2e skills
-        const defaultSkills = [
-          "Acrobatics",
-          "Arcana",
-          "Athletics",
-          "Crafting",
-          "Deception",
-          "Diplomacy",
-          "Intimidation",
-          "Medicine",
-          "Nature",
-          "Occultism",
-          "Performance",
-          "Religion",
-          "Society",
-          "Stealth",
-          "Survival",
-          "Thievery",
-        ];
-
-        // Build complete skills array with updates and missing skills
-        const skills = record.data?.skills || [];
-        const existingSkillNames = skills.map(
-          (s) => s.name?.toLowerCase() || ""
-        );
-
-        // Start with updated existing skills
-        const updatedSkills = skills.map((skill) => {
-          const skillName = skill.name?.toLowerCase() || "";
-          let mod;
-          if (skillName === "acrobatics" || skillName === "stealth") {
-            mod = specialSkillMod;
-          } else {
-            mod = masterLevel;
-          }
-          const modString = mod >= 0 ? `+${mod}` : `${mod}`;
-
-          return {
-            ...skill,
-            data: {
-              ...skill.data,
-              mod: mod,
-              skillWithMod: `${skill.name} ${modString}`,
-            },
-          };
-        });
-
-        // Add any missing default skills
-        defaultSkills.forEach((skillName) => {
-          if (!existingSkillNames.includes(skillName.toLowerCase())) {
-            const isSpecialSkill =
-              skillName.toLowerCase() === "acrobatics" ||
-              skillName.toLowerCase() === "stealth";
-            const mod = isSpecialSkill ? specialSkillMod : masterLevel;
-            const modString = mod >= 0 ? `+${mod}` : `${mod}`;
-
-            updatedSkills.push({
-              _id: generateUuid(),
-              name: skillName,
-              unidentifiedName: skillName,
-              identified: true,
-              data: {
-                mod: mod,
-                skillWithMod: `${skillName} ${modString}`,
-                rollTooltip: `Roll ${skillName} Check`,
-                note: "",
-              },
-            });
-          }
-        });
-
-        // Set the complete skills array at once
-        valuesToSet["data.skills"] = updatedSkills;
-
-        // Set initiative mod to perception mod
-        valuesToSet["data.initiativeMod"] = specialSkillMod;
-
-        // Speed: 25 feet (default)
-        if (!record.data?.speed || record.data?.speed === "0") {
-          valuesToSet["data.speed"] = "25";
-        }
-
-        // Apply all changes
-        if (Object.keys(valuesToSet).length > 0) {
-          api.setValues(valuesToSet);
-        }
-      });
-    } catch (error) {
-      console.error("Error in onSelectMaster:", error);
-    }
+  function onNumAbilitiesChange(value) {
+    onFamiliarAbilityLimitChange(record, value);
   }
 </script>
 
@@ -2182,7 +2053,20 @@
             placeholder="0"
             size="xs"
             label="Total # of Familiar Abilities"
+            onchange="onNumAbilitiesChange(value);"
           ></numberfield>
+        </div>
+        <!-- Familiar Focus: 1 Focus Point back to the master (familiars.js) -->
+        <div style="display: flex; gap: 4px; flex-wrap: wrap; margin-top: 4px">
+          <button
+            size="xs"
+            variant="light"
+            icon="IconSparkles"
+            label="Familiar Focus"
+            field="familiarFocusBtn"
+            hidden="true"
+            onclick="useFamiliarFocus(record);"
+          ></button>
         </div>
       </box>
 
