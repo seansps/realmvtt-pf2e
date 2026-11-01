@@ -347,6 +347,21 @@ section("G4.5 parent:granter atoms (Crossblooded Evolution)");
   Object.assign(ctx.api, saved);
   const added = (written?.["data.classes.0.data.features"] || []).find((f) => f.name === "Diabolic");
   assert("the chosen feature records its granters, nearest first", JSON.stringify(added?.data?.grantedBy), JSON.stringify(["bloodline-draconic", "crossblooded-evolution"]));
+
+  // A choice on a feat (Kineticist Dedication's gate) adds the class feature
+  const gateOption = { _id: "opt-fire", name: "Fire Gate", data: { value: [{ _id: "f-fire-gate", name: "Fire Gate", recordType: "features", data: { level: 1, type: "classfeature" } }] } };
+  const gateChoice = { _id: "c2", name: "Gate", data: { options: [gateOption], choices: [] } };
+  const dedication = { _id: "feat-kin", name: "Kineticist Dedication", recordType: "feats", data: { level: 2, choices: [gateChoice] } };
+  const fighter = pc({ feats: [dedication], classes: [{ name: "Fighter", data: { hp: 10, features: [{ _id: "f-rs", name: "Reactive Strike", recordType: "features", data: { level: 1 } }] } }] });
+  written = null;
+  ctx.api.showPrompt = (title, description, placeholder, options, query, callback) => callback(["opt-fire"]);
+  ctx.api.setValues = (values) => {
+    written = values;
+  };
+  ctx.promptForChoices(fighter, [{ feature: dedication, group: { name: "Feats", dataPath: "data.feats" }, choiceObj: gateChoice }], 0);
+  Object.assign(ctx.api, saved);
+  assert("a feat's choice adds the picked class feature", (written?.["data.classes.0.data.features"] || []).map((f) => f.name).join(","), "Reactive Strike,Fire Gate");
+  assert("and still records the choice on the feat", JSON.parse(written?.["data.feats"]?.[0]?.data?.choices?.[0]?.data?.choices?.[0] || "{}").name, "Fire Gate");
 }
 
 // --- G4.6 spell slot rank (Sorcerous Potency) -----------------------------------

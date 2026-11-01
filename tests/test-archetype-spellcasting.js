@@ -123,6 +123,8 @@ section("Each archetype casts like its class");
   assert("summoner: nothing from the dedication alone", archetype(at("Summoner", 2, ["Summoner Dedication"]), "summoner"), undefined);
   spec = archetype(at("Summoner", 4, ["Summoner Dedication", "Basic Summoner Spellcasting"]), "summoner");
   assert("summoner: spontaneous Charisma from Basic Summoner Spellcasting", [spec.type, spec.attribute, spec.repertoire.repCantrips, slots(spec)], ["spontaneous", "cha", 2, { 1: 1 }]);
+  spec = archetype(at("Summoner", 20, ["Summoner Dedication", "Basic Summoner Spellcasting", "Expert Summoner Spellcasting", "Master Summoning Spellcasting"]), "summoner");
+  assert("summoner: Master Summoning Spellcasting gives 7th and 8th, master", [slots(spec)[7], slots(spec)[8], spec.training], [1, 1, 3]);
   spec = archetype(at("Sorcerer", 2, ["Sorcerer Dedication"], { flags: { bloodline: "bloodline-aberrant" } }), "sorcerer");
   assert("sorcerer: the bloodline's tradition", spec.tradition, "Occult");
   spec = archetype(at("Sorcerer", 2, ["Sorcerer Dedication"]), "sorcerer");

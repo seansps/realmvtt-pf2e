@@ -64,6 +64,7 @@ section("The pool's size");
   const psi = focusEntry("Psi Cantrips", [], { cantrips: [spell("Daze", ["Cantrip", "Psyche"])] });
   assert("Psi Cantrips and Amps: 2 points", ctx.getFocusPoolMax(character([psi], {}, ["Psi Cantrips and Amps"])), 2);
   assert("and Clarity of Focus 1 more", ctx.getFocusPoolMax(character([psi], {}, ["Psi Cantrips and Amps", "Clarity of Focus"])), 3);
+  assert("Psychic Dedication: a pool of 1 for its psi cantrip", ctx.getFocusPoolMax(character([psi], {}, ["Psychic Dedication"])), 1);
   assert("up to 3", ctx.getFocusPoolMax(character([psi], {}, ["Psi Cantrips and Amps", "Clarity of Focus", "Psi Development"])), 3);
 }
 

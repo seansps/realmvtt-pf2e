@@ -827,6 +827,8 @@ function getClassSpellcastingSpecs(record, classCasting, level, valuesToSet) {
 //   breadth     the breadth feat
 //   startsWith  the feat that gives the spellcasting when the dedication
 //               doesn't (the summoner's basic spellcasting)
+//   master      the master spellcasting feat's name when it isn't
+//               "Master <Class> Spellcasting" (Master Summoning Spellcasting)
 //   attribute   "intOrCha": the psychic casts with the attribute they
 //               qualified with, taken as the higher of the two
 const ARCHETYPE_SPELLCASTING = {
@@ -839,7 +841,10 @@ const ARCHETYPE_SPELLCASTING = {
   oracle: { breadth: "Mysterious Breadth" },
   psychic: { cantrips: 1, attribute: "intOrCha" },
   sorcerer: { breadth: "Bloodline Breadth" },
-  summoner: { startsWith: "Basic Summoner Spellcasting" },
+  summoner: {
+    startsWith: "Basic Summoner Spellcasting",
+    master: "Master Summoning Spellcasting",
+  },
   witch: { cantrips: 1, breadth: "Patron's Breadth" },
   wizard: { breadth: "Arcane Breadth" },
 };
@@ -888,10 +893,11 @@ function getArchetypeSpellcastingSpecs(record, level, valuesToSet = {}, classSlu
     if (!start) continue;
     const casting = CLASS_SPELLCASTING[slug];
     const has = (feat) => hasFeatNamed(record, feat);
+    const masterFeat = archetype.master || `Master ${name} Spellcasting`;
     const ranks = getArchetypeSlotRanks(level, {
       basic: has(`Basic ${name} Spellcasting`),
       expert: has(`Expert ${name} Spellcasting`),
-      master: has(`Master ${name} Spellcasting`),
+      master: has(masterFeat),
     });
     const breadth = !!archetype.breadth && has(archetype.breadth);
     const cantrips = archetype.cantrips ?? 2;
@@ -938,7 +944,7 @@ function getArchetypeSpellcastingSpecs(record, level, valuesToSet = {}, classSlu
       attribute,
       counts,
       repertoire,
-      training: has(`Master ${name} Spellcasting`)
+      training: has(masterFeat)
         ? 3
         : has(`Expert ${name} Spellcasting`)
           ? 2
@@ -1763,6 +1769,8 @@ const FOCUS_POOL_FEATURES = {
   "Psi Cantrips and Amps": 2,
   "Clarity of Focus": 1,
   "Psi Development": 1,
+  // A pool of 1, or 1 more if the character has one (Dark Archive)
+  "Psychic Dedication": 1,
 };
 
 function isFocusEntry(entry) {

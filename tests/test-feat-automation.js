@@ -226,6 +226,111 @@ section("critical-hit-only damage riders");
   assertIncludes("a critical damage roll adds the rider", names(crit.modifiers), "Brutal Critical");
   assert("and the critical persistent damage", crit.metadata.criticalPersistentDamage, "1d4 mental");
   assert("the rider's die is critical-only (not doubled)", crit.metadata.criticalOnlyDice.some((d) => d.dieType === 6), true);
+
+  // Unfailing Bow: damage on every hit but a critical one
+  const unfailing = feat("Unfailing Bow", [{ type: "damageBonus", modifierType: "none", field: "", valueType: "string", value: "2", predicate: '[{"not":"check:outcome:critical-success"}]' }]);
+  const bowRecord = pc({ feats: [unfailing], inventory: [claws] });
+  const bowAttack = capturePrompt(() => ctx.performAttackRoll(bowRecord, claws, "data.inventory.0", 1)).metadata;
+  const bowMod = (bowAttack.damageModifiers || []).find((m) => m.name === "Unfailing Bow");
+  assert("a negated critical atom is not a critical rider", bowMod?.criticalOnly, undefined);
+  assert("it is marked for every hit but a critical one", bowMod?.notOnCritical, true);
+  assertIncludes("a normal damage roll adds it", names(capturePrompt(() => ctx.performDamageRoll(bowRecord, claws, "data.inventory.0", false)).modifiers), "Unfailing Bow");
+  assertNotIncludes("a critical damage roll leaves it out", names(capturePrompt(() => ctx.performDamageRoll(bowRecord, claws, "data.inventory.0", true)).modifiers), "Unfailing Bow");
+  assert("polarity: positive", JSON.stringify(ctx.getPredicateAtomPolarity('["check:outcome:failure"]', "check:outcome:failure")), '{"positive":true,"negated":false}');
+  assert("polarity: under nor", JSON.stringify(ctx.getPredicateAtomPolarity({ nor: ["check:outcome:failure"] }, "check:outcome:failure")), '{"positive":false,"negated":true}');
+  assert("polarity: not of not", JSON.stringify(ctx.getPredicateAtomPolarity({ not: { not: "x" } }, "x")), '{"positive":true,"negated":false}');
+}
+
+section("Foundry formula functions in converted macro code");
+{
+  // Stasian Smash's button: `${ternary(gte(level,18),2,1)}d4`
+  assert("below 18th: 1d4", vm.runInContext("(level => `${ternary(gte(level,18),2,1)}d4`)(10)", ctx), "1d4");
+  assert("at 18th: 2d4", vm.runInContext("(level => `${ternary(gte(level,18),2,1)}d4`)(18)", ctx), "2d4");
+  assert("floor, ceil, max", vm.runInContext("[floor(7/2), ceil(7/2), max(1, '4', 2)].join()", ctx), "3,4,4");
+}
+
+section("adjustModifier keeps a damage value's type");
+{
+  assert("upgrade 2 precision to 3", ctx.adjustValueByMode("2 precision", "3 precision", "upgrade"), "3 precision");
+  assert("upgrade with a bare number keeps the type", ctx.adjustValueByMode("2 precision", 3, "upgrade"), "3 precision");
+  assert("a lower upgrade leaves it", ctx.adjustValueByMode("2 precision", "1", "upgrade"), "2 precision");
+  assert("downgrade", ctx.adjustValueByMode(4, 2, "downgrade"), 2);
+  assert("add keeps the type", ctx.adjustValueByMode("1 fire", 2, "add"), "3 fire");
+  assert("override with a typed value", ctx.adjustValueByMode("1d6", "2d6 fire", "override"), "2d6 fire");
+  assert("numbers stay numbers", ctx.adjustValueByMode(2, "3", "upgrade"), 3);
+  const slinger = feat("Slinger's Precision", [
+    { type: "damageBonus", modifierType: "", field: "", valueType: "string", value: "2 precision", slug: "slingers-precision-crossbow" },
+    { type: "adjustModifier", targetSlug: "slingers-precision-crossbow", value: "3 precision", valueType: "string", adjustMode: "upgrade" },
+  ]);
+  const mod = ctx.getEffectsAndModifiersForToken(pc({ feats: [slinger] }), ["damageBonus"], "").find((m) => m.slug === "slingers-precision-crossbow");
+  assert("a feature's adjustModifier upgrade keeps precision", mod?.value, "3 precision");
+}
+
+section("penalties whose tokens resolve to negative numbers");
+{
+  const realGet = ctx.api.getValueOnRecord;
+  ctx.api.getValueOnRecord = (rec, path) => path.split(".").reduce((o, k) => o?.[k], rec);
+  try {
+    const dread = feat("Dread", [{ type: "savePenalty", modifierType: "status", field: "will", valueType: "number", value: "@record.data.effects.dread" }]);
+    const record = pc({ feats: [dread], effects: { dread: -2 } });
+    const mod = ctx.getEffectsAndModifiersForToken(record, ["savePenalty"], "will").find((m) => m.name === "Dread");
+    assert("a token resolving to -2 is a 2 penalty, not 0", String(mod?.value), "-2");
+    const plain = pc({ feats: [dread], effects: { dread: 3 } });
+    assert("a positive token is still a penalty", String(ctx.getEffectsAndModifiersForToken(plain, ["savePenalty"], "will").find((m) => m.name === "Dread")?.value), "-3");
+    const token = { ...pc({ effects: { chill: -1 } }), effects: [{ _id: "e-chill", name: "Arctic", rules: [{ type: "skillPenalty-circumstance", field: "acrobatics", valueType: "number", value: "@record.data.effects.chill" }] }] };
+    assert("an effect rule does the same", String(ctx.getEffectsAndModifiersForToken(token, ["skillPenalty"], "acrobatics").find((m) => m.name === "Arctic")?.value), "-1");
+    assert("asPenaltyValue keeps a formula", ctx.asPenaltyValue("1d4"), "-1d4");
+  } finally {
+    ctx.api.getValueOnRecord = realGet;
+  }
+}
+
+section("roll options from choices feed rollOption modifiers");
+{
+  const gate = feat("Fire Gate", [{ type: "rollOption", option: "fire-gate-junction", predicate: '["junction:fire:skill"]' }], {
+    choices: [{ data: { rollOption: "junction:fire", choices: [JSON.stringify({ _id: "x", name: "Skill", selectedRollOption: "junction:fire:skill" })] } }],
+  });
+  const values = {};
+  ctx.updateRollOptions(pc({ feats: [gate] }), values);
+  assertIncludes("the choice's own roll option is stored", values["data.rollOptions"] || [], "junction:fire:skill");
+  assertIncludes("a rollOption modifier gated on it fires", values["data.rollOptions"] || [], "fire-gate-junction");
+}
+
+section("Elemental Blast (Rage of Elements pg. 15)");
+{
+  const blastAt = (level, attackType, actions) => {
+    const record = pc({ level, str: 3, con: 4, classDC: 20, flags: { element: "fire" } });
+    const answers = [attackType, actions];
+    const saved = { getToken: ctx.api.getToken, showPrompt: ctx.api.showPrompt, roll: ctx.performAttackRoll };
+    let weapon = null;
+    ctx.api.getToken = () => record;
+    ctx.api.showPrompt = (title, text, placeholder, options, value, callback) => callback([answers.length ? answers.shift() : options[0].value]);
+    ctx.performAttackRoll = (rec, w) => (weapon = w);
+    try {
+      ctx.elementalBlast();
+    } finally {
+      ctx.api.getToken = saved.getToken;
+      ctx.api.showPrompt = saved.showPrompt;
+      ctx.performAttackRoll = saved.roll;
+    }
+    return weapon;
+  };
+  const extra = (w, name) => (w.data.extraDamageModifiers || []).find((m) => m.name === name);
+  assert("1 die at 4th level", blastAt(4, "ranged", "1").data.damageRolls[0].data.formula, "1d6");
+  assert("2 dice at 5th level", blastAt(5, "ranged", "1").data.damageRolls[0].data.formula, "2d6");
+  assert("5 dice at 17th level", blastAt(17, "ranged", "1").data.damageRolls[0].data.formula, "5d6");
+  const melee = blastAt(5, "melee", "2");
+  assert("melee: Strength is not added to the attack", melee.data.bonus, 10);
+  assert("melee: Strength adds to damage (strengthToDamage)", melee.data.strengthToDamage, true);
+  assert("2 actions: Constitution as a status bonus to damage", [extra(melee, "Elemental Blast (2 actions)")?.value, extra(melee, "Elemental Blast (2 actions)")?.type], [4, "status"]);
+  assert("no flat modifier left on the damage roll", melee.data.damageRolls[0].data.modifier, undefined);
+  const ranged = blastAt(5, "ranged", "1");
+  assert("ranged 1-action: no Strength or Constitution", [ranged.data.strengthToDamage, (ranged.data.extraDamageModifiers || []).length], [false, 0]);
+  // The attack's damage rows: one ticked Strength for melee, none for ranged
+  const rows = (w) => (capturePrompt(() => saved_performAttackRoll(pc({ level: 5, str: 3, con: 4, classDC: 20 }), w, null)).metadata.damageModifiers || []).filter((m) => /Strength/.test(m.name));
+  const saved_performAttackRoll = ctx.performAttackRoll;
+  assert("melee blast: one ticked Strength row", rows(melee).map((m) => `${m.value}:${m.active}`).join(), "3:true");
+  assert("ranged blast: no Strength row", rows(ranged).length, 0);
 }
 
 // --- Foundry atoms ----------------------------------------------------------------
@@ -238,6 +343,10 @@ section("Foundry item atoms");
   assertIncludes("item:slug is the full name", traits, "item:slug:1-striking-flaming-longbow");
   assertIncludes("item:type:weapon", traits, "item:type:weapon");
   assertIncludes("item:hands-held from usage", traits, "item:hands-held:1");
+  const staff = weapon("Staff", { group: "club", usage: "held-in-one-plus-hands", carried: "equipped", handBtn: "two" });
+  assertIncludes("item:hands-held:2 for a 1+ weapon gripped in two hands", traitsFor(pc(), { weapon: staff }), "item:hands-held:2");
+  assertIncludes("its usage atom stays 1", traitsFor(pc(), { weapon: staff }), "item:usage:hands:1");
+  assertNotIncludes("a stowed weapon holds no hands", traitsFor(pc(), { weapon: { ...staff, data: { ...staff.data, carried: "carried" } } }), "item:hands-held:1");
   assertIncludes("item:magical with runes", traits, "item:magical");
   const greataxe = traitsFor(pc(), { weapon: weapon("Greataxe", { usage: "held-in-two-hands" }) });
   assertIncludes("two-handed usage", greataxe, "item:usage:hands:2");

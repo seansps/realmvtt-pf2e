@@ -330,7 +330,10 @@ let criticalOnlyDice = [];
 // critical-only dice and moved to the end where the damage handler looks for
 // them. On any other hit they are dropped.
 const criticalRiders = damageModifiers.filter((mod) => mod.criticalOnly);
-damageModifiers = damageModifiers.filter((mod) => !mod.criticalOnly);
+// Damage for every hit but a critical one ({"not":"check:outcome:critical-success"})
+damageModifiers = damageModifiers.filter(
+  (mod) => !mod.criticalOnly && !(isCritical && mod.notOnCritical),
+);
 if (isCritical) {
   criticalRiders.forEach((mod) => {
     damageModifiers.push({ ...mod, active: true });

@@ -644,6 +644,44 @@ function checkForReplacements(
   return value;
 }
 
+// Foundry formula functions as JavaScript, for the module converter's macro
+// buttons, which call them in code: `${ternary(gte(level, 18), 2, 1)}d4`
+// (Stasian Smash, Garland Spell). evaluateFormula handles the same names in
+// modifier values, which are strings, not code.
+function ternary(condition, whenTrue, whenFalse) {
+  return condition ? whenTrue : whenFalse;
+}
+function gte(a, b) {
+  return Number(a) >= Number(b);
+}
+function gt(a, b) {
+  return Number(a) > Number(b);
+}
+function lte(a, b) {
+  return Number(a) <= Number(b);
+}
+function lt(a, b) {
+  return Number(a) < Number(b);
+}
+function eq(a, b) {
+  return Number(a) === Number(b);
+}
+function ne(a, b) {
+  return Number(a) !== Number(b);
+}
+function floor(value) {
+  return Math.floor(Number(value));
+}
+function ceil(value) {
+  return Math.ceil(Number(value));
+}
+function max(...values) {
+  return Math.max(...values.map(Number));
+}
+function min(...values) {
+  return Math.min(...values.map(Number));
+}
+
 // Helper function to evaluate formulas
 function evaluateFormula(formula) {
   if (typeof formula !== "string") {
@@ -1608,10 +1646,13 @@ function getFoundryItemAtoms(item) {
       : usage.includes("one-plus") || usage.includes("one-hand")
         ? 1
         : 0;
-    if (hands) {
-      atoms.push(`item:usage:hands:${hands}`);
-      atoms.push(`item:hands-held:${hands}`);
-    }
+    if (hands) atoms.push(`item:usage:hands:${hands}`);
+    // Foundry's item:hands-held is how many hands hold it now: a staff
+    // gripped in two hands holds 2 (getHandsHeld reads the two-hand button).
+    // A weapon not on a sheet (a synthetic attack) goes by its usage.
+    const held =
+      item.data?.carried !== undefined ? getHandsHeld(item) : hands;
+    if (held) atoms.push(`item:hands-held:${held}`);
   }
   const category = String(item.data?.itemCategory || "").toLowerCase();
   if (category === "unarmed") atoms.push("item:unarmed");
@@ -2263,8 +2304,51 @@ function applySenseModifiers(baseSenses, senseModifiers, hasLowLightDarkvision) 
 function updateRollOptions(record, valuesToSet) {
   if (!record) return;
 
-  // Get base traits WITHOUT stored rollOptions
+  // Roll options from choices that have been made (choice.data.rollOption):
+  // the selected choice is stored as JSON in choice.data.choices[0]
+  const choiceRollOptions = [];
+  const collectChoiceRollOptions = (features) => {
+    if (!Array.isArray(features)) return;
+    features.forEach((feature) => {
+      const choices = feature.data?.choices || [];
+      choices.forEach((choice) => {
+        const selectedChoices = choice.data?.choices || [];
+        if (selectedChoices.length > 0) {
+          try {
+            const selectedData =
+              typeof selectedChoices[0] === "string"
+                ? JSON.parse(selectedChoices[0])
+                : selectedChoices[0];
+            if (selectedData?.selectedRollOption) {
+              choiceRollOptions.push(selectedData.selectedRollOption);
+            }
+          } catch (e) {
+            // Ignore parse errors
+          }
+        }
+      });
+    });
+  };
+
+  // Collect from all feature sources
+  collectChoiceRollOptions(record.data?.feats);
+  collectChoiceRollOptions(record.data?.bonusFeats);
+  collectChoiceRollOptions(record.data?.features);
+  (record.data?.ancestries || []).forEach((ancestry) =>
+    collectChoiceRollOptions(ancestry.data?.features),
+  );
+  (record.data?.heritages || []).forEach((heritage) =>
+    collectChoiceRollOptions(heritage.data?.features),
+  );
+  (record.data?.classes || []).forEach((classObj) =>
+    collectChoiceRollOptions(classObj.data?.features),
+  );
+
+  // Base traits WITHOUT stored rollOptions, plus the choices' roll options,
+  // so a rollOption modifier can depend on a choice (a kineticist's gate
+  // junction)
   const baseTraits = collectTraitsAndProperties(record, {}, true);
+  choiceRollOptions.forEach((option) => baseTraits.add(option));
 
   // Get all rollOption modifiers
   const rollOptionModifiers = getEffectsAndModifiersForToken(
@@ -2284,58 +2368,7 @@ function updateRollOptions(record, valuesToSet) {
       activeRollOptions.push(rollOpt.option);
     }
   });
-
-  // Also collect rollOptions from choices that have been made
-  // Helper to extract selectedRollOption from choices in features
-  const collectChoiceRollOptions = (features) => {
-    if (!Array.isArray(features)) return;
-    features.forEach((feature) => {
-      const choices = feature.data?.choices || [];
-      choices.forEach((choice) => {
-        // The selected choice data is stored as JSON string in choice.data.choices[0]
-        const selectedChoices = choice.data?.choices || [];
-        if (selectedChoices.length > 0) {
-          try {
-            const selectedData =
-              typeof selectedChoices[0] === "string"
-                ? JSON.parse(selectedChoices[0])
-                : selectedChoices[0];
-            if (selectedData?.selectedRollOption) {
-              activeRollOptions.push(selectedData.selectedRollOption);
-            }
-          } catch (e) {
-            // Ignore parse errors
-          }
-        }
-      });
-    });
-  };
-
-  // Collect from all feature sources
-  collectChoiceRollOptions(record.data?.feats);
-  collectChoiceRollOptions(record.data?.bonusFeats);
-  collectChoiceRollOptions(record.data?.features);
-
-  // Collect from ancestry features
-  if (record.data?.ancestries) {
-    record.data.ancestries.forEach((ancestry) => {
-      collectChoiceRollOptions(ancestry.data?.features);
-    });
-  }
-
-  // Collect from heritage features
-  if (record.data?.heritages) {
-    record.data.heritages.forEach((heritage) => {
-      collectChoiceRollOptions(heritage.data?.features);
-    });
-  }
-
-  // Collect from class features
-  if (record.data?.classes) {
-    record.data.classes.forEach((classObj) => {
-      collectChoiceRollOptions(classObj.data?.features);
-    });
-  }
+  activeRollOptions.push(...choiceRollOptions);
 
   // Only update if rollOptions actually changed
   const currentRollOptions = record.data?.rollOptions || [];
@@ -2539,6 +2572,38 @@ function resolvePredicateValue(value, target, context, traits) {
 
   // If exact match exists, treat as 1 (present); not found, treat as 0
   return present ? 1 : 0;
+}
+
+// A penalty's value once its tokens are resolved: a number becomes negative
+// whatever the token's sign (a token resolving to -5 is still a 5 penalty;
+// signing it first gave "--5", which worked out to 0), anything else gets a
+// leading "-"
+function asPenaltyValue(value) {
+  const text = String(value ?? "").trim();
+  if (/^-?\d+(\.\d+)?$/.test(text)) {
+    return String(-Math.abs(parseFloat(text)));
+  }
+  return text && !text.startsWith("-") ? `-${text}` : value;
+}
+
+// Whether a predicate names an atom outright and/or under not/nor/nand:
+// { positive, negated }
+function getPredicateAtomPolarity(predicateInput, atom) {
+  const result = { positive: false, negated: false };
+  if (!predicateInput) return result;
+  const walk = (node, negated) => {
+    if (typeof node === "string") {
+      if (node === atom) result[negated ? "negated" : "positive"] = true;
+    } else if (Array.isArray(node)) {
+      node.forEach((child) => walk(child, negated));
+    } else if (node && typeof node === "object") {
+      Object.entries(node).forEach(([key, child]) =>
+        walk(child, negated !== ["not", "nor", "nand"].includes(key)),
+      );
+    }
+  };
+  walk(parseModifierPredicate(predicateInput), false);
+  return result;
 }
 
 // Modifier types that appear in a roll prompt, where an opt-in can be ticked
@@ -2852,6 +2917,37 @@ function evaluateEffectPredicate(predicate, traits, target, context = {}) {
  * @param {Object} weapon - The weapon being used (for context)
  * @returns {number|string} - The adjusted value
  */
+// A modifier value as an amount and what follows it: 2 -> { 2, "" },
+// "2 precision" -> { 2, " precision" }; null for dice or formulas
+function getAdjustAmount(value) {
+  if (typeof value === "number") return { amount: value, suffix: "" };
+  const match = String(value ?? "").match(/^\s*(-?\d+(?:\.\d+)?)(\s+[a-z][a-z\s-]*)?\s*$/i);
+  return match ? { amount: parseFloat(match[1]), suffix: (match[2] || "").replace(/\s+$/, "") } : null;
+}
+
+// An adjustModifier's mode applied to a value. A damage value keeps its type:
+// upgrading "2 precision" to 3 gives "3 precision" (Slinger's Precision). A
+// dice or formula value is replaced by the adjustment in upgrade/downgrade,
+// as before.
+function adjustValueByMode(current, adjust, mode) {
+  const cur = getAdjustAmount(current);
+  const adj = getAdjustAmount(adjust);
+  const typed = (amount, suffix) => (suffix ? `${amount}${suffix}` : amount);
+  if (mode === "override") return adj && !adj.suffix && cur?.suffix ? typed(adj.amount, cur.suffix) : adjust;
+  if (mode === "upgrade" || mode === "downgrade") {
+    if (!cur || !adj) return adj ? typed(adj.amount, adj.suffix || cur?.suffix || "") : adjust;
+    const pickAdjust = mode === "upgrade" ? adj.amount > cur.amount : adj.amount < cur.amount;
+    if (!pickAdjust) return typed(cur.amount, cur.suffix);
+    return typed(adj.amount, adj.suffix || cur.suffix);
+  }
+  if (mode === "add") return typed((cur?.amount || 0) + (adj?.amount || 0), cur?.suffix || adj?.suffix || "");
+  if (mode === "multiply") {
+    const factor = adj ? adj.amount : parseFloat(adjust) || 0;
+    return typed(Math.floor((cur?.amount || 0) * factor), cur?.suffix || "");
+  }
+  return current;
+}
+
 function applyAdjustModifiers(record, currentValue, targetSlug, weapon = null) {
   if (!targetSlug) return currentValue;
 
@@ -2875,41 +2971,7 @@ function applyAdjustModifiers(record, currentValue, targetSlug, weapon = null) {
 
     // Only process if this modifier targets our slug and is active
     if (modTargetSlug === targetSlug && adjMod.active) {
-      // Parse current and adjust values as numbers
-      let currentNum =
-        typeof adjustedValue === "number"
-          ? adjustedValue
-          : parseInt(adjustedValue, 10) || 0;
-      let adjustNum =
-        typeof adjustValue === "number"
-          ? adjustValue
-          : parseInt(adjustValue, 10) || 0;
-
-      // Apply adjustment based on mode
-      if (adjustMode === "upgrade") {
-        // Use the higher value
-        adjustedValue = Math.max(currentNum, adjustNum);
-      } else if (adjustMode === "downgrade") {
-        // Use the lower value
-        adjustedValue = Math.min(currentNum, adjustNum);
-      } else if (adjustMode === "add") {
-        // Add the values
-        adjustedValue = currentNum + adjustNum;
-      } else if (adjustMode === "multiply") {
-        // Multiply the values (use parseFloat for decimals)
-        const currentFloat =
-          typeof adjustedValue === "number"
-            ? adjustedValue
-            : parseFloat(adjustedValue) || 0;
-        const multFloat =
-          typeof adjustValue === "number"
-            ? adjustValue
-            : parseFloat(adjustValue) || 0;
-        adjustedValue = Math.floor(currentFloat * multFloat);
-      } else if (adjustMode === "override") {
-        // Replace with new value
-        adjustedValue = adjustNum;
-      }
+      adjustedValue = adjustValueByMode(adjustedValue, adjustValue, adjustMode);
     }
   });
 
@@ -3124,18 +3186,22 @@ function getEffectsAndModifiersForToken(
         valueType === "string" &&
         !value.trim().startsWith("-") &&
         isPenalty &&
-        !value.includes("disadvantage")
+        !value.includes("disadvantage") &&
+        !value.includes("@")
       ) {
         value = "-" + value;
       }
       // Check for strings that require replacements
       if (valueType === "string") {
+        const tokenPenalty =
+          isPenalty && !value.trim().startsWith("-") && value.includes("@");
         // Check if value references a data field on the record (e.g., "data.level")
         if (typeof value === "string" && value.startsWith("data.")) {
           value = api.getValueOnRecord(target, value) || 0;
         } else {
           value = checkForReplacements(value, {}, target, effect, context);
         }
+        if (tokenPenalty) value = asPenaltyValue(value);
       }
       if (value !== 0 && (valueType === "number" || valueType === "string")) {
         let name = effect.name || "Effect";
@@ -3384,13 +3450,15 @@ function getEffectsAndModifiersForToken(
       // Critical-hit-only modifiers (data.critical, Foundry's DamageDice
       // critical: true, or a check:outcome:critical-success predicate) only
       // apply to a lookup made for a critical success
+      // A negated atom ({"not":"check:outcome:critical-success"}, Unfailing
+      // Bow) means every hit but a critical one instead
+      const criticalAtom = getPredicateAtomPolarity(
+        predicate,
+        "check:outcome:critical-success",
+      );
       const criticalOnly =
-        modifier.data?.critical === true ||
-        (typeof predicate === "string"
-          ? predicate.includes("check:outcome:critical-success")
-          : JSON.stringify(predicate || "").includes(
-              "check:outcome:critical-success",
-            ));
+        modifier.data?.critical === true || criticalAtom.positive;
+      const notOnCritical = criticalAtom.negated && !criticalOnly;
       if (
         modifier.data?.critical === true &&
         context.outcome !== "critical-success"
@@ -3400,15 +3468,14 @@ function getEffectsAndModifiersForToken(
 
       // Damage only on a failed Strike (Brutal Finish): data.outcome
       // "failure" or a check:outcome:failure predicate
-      const predicateText =
-        typeof predicate === "string" ? predicate : JSON.stringify(predicate || "");
       // (a rollNote's outcome is the degrees its note shows on instead)
       const failureFlag =
         ruleType !== "rollNote" &&
         (modifier.data?.outcome === "failure" ||
           modifier.data?.failureOnly === true);
       const failureOnly =
-        failureFlag || predicateText.includes("check:outcome:failure");
+        failureFlag ||
+        getPredicateAtomPolarity(predicate, "check:outcome:failure").positive;
       if (failureFlag && context.outcome !== "failure") {
         active = false;
       }
@@ -3443,19 +3510,23 @@ function getEffectsAndModifiersForToken(
       } else if (
         valueType === "string" &&
         !value.trim().startsWith("-") &&
-        isPenalty
+        isPenalty &&
+        !value.includes("@")
       ) {
         value = "-" + value;
       }
 
       // Check for strings that require replacements
       if (valueType === "string") {
+        const tokenPenalty =
+          isPenalty && !value.trim().startsWith("-") && value.includes("@");
         // Check if value references a data field on the record (e.g., "data.level")
         if (typeof value === "string" && value.startsWith("data.")) {
           value = api.getValueOnRecord(target, value) || 0;
         } else {
           value = checkForReplacements(value, {}, target, null, context);
         }
+        if (tokenPenalty) value = asPenaltyValue(value);
       }
 
       // If this is adjustDegreeOfSuccess, set value to the object
@@ -3513,6 +3584,9 @@ function getEffectsAndModifiersForToken(
         };
         if (criticalOnly) {
           resultObj.criticalOnly = true;
+        }
+        if (notOnCritical) {
+          resultObj.notOnCritical = true;
         }
         if (failureOnly) {
           resultObj.failureOnly = true;
@@ -3665,102 +3739,11 @@ function getEffectsAndModifiersForToken(
         if (adjMod.damageType) {
           result.damageType = adjMod.damageType;
         }
-        // Helper to check if a value is a pure number (not a dice expression like "1d6")
-        const isPureNumber = (val) => {
-          if (typeof val === "number") return true;
-          if (typeof val !== "string") return false;
-          const trimmed = val.trim();
-          return trimmed !== "" && !isNaN(Number(trimmed));
-        };
-
-        // Apply adjustment based on mode
-        if (adjustMode === "upgrade") {
-          // Use the higher value
-          // For string values that aren't pure numbers (e.g., "1d6"), use the adjust value
-          if (typeof result.value === "number") {
-            const newVal =
-              typeof adjustValue === "number"
-                ? adjustValue
-                : parseInt(adjustValue, 10) || 0;
-            if (newVal > result.value) {
-              result.value = newVal;
-            }
-          } else if (isPureNumber(result.value)) {
-            const currentVal = parseInt(result.value, 10) || 0;
-            const newVal =
-              typeof adjustValue === "number"
-                ? adjustValue
-                : parseInt(adjustValue, 10) || 0;
-            if (newVal > currentVal) {
-              result.value = newVal;
-              result.valueType = "number";
-            }
-          } else {
-            // String value that isn't a pure number (e.g., "1d6") - use adjust value
-            result.value =
-              typeof adjustValue === "number"
-                ? adjustValue
-                : parseInt(adjustValue, 10) || 0;
-            result.valueType = "number";
-          }
-        } else if (adjustMode === "downgrade") {
-          // Use the lower value
-          // For string values that aren't pure numbers, use the adjust value
-          if (typeof result.value === "number") {
-            const newVal =
-              typeof adjustValue === "number"
-                ? adjustValue
-                : parseInt(adjustValue, 10) || 0;
-            if (newVal < result.value) {
-              result.value = newVal;
-            }
-          } else if (isPureNumber(result.value)) {
-            const currentVal = parseInt(result.value, 10) || 0;
-            const newVal =
-              typeof adjustValue === "number"
-                ? adjustValue
-                : parseInt(adjustValue, 10) || 0;
-            if (newVal < currentVal) {
-              result.value = newVal;
-              result.valueType = "number";
-            }
-          } else {
-            // String value that isn't a pure number - use adjust value
-            result.value =
-              typeof adjustValue === "number"
-                ? adjustValue
-                : parseInt(adjustValue, 10) || 0;
-            result.valueType = "number";
-          }
-        } else if (adjustMode === "add") {
-          // Add the values
-          const currentVal =
-            typeof result.value === "number"
-              ? result.value
-              : parseInt(result.value, 10) || 0;
-          const addVal =
-            typeof adjustValue === "number"
-              ? adjustValue
-              : parseInt(adjustValue, 10) || 0;
-          result.value = currentVal + addVal;
-          result.valueType = "number";
-        } else if (adjustMode === "multiply") {
-          // Multiply the values
-          const currentVal =
-            typeof result.value === "number"
-              ? result.value
-              : parseFloat(result.value) || 0;
-          const multVal =
-            typeof adjustValue === "number"
-              ? adjustValue
-              : parseFloat(adjustValue) || 0;
-          result.value = Math.floor(currentVal * multVal);
-          result.valueType = "number";
-        } else if (adjustMode === "override") {
-          // Replace the value
-          result.value = adjustValue;
-          result.valueType =
-            typeof adjustValue === "number" ? "number" : "string";
+        // Apply the adjustment; a typed damage value keeps its type
+        const adjusted = adjustValueByMode(result.value, adjustValue, adjustMode);
+        if (adjusted !== result.value) {
+          result.value = adjusted;
+          result.valueType = typeof adjusted === "number" ? "number" : "string";
         }
       }
     });
@@ -6678,6 +6661,30 @@ function promptForChoices(record, choicesToMake, index, depth = 0) {
 
       valuesToSet["data.bonusFeats"] = bonusFeats;
     }
+
+    // Features picked by a choice on a feat or heritage feature (Kineticist
+    // Dedication's gate) join the class's or ancestry's features
+    const appendFeatures = (path, list, newOnes) => {
+      if (newOnes.length === 0 || featureDataPath === path || !list) return;
+      const existing = list.data?.features || [];
+      const added = newOnes.filter(
+        (newFeature) =>
+          !existing.some(
+            (f) => f.name === newFeature.name || f._id === newFeature._id,
+          ),
+      );
+      if (added.length > 0) valuesToSet[path] = [...existing, ...added];
+    };
+    appendFeatures(
+      "data.classes.0.data.features",
+      record.data?.classes?.[0],
+      itemsByType.classFeatures,
+    );
+    appendFeatures(
+      "data.ancestries.0.data.features",
+      record.data?.ancestries?.[0],
+      itemsByType.ancestryFeatures,
+    );
 
     // Apply all changes
     if (Object.keys(valuesToSet).length > 0) {
@@ -12559,6 +12566,16 @@ function performAttackRoll(record, weapon, weaponDataPath, attackNumber) {
   } else {
     damageMod.value = 0; // Don't add damage if conditions not met
   }
+  // A synthetic attack that says whether Strength adds to its damage (a
+  // melee Elemental Blast does, a ranged one doesn't)
+  if (typeof weapon.data?.strengthToDamage === "boolean") {
+    if (!weapon.data.strengthToDamage) {
+      damageMod.value = 0;
+    } else {
+      damageMod.active = true;
+      damageMod.name = damageMod.name || "Strength";
+    }
+  }
 
   // Get targets early so we can pass them to modifier collection for target:mark predicates
   const targets = api.getTargets();
@@ -13827,9 +13844,13 @@ function performDamageRoll(record, weapon, weaponDataPath, isCritical) {
 
   // Critical riders join only through criticalRiders, and miss-only damage
   // only through the attack's miss button (every lookup above can return
-  // them inactive)
+  // them inactive). Damage for every hit but a critical one leaves a
+  // critical damage roll.
   damageModifiers = damageModifiers.filter(
-    (mod) => !mod.criticalOnly && !mod.failureOnly,
+    (mod) =>
+      !mod.criticalOnly &&
+      !mod.failureOnly &&
+      !(isCritical && mod.notOnCritical),
   );
 
   // Only the strongest damage bonus and penalty of each type apply across the
@@ -16900,8 +16921,9 @@ function elementalBlast() {
     const chosenElement = elementData[elementKey];
     const level = record.data?.level || 1;
 
-    // Calculate number of damage dice (base + 1 per 4 levels)
-    const damageDice = 1 + Math.floor(level / 4);
+    // Number of damage dice: heightened (+4), so 2 at 5th, 3 at 9th, 4 at
+    // 13th and 5 at 17th
+    const damageDice = 1 + Math.floor((level - 1) / 4);
 
     // Helper function to continue with the selected damage type
     const continueWithDamageType = (selectedDamageType) => {
@@ -16975,9 +16997,6 @@ function elementalBlast() {
               // Build damage formula
               const damageFormula = `${damageDice}${chosenElement.die}`;
 
-              // If 2-action version, add Constitution modifier directly to damage
-              const conMod = isTwoAction ? record.data?.con || 0 : 0;
-
               // Build damageRolls array
               const damageRolls = [
                 {
@@ -16986,7 +17005,6 @@ function elementalBlast() {
                     formula: damageFormula,
                     type: selectedDamageType,
                     category: "standard",
-                    modifier: conMod,
                   },
                 },
               ];
@@ -16994,12 +17012,6 @@ function elementalBlast() {
               // Calculate impulse attack bonus (Class DC - 10)
               const classDC = record.data?.classDC || 10;
               const impulseAttackBonus = classDC - 10;
-
-              // For melee impulse attacks, add Strength modifier
-              let meleeMod = 0;
-              if (isMelee) {
-                meleeMod = record.data?.str || 0;
-              }
 
               // Create synthetic weapon object for the impulse attack
               const syntheticWeapon = {
@@ -17014,7 +17026,8 @@ function elementalBlast() {
                   traits: traits,
                   damageRolls: damageRolls,
                   damage: { die: chosenElement.die }, // For @dieSize replacement
-                  bonus: impulseAttackBonus + meleeMod, // Impulse attack bonus + Strength for melee
+                  bonus: impulseAttackBonus,
+                  strengthToDamage: isMelee,
                 },
               };
 
@@ -17076,6 +17089,25 @@ function elementalBlast() {
                   extraDamageModifiers.push(mod);
                 }
               });
+
+              // A 2-action blast adds a status bonus to damage equal to
+              // Constitution (a melee blast's Strength: strengthToDamage)
+              const blastDamage = (name, value, type) => ({
+                name,
+                value,
+                active: true,
+                type,
+                modifierType: "damageBonus",
+                field: "",
+                isPenalty: value < 0,
+                isEffect: false,
+              });
+              const conMod = parseInt(record.data?.con || 0, 10) || 0;
+              if (isTwoAction && conMod) {
+                extraDamageModifiers.push(
+                  blastDamage("Elemental Blast (2 actions)", conMod, "status"),
+                );
+              }
 
               // Add the collected modifiers to the weapon
               syntheticWeapon.data.extraAttackModifiers = extraAttackModifiers;
