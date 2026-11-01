@@ -5459,6 +5459,9 @@
         },
         "Eidolons": {
           "file": "rollhandlers/eidolons.js"
+        },
+        "Sustain": {
+          "file": "rollhandlers/sustain.js"
         }
       },
       "defaultDice": "default",

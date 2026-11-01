@@ -160,3 +160,6 @@ getEncounterTokens(data?.tokens)
 // turn is being taken (attack-log.js)
 setEncounterState([], 0);
 setCurrentTurn(null);
+
+// Sustained spells' lists start over next encounter (sustain.js)
+clearSustainedSpells(data?.tokens);

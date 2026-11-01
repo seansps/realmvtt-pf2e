@@ -324,6 +324,10 @@ Animal companions are characters, as Foundry's PF2e Companion Compendia builds t
 - One effect on both (pg. 63): applyDamage keeps a pool per summoner (`sharedPools`, keyed by `getSharedPoolKey` when the partner is among the targets); the second of the pair starts from the pool as the first left it and takes only what its amount adds (`getSharedPoolDamage`), so the greater applies once. Apply by Saves passes one pool for its card (`options.sharedPools`, `options.poolCreatures`).
 - Ranks (pg. 69): the sync and the summoner's recalculation snapshot the summoner's ranks into `data.summonerRanks`; `updateProficiencies` takes the skill ranks for every eidolon, and Perception and save ranks too with Summoner Dedication (Eidolon), as exact ranks (`getEidolonSharedRanks`). The Eidolon class features' proficiencies and modifiers carry `{not: feat:summoner-dedication-eidolon}`. The gear snapshot also has the summoner's best item bonus to Perception and each skill from invested items.
 - A ranged unarmed attack (Ranged Combatant) uses Dexterity but no ammunition (performAttackRoll's `isRangedUnarmed`).
+
+### Sustained spells (Sustain, turn-end ending)
+
+`rollhandlers/sustain.js` (global script `Sustain`). Casting a spell with `duration.sustained` records it on the caster's token (`data.sustaining`: `{ name, castRound, sustainedRound }`, written with `"tokens"`) and adds a Sustain button to its card (`getSustainButton`, `startSustainingSpell` in castSpell). `sustainSpell` marks it Sustained this round (a GM note past 10 minutes, nothing refused). onTurnStart posts what the creature is sustaining with Sustain and Stop buttons (`remindSustainedSpells`); onTurnEnd ends what wasn't cast or Sustained this round, or reached 10 minutes, with a card and a GM button (`removeSpellEffects`) that removes the effects named for the spell from the scene's tokens, since spells don't record which effects they put on whom. onEncounterEnd clears the lists. Outside an encounter (no round) nothing ends.
 ### Data Structure
 
 - Character data is nested under `record.data`

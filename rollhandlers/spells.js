@@ -1766,6 +1766,13 @@ function castSpell(record, spell, dataPathToSpell, isOverlay = false) {
 
   // A summon spell: pick the creature, at the casting rank's level cap
   // (summons.js)
+  // A sustained spell: recorded on the caster, with a Sustain button
+  // (sustain.js)
+  if (isSustainedSpell(spell) && ourToken?._id) {
+    macros.push(getSustainButton(ourToken, spellName));
+    startSustainingSpell(ourToken, spellName);
+  }
+
   if (isSummonSpell(spell)) {
     macros.push(getSummonButton(record, ourToken, spell, castingRank));
   }
