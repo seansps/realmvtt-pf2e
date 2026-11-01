@@ -8,6 +8,11 @@
     }
   }
 
+  // The exploration activity: one write, and a card (exploration.js)
+  function onExplorationActivity(value) {
+    setExplorationActivity(record, value === "none" ? "" : value);
+  }
+
   function rollInitiative() {
     // Roll initiative for the character
     performInitiativeRoll(record);
@@ -104,6 +109,26 @@
     >
       <!-- Hands in use (weapon-traits.js) -->
       <label field="handsLabel" size="xs" hidden="true" style="margin-right: auto"></label>
+      <label
+        class="rvtt-sheet-label rvtt-sheet-label--accent"
+        label="Exploration"
+      ></label>
+      <dropdown
+        field="explorationActivity"
+        size="xs"
+        placeholder="None"
+        onchange="onExplorationActivity(value)"
+        options='[{"label": "None", "value": "none"},
+        {"label": "Avoid Notice", "value": "Avoid Notice"},
+        {"label": "Defend", "value": "Defend"},
+        {"label": "Detect Magic", "value": "Detect Magic"},
+        {"label": "Follow the Expert", "value": "Follow the Expert"},
+        {"label": "Hustle", "value": "Hustle"},
+        {"label": "Investigate", "value": "Investigate"},
+        {"label": "Repeat a Spell", "value": "Repeat a Spell"},
+        {"label": "Scout", "value": "Scout"},
+        {"label": "Search", "value": "Search"}]'
+      ></dropdown>
       <label
         class="rvtt-sheet-label rvtt-sheet-label--accent"
         label="Initiative"
