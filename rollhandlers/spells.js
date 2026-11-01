@@ -1764,6 +1764,12 @@ function castSpell(record, spell, dataPathToSpell, isOverlay = false) {
     );
   }
 
+  // A summon spell: pick the creature, at the casting rank's level cap
+  // (summons.js)
+  if (isSummonSpell(spell)) {
+    macros.push(getSummonButton(record, ourToken, spell, castingRank));
+  }
+
   // Add overlay macros if this is not already an overlay
   const overlayMacros = [];
   if (!isOverlay) {
