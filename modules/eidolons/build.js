@@ -90,7 +90,7 @@ function choice(id, description, options, extra = {}) {
     data: {
       description,
       options: options.map((option) => ({
-        _id: idFor(id, "option", option.name),
+        _id: `${id}-option-${slug(option.name)}`,
         name: option.name,
         recordType: "records",
         identified: true,

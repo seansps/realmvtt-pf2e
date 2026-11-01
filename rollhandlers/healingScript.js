@@ -13,6 +13,8 @@ if (value > 0) {
   }
   const { values, wake } = getHealingChanges(record, oldHp, curhp);
   api.setValuesOnRecord(record, { "data.curhp": curhp, ...values });
+  // An eidolon and its summoner share the HP (eidolons.js)
+  shareHitPoints(record, { "data.curhp": curhp });
   const healedToken = api.getToken();
   if (wake && healedToken) {
     wakeCreature(healedToken);

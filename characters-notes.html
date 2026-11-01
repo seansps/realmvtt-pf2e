@@ -159,7 +159,8 @@
       ></dropdown>
     </div>
 
-    <!-- An animal companion's master and level (animal-companions.js) -->
+    <!-- An animal companion's master or an eidolon's summoner, and its level
+         (animal-companions.js, eidolons.js) -->
     <box field="companionProperties" hidden="true">
       <div
         style="
@@ -172,7 +173,7 @@
       >
         <dropdown
           field="companionMaster"
-          label="Animal Companion of"
+          label="Companion or Eidolon of"
           placeholder="Select Master..."
           optionsquery='{"type": "characters", "query": {}}'
           size="xs"

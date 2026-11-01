@@ -152,7 +152,7 @@
           "description": "Choose your eidolon's key attribute",
           "options": [
            {
-            "_id": "eid-eid-choice-aberrant-eidolon-attributes-option-strength",
+            "_id": "eid-choice-aberrant-eidolon-attributes-option-strength",
             "name": "Strength",
             "recordType": "records",
             "identified": true,
@@ -241,7 +241,7 @@
             }
            },
            {
-            "_id": "eid-eid-choice-aberrant-eidolon-attributes-option-dexterity",
+            "_id": "eid-choice-aberrant-eidolon-attributes-option-dexterity",
             "name": "Dexterity",
             "recordType": "records",
             "identified": true,
@@ -599,7 +599,7 @@
           "description": "Choose your eidolon's key attribute",
           "options": [
            {
-            "_id": "eid-eid-choice-angel-eidolon-attributes-option-strength",
+            "_id": "eid-choice-angel-eidolon-attributes-option-strength",
             "name": "Strength",
             "recordType": "records",
             "identified": true,
@@ -688,7 +688,7 @@
             }
            },
            {
-            "_id": "eid-eid-choice-angel-eidolon-attributes-option-dexterity",
+            "_id": "eid-choice-angel-eidolon-attributes-option-dexterity",
             "name": "Dexterity",
             "recordType": "records",
             "identified": true,
@@ -986,7 +986,7 @@
           "description": "Choose your eidolon's key attribute",
           "options": [
            {
-            "_id": "eid-eid-choice-anger-phantom-eidolon-attributes-option-strength",
+            "_id": "eid-choice-anger-phantom-eidolon-attributes-option-strength",
             "name": "Strength",
             "recordType": "records",
             "identified": true,
@@ -1075,7 +1075,7 @@
             }
            },
            {
-            "_id": "eid-eid-choice-anger-phantom-eidolon-attributes-option-dexterity",
+            "_id": "eid-choice-anger-phantom-eidolon-attributes-option-dexterity",
             "name": "Dexterity",
             "recordType": "records",
             "identified": true,
@@ -1442,7 +1442,7 @@
           "description": "Choose your eidolon's key attribute",
           "options": [
            {
-            "_id": "eid-eid-choice-beast-eidolon-attributes-option-strength",
+            "_id": "eid-choice-beast-eidolon-attributes-option-strength",
             "name": "Strength",
             "recordType": "records",
             "identified": true,
@@ -1531,7 +1531,7 @@
             }
            },
            {
-            "_id": "eid-eid-choice-beast-eidolon-attributes-option-dexterity",
+            "_id": "eid-choice-beast-eidolon-attributes-option-dexterity",
             "name": "Dexterity",
             "recordType": "records",
             "identified": true,
@@ -1943,7 +1943,7 @@
           "description": "Choose your eidolon's key attribute",
           "options": [
            {
-            "_id": "eid-eid-choice-construct-eidolon-attributes-option-strength",
+            "_id": "eid-choice-construct-eidolon-attributes-option-strength",
             "name": "Strength",
             "recordType": "records",
             "identified": true,
@@ -2032,7 +2032,7 @@
             }
            },
            {
-            "_id": "eid-eid-choice-construct-eidolon-attributes-option-dexterity",
+            "_id": "eid-choice-construct-eidolon-attributes-option-dexterity",
             "name": "Dexterity",
             "recordType": "records",
             "identified": true,
@@ -2337,7 +2337,7 @@
           "description": "Choose your eidolon's key attribute",
           "options": [
            {
-            "_id": "eid-eid-choice-demon-eidolon-attributes-option-strength",
+            "_id": "eid-choice-demon-eidolon-attributes-option-strength",
             "name": "Strength",
             "recordType": "records",
             "identified": true,
@@ -2426,7 +2426,7 @@
             }
            },
            {
-            "_id": "eid-eid-choice-demon-eidolon-attributes-option-dexterity",
+            "_id": "eid-choice-demon-eidolon-attributes-option-dexterity",
             "name": "Dexterity",
             "recordType": "records",
             "identified": true,
@@ -2732,7 +2732,7 @@
           "description": "Choose your eidolon's key attribute",
           "options": [
            {
-            "_id": "eid-eid-choice-devotion-phantom-eidolon-attributes-option-strength",
+            "_id": "eid-choice-devotion-phantom-eidolon-attributes-option-strength",
             "name": "Strength",
             "recordType": "records",
             "identified": true,
@@ -2821,7 +2821,7 @@
             }
            },
            {
-            "_id": "eid-eid-choice-devotion-phantom-eidolon-attributes-option-dexterity",
+            "_id": "eid-choice-devotion-phantom-eidolon-attributes-option-dexterity",
             "name": "Dexterity",
             "recordType": "records",
             "identified": true,
@@ -3146,7 +3146,7 @@
           "description": "Choose your eidolon's key attribute",
           "options": [
            {
-            "_id": "eid-eid-choice-dragon-eidolon-attributes-option-strength",
+            "_id": "eid-choice-dragon-eidolon-attributes-option-strength",
             "name": "Strength",
             "recordType": "records",
             "identified": true,
@@ -3235,7 +3235,7 @@
             }
            },
            {
-            "_id": "eid-eid-choice-dragon-eidolon-attributes-option-dexterity",
+            "_id": "eid-choice-dragon-eidolon-attributes-option-dexterity",
             "name": "Dexterity",
             "recordType": "records",
             "identified": true,
@@ -3336,7 +3336,7 @@
           "description": "Choose your dragon eidolon's tradition",
           "options": [
            {
-            "_id": "eid-eid-choice-dragon-eidolon-tradition-option-arcane",
+            "_id": "eid-choice-dragon-eidolon-tradition-option-arcane",
             "name": "Arcane",
             "recordType": "records",
             "identified": true,
@@ -3393,7 +3393,7 @@
             }
            },
            {
-            "_id": "eid-eid-choice-dragon-eidolon-tradition-option-divine",
+            "_id": "eid-choice-dragon-eidolon-tradition-option-divine",
             "name": "Divine",
             "recordType": "records",
             "identified": true,
@@ -3450,7 +3450,7 @@
             }
            },
            {
-            "_id": "eid-eid-choice-dragon-eidolon-tradition-option-occult",
+            "_id": "eid-choice-dragon-eidolon-tradition-option-occult",
             "name": "Occult",
             "recordType": "records",
             "identified": true,
@@ -3507,7 +3507,7 @@
             }
            },
            {
-            "_id": "eid-eid-choice-dragon-eidolon-tradition-option-primal",
+            "_id": "eid-choice-dragon-eidolon-tradition-option-primal",
             "name": "Primal",
             "recordType": "records",
             "identified": true,
@@ -3834,7 +3834,7 @@
           "description": "Choose your elemental eidolon's attributes",
           "options": [
            {
-            "_id": "eid-eid-choice-elemental-eidolon-attributes-option-adaptable-elemental",
+            "_id": "eid-choice-elemental-eidolon-attributes-option-adaptable-elemental",
             "name": "Adaptable Elemental",
             "recordType": "records",
             "identified": true,
@@ -3953,7 +3953,7 @@
             }
            },
            {
-            "_id": "eid-eid-choice-elemental-eidolon-attributes-option-primordial-elemental",
+            "_id": "eid-choice-elemental-eidolon-attributes-option-primordial-elemental",
             "name": "Primordial Elemental",
             "recordType": "records",
             "identified": true,
@@ -4289,7 +4289,7 @@
           "description": "Choose your eidolon's key attribute",
           "options": [
            {
-            "_id": "eid-eid-choice-fey-eidolon-attributes-option-strength",
+            "_id": "eid-choice-fey-eidolon-attributes-option-strength",
             "name": "Strength",
             "recordType": "records",
             "identified": true,
@@ -4378,7 +4378,7 @@
             }
            },
            {
-            "_id": "eid-eid-choice-fey-eidolon-attributes-option-dexterity",
+            "_id": "eid-choice-fey-eidolon-attributes-option-dexterity",
             "name": "Dexterity",
             "recordType": "records",
             "identified": true,
@@ -4699,7 +4699,7 @@
           "description": "Choose your eidolon's key attribute",
           "options": [
            {
-            "_id": "eid-eid-choice-ooze-eidolon-attributes-option-strength",
+            "_id": "eid-choice-ooze-eidolon-attributes-option-strength",
             "name": "Strength",
             "recordType": "records",
             "identified": true,
@@ -4788,7 +4788,7 @@
             }
            },
            {
-            "_id": "eid-eid-choice-ooze-eidolon-attributes-option-dexterity",
+            "_id": "eid-choice-ooze-eidolon-attributes-option-dexterity",
             "name": "Dexterity",
             "recordType": "records",
             "identified": true,
@@ -5117,7 +5117,7 @@
           "description": "Choose your eidolon's key attribute",
           "options": [
            {
-            "_id": "eid-eid-choice-plant-eidolon-attributes-option-strength",
+            "_id": "eid-choice-plant-eidolon-attributes-option-strength",
             "name": "Strength",
             "recordType": "records",
             "identified": true,
@@ -5206,7 +5206,7 @@
             }
            },
            {
-            "_id": "eid-eid-choice-plant-eidolon-attributes-option-dexterity",
+            "_id": "eid-choice-plant-eidolon-attributes-option-dexterity",
             "name": "Dexterity",
             "recordType": "records",
             "identified": true,
@@ -5580,7 +5580,7 @@
           "description": "Choose your eidolon's key attribute",
           "options": [
            {
-            "_id": "eid-eid-choice-psychopomp-eidolon-attributes-option-strength",
+            "_id": "eid-choice-psychopomp-eidolon-attributes-option-strength",
             "name": "Strength",
             "recordType": "records",
             "identified": true,
@@ -5669,7 +5669,7 @@
             }
            },
            {
-            "_id": "eid-eid-choice-psychopomp-eidolon-attributes-option-dexterity",
+            "_id": "eid-choice-psychopomp-eidolon-attributes-option-dexterity",
             "name": "Dexterity",
             "recordType": "records",
             "identified": true,
@@ -5921,7 +5921,7 @@
           "description": "Choose your swarm eidolon's attributes",
           "options": [
            {
-            "_id": "eid-eid-choice-swarm-eidolon-attributes-option-brazen-swarm",
+            "_id": "eid-choice-swarm-eidolon-attributes-option-brazen-swarm",
             "name": "Brazen Swarm",
             "recordType": "records",
             "identified": true,
@@ -6025,7 +6025,7 @@
             }
            },
            {
-            "_id": "eid-eid-choice-swarm-eidolon-attributes-option-slinking-swarm",
+            "_id": "eid-choice-swarm-eidolon-attributes-option-slinking-swarm",
             "name": "Slinking Swarm",
             "recordType": "records",
             "identified": true,
@@ -6361,7 +6361,7 @@
           "description": "Choose your eidolon's key attribute",
           "options": [
            {
-            "_id": "eid-eid-choice-undead-eidolon-attributes-option-strength",
+            "_id": "eid-choice-undead-eidolon-attributes-option-strength",
             "name": "Strength",
             "recordType": "records",
             "identified": true,
@@ -6450,7 +6450,7 @@
             }
            },
            {
-            "_id": "eid-eid-choice-undead-eidolon-attributes-option-dexterity",
+            "_id": "eid-choice-undead-eidolon-attributes-option-dexterity",
             "name": "Dexterity",
             "recordType": "records",
             "identified": true,
@@ -6788,7 +6788,7 @@
           "description": "Choose your eidolon's primary attack",
           "options": [
            {
-            "_id": "eid-eid-choice-primary-attack-option-1d8-disarm",
+            "_id": "eid-choice-primary-attack-option-1d8-disarm",
             "name": "1d8, Disarm",
             "recordType": "records",
             "identified": true,
@@ -6842,7 +6842,7 @@
             }
            },
            {
-            "_id": "eid-eid-choice-primary-attack-option-1d8-nonlethal",
+            "_id": "eid-choice-primary-attack-option-1d8-nonlethal",
             "name": "1d8, Nonlethal",
             "recordType": "records",
             "identified": true,
@@ -6896,7 +6896,7 @@
             }
            },
            {
-            "_id": "eid-eid-choice-primary-attack-option-1d8-shove",
+            "_id": "eid-choice-primary-attack-option-1d8-shove",
             "name": "1d8, Shove",
             "recordType": "records",
             "identified": true,
@@ -6950,7 +6950,7 @@
             }
            },
            {
-            "_id": "eid-eid-choice-primary-attack-option-1d8-trip",
+            "_id": "eid-choice-primary-attack-option-1d8-trip",
             "name": "1d8, Trip",
             "recordType": "records",
             "identified": true,
@@ -7004,7 +7004,7 @@
             }
            },
            {
-            "_id": "eid-eid-choice-primary-attack-option-1d6-fatal-d10",
+            "_id": "eid-choice-primary-attack-option-1d6-fatal-d10",
             "name": "1d6, Fatal d10",
             "recordType": "records",
             "identified": true,
@@ -7058,7 +7058,7 @@
             }
            },
            {
-            "_id": "eid-eid-choice-primary-attack-option-1d6-forceful-and-sweep",
+            "_id": "eid-choice-primary-attack-option-1d6-forceful-and-sweep",
             "name": "1d6, Forceful and Sweep",
             "recordType": "records",
             "identified": true,
@@ -7119,7 +7119,7 @@
             }
            },
            {
-            "_id": "eid-eid-choice-primary-attack-option-1d6-deadly-d8-and-finesse",
+            "_id": "eid-choice-primary-attack-option-1d6-deadly-d8-and-finesse",
             "name": "1d6, Deadly d8 and Finesse",
             "recordType": "records",
             "identified": true,
@@ -7540,7 +7540,7 @@
           "description": "Choose the attribute your eidolon's transcendence increases by 1",
           "options": [
            {
-            "_id": "eid-eid-choice-transcendence-attribute-option-strength",
+            "_id": "eid-choice-transcendence-attribute-option-strength",
             "name": "Strength",
             "recordType": "records",
             "identified": true,
@@ -7584,7 +7584,7 @@
             }
            },
            {
-            "_id": "eid-eid-choice-transcendence-attribute-option-dexterity",
+            "_id": "eid-choice-transcendence-attribute-option-dexterity",
             "name": "Dexterity",
             "recordType": "records",
             "identified": true,
@@ -7628,7 +7628,7 @@
             }
            },
            {
-            "_id": "eid-eid-choice-transcendence-attribute-option-constitution",
+            "_id": "eid-choice-transcendence-attribute-option-constitution",
             "name": "Constitution",
             "recordType": "records",
             "identified": true,
@@ -7672,7 +7672,7 @@
             }
            },
            {
-            "_id": "eid-eid-choice-transcendence-attribute-option-intelligence",
+            "_id": "eid-choice-transcendence-attribute-option-intelligence",
             "name": "Intelligence",
             "recordType": "records",
             "identified": true,
@@ -7716,7 +7716,7 @@
             }
            },
            {
-            "_id": "eid-eid-choice-transcendence-attribute-option-wisdom",
+            "_id": "eid-choice-transcendence-attribute-option-wisdom",
             "name": "Wisdom",
             "recordType": "records",
             "identified": true,
@@ -7760,7 +7760,7 @@
             }
            },
            {
-            "_id": "eid-eid-choice-transcendence-attribute-option-charisma",
+            "_id": "eid-choice-transcendence-attribute-option-charisma",
             "name": "Charisma",
             "recordType": "records",
             "identified": true,

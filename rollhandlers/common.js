@@ -5622,8 +5622,9 @@ function updateAttribute({
     return acc + (parseInt(mod.value || 0, 10) || 0);
   }, 0);
 
-  // If this was constitution, update hitpoints
-  if (attribute === "con") {
+  // If this was constitution, update hitpoints. A linked eidolon's are its
+  // summoner's, shared (eidolons.js)
+  if (attribute === "con" && !getEidolonSummonerId(record)) {
     // hitpoints = CON MOD + hp rolled at each level (min 1)
     const conMod = value;
     // Hit Points in PF2e is Ancestry HP + (Class HP + Con Mod)*Level
@@ -5639,6 +5640,8 @@ function updateAttribute({
     if (record.data?.curhp === undefined) {
       valuesToSet[`data.curhp`] = totalHp;
     }
+    // A summoner's eidolon has the same maximum (eidolons.js)
+    if (getSummonerEidolonId(record)) shareHitPoints(record, { "data.hitpoints": totalHp });
   }
 
   // You can carry an amount of Bulk equal to 5 plus your Strength modifier without penalty
@@ -8472,7 +8475,8 @@ function onAddEditFeature(
 
   // The Notes tab's Animal Companion box (master, level) shows for a
   // character whose class is Animal Companion
-  const hideCompanionBox = !isAnimalCompanionCharacter(record);
+  // (or Eidolon: its summoner, eidolons.js)
+  const hideCompanionBox = !isAnimalCompanionCharacter(record) && !isEidolonCharacter(record);
   if ((record.fields?.companionProperties?.hidden ?? true) !== hideCompanionBox) {
     valuesToSet["fields.companionProperties.hidden"] = hideCompanionBox;
   }
@@ -16212,8 +16216,10 @@ function applyDamage(
         if (confusedButton) dyingButtons.push(confusedButton);
       }
 
-      // Apply all value changes in a single batch
+      // Apply all value changes in a single batch; an eidolon and its
+      // summoner share the HP (eidolons.js)
       if (Object.keys(valuesToSet).length > 0) {
+        shareHitPoints(target, valuesToSet);
         api.setValuesOnTokenById(
           target._id,
           target.recordType,

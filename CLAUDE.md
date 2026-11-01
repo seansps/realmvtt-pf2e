@@ -310,6 +310,14 @@ Animal companions are characters, as Foundry's PF2e Companion Compendia builds t
 - Mark Summoned, dropped on the token: `data.summonedBy` `{ tokenId, name }` on the token, the initiative just below the caster in the same write, and the Summoned effect by name with the caster as applier (a module effect; a campaign without it gets the link and the note only).
 - Minions (`getMinionMaster`): a summon's caster (`data.summonedBy`), a familiar's `data.master`, an animal companion's `data.companionMaster` (both matched to a token's `recordId`), or a mount's rider (the rider's Mounted applier). A minion added to the tracker goes to the master's initiative - 0.01 when the master is in it with an initiative; when a master rolls (`initiative.js`, alone or in a group), its minions in the tracker follow (`placeMinionsOf`). `api.getCombatTracker` gives `{ tokenIds, round, initiative, slot }`; scene tokens carry `data.initiative`.
 
+
+### Eidolons (eidolon characters, summoner link, shared Hit Points)
+
+`rollhandlers/eidolons.js` (global script `Eidolons`), with the data in `modules/eidolons` (see its README): an eidolon is a character whose ancestry is its type (flagged `data.eidolon`) and whose class is Eidolon (by name or `data.eidolon`), as Foundry's PF2e Companion Compendia builds them.
+- An eidolon type asks for no heritage when dropped (`isEidolonAncestry`, characters-main.html). The Notes tab's companion box (master field, Match Master's Level) shows for eidolons too and links one to its summoner (`data.companionMaster`); the summoner links back (`data.eidolon`), as a familiar's master does.
+- `syncEidolonWithSummoner`: the summoner's level, maximum, current and temporary HP in one write, then the summoner's link if missing; the sheet is worked out again when the level changed.
+- Shared Hit Points (Impossible Magic pg. 63): `shareHitPoints(creature, values)` copies `data.hitpoints`, `data.curhp` and `data.tempHp` just written to an eidolon or its summoner to the other, reading it fresh and writing only what differs (dying and wounded aren't shared). It's called by applyDamage (common.js), damageScript.js, healingScript.js and dying.js's healing; a summoner's new maximum in `updateAttribute` goes to its eidolon, and a linked eidolon's maximum isn't recomputed.
+- An eidolon goes just after its summoner in initiative through the companion master link (summons.js).
 ### Data Structure
 
 - Character data is nested under `record.data`

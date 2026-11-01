@@ -66,8 +66,9 @@
         api.setHidden("ancestries", false, () => {
           api.setHidden("ancestryDetailsLabel", true);
         });
-        // An animal companion's type has no heritages (animal-companions.js)
-        if (isAnimalCompanionAncestry(ancestryObj)) {
+        // An animal companion's or eidolon's type has no heritages
+        // (animal-companions.js, eidolons.js)
+        if (isAnimalCompanionAncestry(ancestryObj) || isEidolonAncestry(ancestryObj)) {
           onAddEditFeature(updatedRecord);
           return;
         }

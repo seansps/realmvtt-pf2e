@@ -37,6 +37,8 @@ if (damage > 0) {
   valuesToSet["data.curhp"] = curhp;
 
   api.setValuesOnRecord(record, valuesToSet);
+  // An eidolon and its summoner share the HP (eidolons.js)
+  shareHitPoints(record, valuesToSet);
 
   // If damage > 0, float text
   const token = api.getToken();

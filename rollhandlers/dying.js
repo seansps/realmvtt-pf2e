@@ -300,6 +300,8 @@ function applyHealingToToken(target, healing, options = {}) {
       key === "data.curhp" ? oldHp : parseInt(target.data?.[key.slice(5)] || "0", 10) || 0;
   }
   api.setValuesOnTokenById(target._id, target.recordType, valuesToSet);
+  // An eidolon and its summoner share the HP (eidolons.js)
+  shareHitPoints(target, valuesToSet);
   // One effect change after the other: waking, the bleed, the immunity
   const afterBleed = () => {
     if (options.medicine) applyMedicineImmunity(target, options.medicine);
