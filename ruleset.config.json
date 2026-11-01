@@ -5472,6 +5472,9 @@
         },
         "Sustain": {
           "file": "rollhandlers/sustain.js"
+        },
+        "CriticalSpecialization": {
+          "file": "rollhandlers/critical-specialization.js"
         }
       },
       "defaultDice": "default",

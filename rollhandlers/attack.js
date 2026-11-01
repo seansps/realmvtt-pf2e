@@ -293,6 +293,8 @@ let critSpecDetails = {
 };
 if (isCritical && hasCriticalSpecialization && weaponGroup) {
   critSpecDetails = getCriticalSpecializationDetails(weaponGroup);
+  // The effect's buttons: conditions, saves, bleed (critical-specialization.js)
+  critSpecDetails.macros = getCriticalSpecializationButtons(weaponGroup, data?.roll?.metadata);
   if (critSpecDetails.description) {
     tags.push({
       name: `${capitalize(critSpecDetails.group)} Critical Effect`,

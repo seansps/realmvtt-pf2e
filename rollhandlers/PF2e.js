@@ -1075,7 +1075,9 @@ function getCriticalSpecializationDetails(weaponGroup) {
   return {
     description: description,
     group: group,
-    macros: [], // TODO add macros for certain specializations later
+    // Its buttons come from getCriticalSpecializationButtons
+    // (critical-specialization.js), which needs the attack's metadata
+    macros: [],
   };
 }
 

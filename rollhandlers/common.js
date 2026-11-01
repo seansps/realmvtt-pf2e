@@ -13422,6 +13422,9 @@ function performAttackRoll(record, weapon, weaponDataPath, attackNumber) {
         weaponName: weapon.name,
         weaponGroup: weaponGroup,
         hasCriticalSpecialization: hasCriticalSpecialization,
+        // Its class DC, item bonus and dice, for the effect's buttons
+        // (critical-specialization.js)
+        critSpec: hasCriticalSpecialization ? getCriticalSpecializationContext(record, weapon) : null,
         traits: traits,
         damageCategories: damageCategories,
         runes: runes,
@@ -13530,6 +13533,9 @@ function performAttackRoll(record, weapon, weaponDataPath, attackNumber) {
       weaponName: weapon.name,
       weaponGroup: weaponGroup,
       hasCriticalSpecialization: hasCriticalSpecialization,
+      // Its class DC, item bonus and dice, for the effect's buttons
+      // (critical-specialization.js)
+      critSpec: hasCriticalSpecialization ? getCriticalSpecializationContext(record, weapon) : null,
       icon: isMelee && !isThrown ? "IconSword" : "IconBow",
       portrait: weapon?.portrait,
       tokenId: ourToken?._id,
@@ -15087,44 +15093,48 @@ function doubleDamageDice(damage) {
  */
 function applyPersistentDamage(persistentDamage, tokenId, tokenName) {
   const targets = api.getSelectedOrDroppedToken();
-  targets.forEach((target) => {
-    const effectValue =
-      tokenId && tokenName
-        ? {
-            value: persistentDamage,
-            _id: tokenId,
-            name: tokenName,
-          }
-        : persistentDamage;
-    // Of one damage type, only the higher amount applies (healing-tools.js)
-    const token = target?.token || target;
-    const change = getPersistentStackChange(token, persistentDamage);
-    const name = getCreatureName(token);
-    if (!change.add) {
-      api.sendMessage(
-        `${name} already takes ${change.kept} persistent damage, as much or more: ${persistentDamage} doesn't add to it.`,
-        undefined,
-        [],
-        [],
-        token,
-      );
-      return;
-    }
-    const add = () => api.addEffect("Persistent Damage", target, undefined, effectValue);
-    const effect = getPersistentDamageEffect(token);
-    if (change.removeIndex !== null && effect) {
-      api.sendMessage(
-        `${name}'s ${persistentDamage} persistent damage replaces the lower one of that type.`,
-        undefined,
-        [],
-        [],
-        token,
-      );
-      api.removeEffectById(effect._id, token, add, { instanceIndex: change.removeIndex });
-    } else {
-      add();
-    }
-  });
+  targets.forEach((target) => applyPersistentDamageToToken(target, persistentDamage, tokenId, tokenName));
+}
+
+// Persistent damage on one creature (applyPersistentDamage's selected tokens,
+// or a button's own target: critical-specialization.js)
+function applyPersistentDamageToToken(target, persistentDamage, tokenId, tokenName) {
+  const effectValue =
+    tokenId && tokenName
+      ? {
+          value: persistentDamage,
+          _id: tokenId,
+          name: tokenName,
+        }
+      : persistentDamage;
+  // Of one damage type, only the higher amount applies (healing-tools.js)
+  const token = target?.token || target;
+  const change = getPersistentStackChange(token, persistentDamage);
+  const name = getCreatureName(token);
+  if (!change.add) {
+    api.sendMessage(
+      `${name} already takes ${change.kept} persistent damage, as much or more: ${persistentDamage} doesn't add to it.`,
+      undefined,
+      [],
+      [],
+      token,
+    );
+    return;
+  }
+  const add = () => api.addEffect("Persistent Damage", target, undefined, effectValue);
+  const effect = getPersistentDamageEffect(token);
+  if (change.removeIndex !== null && effect) {
+    api.sendMessage(
+      `${name}'s ${persistentDamage} persistent damage replaces the lower one of that type.`,
+      undefined,
+      [],
+      [],
+      token,
+    );
+    api.removeEffectById(effect._id, token, add, { instanceIndex: change.removeIndex });
+  } else {
+    add();
+  }
 }
 
 /**
