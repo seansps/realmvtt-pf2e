@@ -107,6 +107,35 @@ section("The tracker's damage and healing");
   assert("healing the summoner: both at 40", writes.map(([id, v]) => [id, v["data.curhp"]]), [["sum", 40], ["eid", 40]]);
 }
 
+section("Temporary Hit Points");
+{
+  useStore(summoner(), eidolon({ hitpoints: 60, curhp: 60, level: 5 }));
+  ctx.api.getSelectedOrDroppedToken = () => [store.sum];
+  ctx.api.setValuesOnTokenById = () => {};
+  ctx.applyActionTemporaryHitPoints(6, "Rage");
+  assert("temporary HP from an action on the summoner: the eidolon's too", writes, [["eid", { "data.tempHp": 6 }]]);
+}
+
+section("Gear from the summoner (Impossible Magic pg. 70)");
+{
+  const item = (name, data) => ({ _id: name, name, data: { carried: "equipped", invested: "true", ...data } });
+  const armored = summoner({ inventory: [item("+2 Resilient Chain Shirt", { type: "armor", runes: { potency: "2", resilient: "1" } }), item("Handwraps of Mighty Blows", { type: "weapon", runes: { potency: "1", striking: "1" } })] });
+  const gear = ctx.getSummonerGear(armored);
+  assert("armor potency, resilient rune, and the handwraps", [gear.armorPotency, gear.resilient, gear.handwraps?.data?.runes?.striking], [2, 1, "1"]);
+  assert("greater bands of force: +2 to both", [ctx.getSummonerGear(summoner({ inventory: [item("Greater Bands of Force", { type: "equipment" })] }))].map((g) => [g.armorPotency, g.resilient])[0], [2, 2]);
+  assert("gear that isn't worn and invested: nothing", ctx.getSummonerGear(summoner({ inventory: [item("+1 Leather", { type: "armor", invested: "false", runes: { potency: "1" } })] })).armorPotency, 0);
+  const saved = ctx.api.getSetting;
+  ctx.api.getSetting = (key) => (key === "automaticBonusProgression" ? "yes" : null);
+  assert("Automatic Bonus Progression: runes give nothing", ctx.getSummonerGear(armored).armorPotency, 0);
+  ctx.api.getSetting = saved;
+  const mods = ctx.getEidolonGearModifiers(eidolon({ summonerGear: gear }));
+  assert("the eidolon: AC and saves", mods.map((m) => [m.modifierType, m.value]), [["armorClassBonus", 2], ["saveBonus", 1]]);
+  assert("its handwraps are the summoner's", ctx.getWornHandwraps(eidolon({ summonerGear: gear }))?.name, "Handwraps of Mighty Blows");
+  useStore(armored, eidolon({ level: 5, hitpoints: 60, curhp: 60 }));
+  ctx.shareSummonerGear(store.sum);
+  assert("the summoner's gear goes to its eidolon", writes.map(([id, v]) => [id, v["data.summonerGear"]?.armorPotency]), [["eid", 2]]);
+}
+
 section("Initiative");
 {
   const scene = [

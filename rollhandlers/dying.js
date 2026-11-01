@@ -472,6 +472,8 @@ function useOrcFerocity(token, before = {}) {
     lines.push(`${level} temporary HP from Undying Ferocity`);
   }
   api.setValuesOnTokenById(token._id, token.recordType, valuesToSet);
+  // An eidolon and its summoner share the HP (eidolons.js)
+  shareHitPoints(token, valuesToSet);
   const remove = ["dead", ...(before.addedUnconscious ? ["unconscious", "prone"] : [])]
     .map((condition) => getTokenCondition(token, condition)?.effect?._id)
     .filter(Boolean);

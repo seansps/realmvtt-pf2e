@@ -1374,6 +1374,8 @@ ${getLevelUpSummary(gains)}`,
 
     // Chain effect changes synchronously through callbacks
     api.setValues(valuesToSet, () => {
+      // An eidolon and its summoner share the HP (eidolons.js)
+      shareHitPoints(record, valuesToSet);
       if (healed.wake) {
         wakeCreature(record);
       }

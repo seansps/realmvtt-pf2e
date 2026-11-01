@@ -11,18 +11,26 @@ Eidolons for the PF2e ruleset as **characters**, the way Foundry's [PF2e Compani
   Its initial, symbiosis (7th) and transcendence (17th) abilities are features of their own, with an action for those that cost actions.
 - **Class = Eidolon.** Expert in Fortitude and Will; trained in Reflex, Perception, unarmed attacks and unarmored defense. The summoner's class features that raise those are its features by level: Shared Vigilance (3rd), Eidolon Unarmed Expertise (5th), Eidolon Weapon Specialization and Eidolon Symbiosis (7th), Shared Reflexes (9th), Twin Juggernauts and Eidolon Defensive Expertise (11th), Eidolon Unarmed Mastery (13th), Shared Resolve and Greater Eidolon Specialization (15th), Eidolon Transcendence (17th, with its +1 attribute choice) and Eidolon Defensive Mastery (19th). It grants the secondary attack (1d6, agile, finesse) and asks for the primary attack's statistics.
 
-Its Hit Points are its summoner's, shared (the ruleset's part, `rollhandlers/eidolons.js`), so the ancestry and class give none.
+- **Evolution feats** for the eidolon itself: Impossible Magic's 40, named "<feat> (Eidolon)" so they don't clash with the summoner's own (the class book's). Add one to the eidolon when the summoner takes the matching feat. What they change on the eidolon is automated where the ruleset can (Foundry's Companion Compendia does the same):
+  - Energy Heart and Dual Energy Heart (an energy choice: resistance of half the level, minimum 1), Energy Resistance (that resistance becomes the level)
+  - Expanded Senses, Vibration Sense (senses); Alacritous Action, Amphibious Form, Burrowing Form, Airborne Form (Speeds); Hulking Size, Towering Size (size)
+  - Ranged Combatant (a 1d4 magical, propulsive ranged unarmed attack, with a damage type choice), Nimble Form (agile unarmed attacks at -3 and -6), Resilient Shell (physical resistance 5, 6 at 17th), Ever-Vigilant Senses (+2 circumstance to Perception)
+  - the rest are their text, with an action for those that cost actions
+- **Summoner Dedication (Eidolon):** for an archetype summoner's eidolon. Its key attribute is +3 instead of +4 until 5th level.
+
+Its Hit Points are its summoner's, shared (the ruleset's part, `rollhandlers/eidolons.js`), so the ancestry and class give none. It also takes item bonuses from its summoner's gear: the armor potency rune or bands of force raise its item bonus to AC, the resilient rune or bands of force give an item bonus to its saves, and the runes on the summoner's worn, invested handwraps of mighty blows go on its unarmed attacks (Impossible Magic pg. 70). With Automatic Bonus Progression, runes give nothing, as for anyone.
 
 ## Making an eidolon
 
 1. Create a character, drop an eidolon type (e.g. Angel Eidolon) and the Eidolon class on it. Don't use the creation wizard. Choose its key attribute and its primary attack when asked.
 2. Rename its Primary Attack and Secondary Attack to fit its form (claw, jaws, fist...) and set their damage types.
-3. On the Notes tab, set its summoner. Its level is the summoner's.
+3. On the Notes tab, set its summoner (**Companion or Eidolon of**). Its level, Hit Points and the item bonuses from the summoner's gear follow; use **Match Master's Level** after the summoner levels up. Damage and healing to either land on both.
+4. Add the "(Eidolon)" version of each evolution feat the summoner takes.
 
 ## Building
 
-- `source/eidolon-types.json` is the 15 types from Archives of Nethys (ORC), made by `source/parse-aon.py` from AoN's search index.
-- `icons.json` (optional) maps a record (`<recordType>|<name>`) to an icon from Realm's catalog.
+- `source/eidolon-types.json` is the 15 types and `source/evolution-feats.json` the 40 evolution feats from Archives of Nethys (ORC), made by `source/parse-aon.py` and `source/parse-aon-feats.py` from AoN's search index.
+- `icons.json` maps every record (`<recordType>|<name>`) to an icon from Realm's catalog, made by `source/pick-icons.py` (an icon named for the record, then hand picks, then the closest word).
 - `node modules/eidolons/build.js` writes `records.json`. `tests/test-eidolon-module.js` builds eidolons from it and checks them against stat blocks worked by hand from Impossible Magic. The test fails if `records.json` is out of date.
 
 The module ships no creature art.

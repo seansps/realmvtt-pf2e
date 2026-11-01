@@ -13,6 +13,7 @@ const path = require("path");
 
 const here = __dirname;
 const TYPES = JSON.parse(fs.readFileSync(path.join(here, "source", "eidolon-types.json"), "utf8"));
+const FEATS = JSON.parse(fs.readFileSync(path.join(here, "source", "evolution-feats.json"), "utf8"));
 const ICONS = fs.existsSync(path.join(here, "icons.json"))
   ? JSON.parse(fs.readFileSync(path.join(here, "icons.json"), "utf8"))
   : {};
@@ -341,8 +342,11 @@ function buildAncestry(type) {
     choice(
       idFor("choice", name, "attributes"),
       standard ? "Choose your eidolon's key attribute" : `Choose your ${name.toLowerCase()}'s attributes`,
-      type.arrays.map((array) => ({ name: array.name, value: [arrayFeature(type, array)] })),
-      { flag: "eidolonAttributes" },
+      // The roll option names the key attribute (the one at +4), for the
+      // Summoner Dedication's reduced start: eidolon-key:strength or
+      // eidolon-key:dexterity
+      type.arrays.map((array) => ({ name: array.name, slug: array.str >= array.dex ? "strength" : "dexterity", value: [arrayFeature(type, array)] })),
+      { flag: "eidolonAttributes", rollOption: "eidolon-key" },
     ),
   ];
   if (type.traditionChoice) {
@@ -421,10 +425,212 @@ function buildAncestry(type) {
   };
 }
 
+// --- the evolution feats -------------------------------------------------------
+
+// The eidolon's versions of the summoner's evolution feats (Impossible Magic
+// pg. 79-86), as Foundry's Companion Compendia has them: the summoner keeps
+// the class book's feat, and the eidolon gets this one, with what it changes
+// on the eidolon. Named "<feat> (Eidolon)" so the two don't clash.
+const ENERGIES = ["Acid", "Cold", "Electricity", "Fire"];
+const RANGED_DAMAGE_TYPES = ["Acid", "Bludgeoning", "Cold", "Electricity", "Fire", "Piercing", "Slashing", "Spirit", "Vitality", "Void"];
+const levelAtLeast = (level) => ({ gte: ["self:level", level] });
+
+// Resistance equal to half the level, minimum 1: one modifier per step (the
+// best one counts)
+function halfLevelResistance(name, type, rollOption) {
+  const mods = [modifier(name, { type: "resistance", field: type.toLowerCase(), value: "1", predicate: JSON.stringify([rollOption]) })];
+  for (let value = 2; value <= 10; value++) {
+    mods.push(modifier(name, { type: "resistance", field: type.toLowerCase(), value: String(value), predicate: JSON.stringify([rollOption, levelAtLeast(value * 2)]) }));
+  }
+  return mods;
+}
+
+// An energy choice (Energy Heart, Dual Energy Heart): the pick's roll option
+// (energy-heart:fire) turns on its resistance
+function energyChoice(featName, rollOption) {
+  return choice(
+    idFor("choice", featName),
+    `Choose ${featName}'s energy`,
+    ENERGIES.map((energy) => ({
+      name: energy,
+      value: [feature(idFor("feature", featName, energy), `${featName}: ${energy}`, 1, p(`Your eidolon's energy is ${energy.toLowerCase()}.`), {}, "classfeature")],
+    })),
+    { flag: slug(rollOption).replace(/-(.)/g, (m, c) => c.toUpperCase()), rollOption },
+  );
+}
+
+function rangedAttack(type) {
+  const traits = ["Magical", "Propulsive", "Unarmed"];
+  return {
+    _id: idFor("item", "ranged-attack", type),
+    name: "Ranged Attack",
+    recordType: "items",
+    identified: true,
+    unidentifiedName: "Ranged Attack",
+    portrait: icon("items|Ranged Attack", "/icons/fantasy/default-icons/ranged.svg"),
+    data: {
+      type: "weapon",
+      level: 0,
+      itemCategory: "Unarmed",
+      group: "Brawling",
+      range: "30",
+      traits,
+      traitsList: traitsList(traits),
+      damage: { dice: 1, die: "d4", damageType: type.toLowerCase() },
+      description: p(`Your eidolon's ranged unarmed attack (Ranged Combatant): 1d4 ${type.toLowerCase()}, range increment 30 feet, magical and propulsive. Rename it to fit its form: spines, flame jets, holy blasts...`),
+      publication: PUBLICATION,
+    },
+  };
+}
+
+// What each feat changes on the eidolon; the rest are text (and an action
+// when they cost actions)
+const EVOLUTION_AUTOMATION = {
+  "Energy Heart": {
+    choices: [energyChoice("Energy Heart", "energy-heart")],
+    modifiers: ENERGIES.flatMap((energy) => halfLevelResistance("Energy Heart", energy, `energy-heart:${slug(energy)}`)),
+    note: "Change the damage type of one of your eidolon's unarmed attacks to the energy you choose.",
+  },
+  "Dual Energy Heart": {
+    choices: [energyChoice("Dual Energy Heart", "dual-energy-heart")],
+    modifiers: ENERGIES.flatMap((energy) => halfLevelResistance("Dual Energy Heart", energy, `dual-energy-heart:${slug(energy)}`)),
+    note: "Add the versatile trait for the second energy to your eidolon's energy attack.",
+  },
+  "Energy Resistance": {
+    modifiers: ENERGIES.map((energy) =>
+      modifier("Energy Resistance", { type: "resistance", field: energy.toLowerCase(), valueType: "string", value: "@actor.level", predicate: JSON.stringify([{ or: [`energy-heart:${slug(energy)}`, `dual-energy-heart:${slug(energy)}`] }]) }),
+    ),
+  },
+  "Expanded Senses": {
+    modifiers: [
+      modifier("Expanded Senses", { type: "sense", valueType: "string", value: "darkvision" }),
+      modifier("Expanded Senses", { type: "sense", valueType: "string", value: "low-light vision" }),
+      modifier("Expanded Senses", { type: "sense", valueType: "string", value: "scent (imprecise) 30 feet" }),
+    ],
+  },
+  "Vibration Sense": {
+    modifiers: [modifier("Vibration Sense", { type: "sense", valueType: "string", value: "tremorsense (imprecise) 30 feet" })],
+    note: "An aquatic eidolon gets wavesense (imprecise) 30 feet instead, and an amphibious one gets both.",
+  },
+  "Alacritous Action": { modifiers: [modifier("Alacritous Action", { type: "speedBonus", value: "10" })] },
+  "Amphibious Form": {
+    modifiers: [
+      modifier("Amphibious Form", { type: "trait", valueType: "string", value: "Amphibious" }),
+      modifier("Amphibious Form", { type: "speed", field: "swim", value: "25" }),
+    ],
+    note: "The swim Speed is 25 feet, or the eidolon's land Speed if that's lower (an ooze eidolon: 20 feet).",
+  },
+  "Burrowing Form": { modifiers: [modifier("Burrowing Form", { type: "speed", field: "burrow", value: "15" })] },
+  "Airborne Form": {
+    // A fly Speed equal to its Speed: 25, or 35 with Alacritous Action
+    modifiers: [
+      modifier("Airborne Form", { type: "speed", field: "fly", value: "25" }),
+      modifier("Airborne Form", { type: "speed", field: "fly", value: "35", predicate: JSON.stringify(["feat:alacritous-action-eidolon"]) }),
+    ],
+  },
+  "Ranged Combatant": {
+    choices: [
+      choice(
+        idFor("choice", "ranged-combatant"),
+        "Choose your eidolon's ranged attack's damage type",
+        RANGED_DAMAGE_TYPES.map((type) => ({ name: type, value: [rangedAttack(type)] })),
+        { flag: "eidolonRangedDamage" },
+      ),
+    ],
+  },
+  "Hulking Size": { modifiers: [modifier("Hulking Size", { type: "creatureSize", valueType: "string", value: "large" })], note: "Its reach increases to 10 feet." },
+  "Towering Size": { modifiers: [modifier("Towering Size", { type: "creatureSize", valueType: "string", value: "huge" })], note: "The reach of all its attacks increases to 15 feet." },
+  "Nimble Form": { modifiers: [modifier("Nimble Form", { type: "mapReduction", valueType: "string", value: "1/2", predicate: JSON.stringify([UNARMED, "item:trait:agile"]) })] },
+  "Resilient Shell": {
+    modifiers: [
+      modifier("Resilient Shell", { type: "resistance", field: "physical", value: "5" }),
+      modifier("Resilient Shell", { type: "resistance", field: "physical", value: "6", predicate: JSON.stringify([levelAtLeast(17)]) }),
+    ],
+  },
+  "Ever-Vigilant Senses": { modifiers: [modifier("Ever-Vigilant Senses", { type: "perceptionBonus", modifierType: "circumstance", value: "2" })] },
+};
+
+const FEAT_ACTION_TYPES = { reaction: "reaction", free: "free" };
+
+function evolutionFeat(source) {
+  const name = `${source.name} (Eidolon)`;
+  const automation = EVOLUTION_AUTOMATION[source.name] || {};
+  const header = [
+    source.prerequisites ? `<strong>Prerequisites</strong> ${source.prerequisites}` : "",
+    source.frequency ? `<strong>Frequency</strong> ${source.frequency}` : "",
+    source.trigger ? `<strong>Trigger</strong> ${source.trigger}` : "",
+    source.requirements ? `<strong>Requirements</strong> ${source.requirements}` : "",
+  ].filter(Boolean);
+  const description =
+    (header.length ? p(header.join("; ")) : "") +
+    html(source.text) +
+    (automation.note ? p(automation.note) : "") +
+    p(`<em>Add this feat to your eidolon when you take ${source.name} (summoner feat ${source.level}). Impossible Magic ${source.page}.</em>`);
+  const traits = source.traits.filter((trait) => trait !== "Summoner");
+  const actions = source.actions;
+  return {
+    _id: idFor("feat", name),
+    name,
+    recordType: "feats",
+    identified: true,
+    unidentifiedName: "Unidentified Feat",
+    portrait: icon(`feats|${name}`, "/icons/fantasy/sundries/books/book-red-exclamation.webp"),
+    data: {
+      level: source.level,
+      levelLabel: "Eidolon",
+      type: "bonus",
+      actionType: actions ? FEAT_ACTION_TYPES[actions] || "action" : "passive",
+      actions,
+      prerequisites: source.prerequisites || "",
+      description,
+      traits,
+      traitsList: traitsList(traits),
+      modifiers: automation.modifiers || [],
+      ...(automation.choices ? { choices: automation.choices } : {}),
+      publication: PUBLICATION,
+    },
+    fields: { actions: { hidden: !actions }, keyOptions: { hidden: true }, levelLabel: { hidden: false } },
+  };
+}
+
+// An archetype summoner's eidolon (Summoner Dedication, Impossible Magic):
+// +3 instead of +4 in its key attribute until 5th level, and the summoner's
+// proficiency ranks for Perception, saves and skills
+function summonerDedicationFeat() {
+  const name = "Summoner Dedication (Eidolon)";
+  const reduced = (field, key) =>
+    modifier(name, { type: "attributePenalty", field, value: "1", predicate: JSON.stringify([`eidolon-key:${key}`, { lt: ["self:level", 5] }]) });
+  return {
+    _id: idFor("feat", name),
+    name,
+    recordType: "feats",
+    identified: true,
+    unidentifiedName: "Unidentified Feat",
+    portrait: icon(`feats|${name}`, "/icons/fantasy/sundries/books/book-red-exclamation.webp"),
+    data: {
+      level: 2,
+      levelLabel: "Eidolon",
+      type: "bonus",
+      actionType: "passive",
+      actions: "",
+      prerequisites: "",
+      description:
+        p("Your eidolon's link to you is tenuous. Its key attribute starts at +3 instead of +4 (the other stays +2) and becomes +4 at 5th level, before its attribute boosts. It's trained in unarmed attacks and unarmored defense, and shares your proficiency rank for Perception, saving throws and skill checks: set its Perception and saves to yours if they differ. You can't use tandem actions.") +
+        p("<em>Add this feat to the eidolon of a summoner who took Summoner Dedication. Impossible Magic.</em>"),
+      traits: ["Eidolon"],
+      traitsList: traitsList(["Eidolon"]),
+      modifiers: [reduced("str", "strength"), reduced("dex", "dexterity")],
+      publication: PUBLICATION,
+    },
+    fields: { actions: { hidden: true }, keyOptions: { hidden: true }, levelLabel: { hidden: false } },
+  };
+}
+
 function build() {
   return {
     ancestry: TYPES.map(buildAncestry),
     class: [buildClass()],
+    feats: [...FEATS.map(evolutionFeat), summonerDedicationFeat()],
   };
 }
 

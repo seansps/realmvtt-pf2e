@@ -10,7 +10,10 @@
 //     familiar's master links its familiar);
 //   - the eidolon's level and Hit Points are its summoner's: one pool of HP
 //     and temporary HP, so damage or healing to either is copied to the
-//     other (shareHitPoints), and its maximum HP is the summoner's.
+//     other (shareHitPoints), and its maximum HP is the summoner's;
+//   - it takes item bonuses from its summoner's gear: armor potency and
+//     resilient runes or bands of force, and handwraps' runes on its
+//     unarmed attacks (getSummonerGear, data.summonerGear).
 // It isn't a minion, but it acts on its summoner's turn (shared actions), so
 // it goes just after the summoner in initiative (summons.js).
 
@@ -112,6 +115,8 @@ function syncEidolonWithSummoner(record, summonerId = getEidolonSummonerId(recor
     const level = parseInt(summoner.data?.level, 10);
     const levelChanged = level >= 0 && parseInt(record.data?.level, 10) !== level;
     if (levelChanged) values["data.level"] = level;
+    const gear = getSummonerGear(summoner);
+    if (!isSameSummonerGear(record.data?.summonerGear, gear)) values["data.summonerGear"] = gear;
     const linkBack = () => {
       if (getRecordIdFromValue(summoner.data?.eidolon) === record._id) return;
       api.setValuesOnRecord(summoner, { "data.eidolon": JSON.stringify({ _id: record._id, name: record.name, recordType: record.recordType || "characters" }) });
@@ -126,5 +131,80 @@ function syncEidolonWithSummoner(record, summonerId = getEidolonSummonerId(recor
       if (levelChanged) onAddEditFeature(current, undefined, true);
       done(current);
     });
+  });
+}
+
+// ---------------------------------------------------------------- Gear
+
+// Bands of force (Impossible Magic and Player Core): an item bonus to AC and
+// saves, +1, greater +2, major +3
+function getBandsOfForceBonus(item) {
+  const name = String(item?.name || "").toLowerCase();
+  if (!name.includes("bands of force")) return 0;
+  if (name.includes("major")) return 3;
+  if (name.includes("greater")) return 2;
+  return 1;
+}
+
+// What an eidolon takes from its summoner's gear (Impossible Magic pg. 70):
+// the item bonus to AC of the summoner's armor potency rune or bands of
+// force, the item bonus to saves of its resilient rune or bands of force, and
+// its worn, invested handwraps of mighty blows' runes. With Automatic Bonus
+// Progression runes give nothing (the eidolon has its own potency).
+function getSummonerGear(summoner) {
+  const gear = { armorPotency: 0, resilient: 0, handwraps: null };
+  if (getVariantRules().automaticBonusProgression) return gear;
+  const invested = (summoner?.data?.inventory || []).filter(
+    (item) => item?.data?.carried === "equipped" && item?.data?.invested === "true",
+  );
+  invested.forEach((item) => {
+    const bands = getBandsOfForceBonus(item);
+    if (bands) {
+      gear.armorPotency = Math.max(gear.armorPotency, bands);
+      gear.resilient = Math.max(gear.resilient, bands);
+    }
+    if (item.data?.type === "armor") {
+      gear.armorPotency = Math.max(gear.armorPotency, parseInt(item.data?.runes?.potency || 0, 10) || 0);
+      gear.resilient = Math.max(gear.resilient, parseInt(item.data?.runes?.resilient || 0, 10) || 0);
+    }
+  });
+  const handwraps = getWornHandwraps(summoner);
+  if (handwraps) {
+    gear.handwraps = { _id: handwraps._id, name: handwraps.name, data: { handwraps: true, carried: "equipped", invested: "true", runes: handwraps.data?.runes || {} } };
+  }
+  return gear;
+}
+
+// Whether two gear snapshots give the same; none is the same as no gear
+function isSameSummonerGear(a, b) {
+  const key = (gear) => JSON.stringify({ armorPotency: gear?.armorPotency || 0, resilient: gear?.resilient || 0, handwraps: gear?.handwraps || null });
+  return key(a) === key(b);
+}
+
+// The eidolon's modifiers from its summoner's gear (getEffectsAndModifiersForToken)
+function getEidolonGearModifiers(record) {
+  if (!isEidolonCharacter(record)) return [];
+  const gear = getEidolonCreatureData(record, "summonerGear");
+  if (!gear) return [];
+  const modifier = (name, value, modifierType, type) => ({ value, isPenalty: false, valueType: "number", name, type, modifierType, field: "all", active: true });
+  const results = [];
+  // Increases the eidolon's item bonus to AC (its key attribute's), so it
+  // adds to it rather than competing with it
+  if (gear.armorPotency > 0) results.push(modifier(`Summoner's Armor Potency +${gear.armorPotency}`, gear.armorPotency, "armorClassBonus", ""));
+  if (gear.resilient > 0) results.push(modifier(`Summoner's Resilient +${gear.resilient}`, gear.resilient, "saveBonus", "item"));
+  return results;
+}
+
+// The summoner's gear written to its eidolon when it changed
+function shareSummonerGear(summoner, callback) {
+  const done = () => {
+    if (callback) callback();
+  };
+  const eidolonId = getSummonerEidolonId(summoner);
+  if (!eidolonId) return done();
+  const gear = getSummonerGear(summoner);
+  api.getRecord("characters", eidolonId, (eidolon) => {
+    if (!eidolon || isSameSummonerGear(eidolon.data?.summonerGear, gear)) return done();
+    api.setValuesOnRecord(eidolon, { "data.summonerGear": gear }, () => done());
   });
 }

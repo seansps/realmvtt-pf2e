@@ -268,6 +268,8 @@ function isUnarmedWeapon(weapon) {
 // have their runes in their stat blocks.
 function getWornHandwraps(record) {
   if (record?.recordType === "npcs") return null;
+  // An eidolon's are its summoner's (eidolons.js)
+  if (isEidolonCharacter(record)) return getEidolonCreatureData(record, "summonerGear")?.handwraps || null;
   return (
     (record?.data?.inventory || []).find(
       (item) =>

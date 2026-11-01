@@ -60,7 +60,10 @@ const tempMacro = tempHealing
     const oldTempHp = parseInt(target.data?.tempHp || '0', 10);
     // Temp HP always overrides existing temp HP, if it is higher. The kept
     // ones' source is noted, so Rage's aren't taken for these (class-extras.js)
-    api.setValuesOnTokenById(target._id, target.recordType, getActionTempHpValues(target, tempHp, "Healing"));
+    const tempHpValues = getActionTempHpValues(target, tempHp, "Healing");
+    api.setValuesOnTokenById(target._id, target.recordType, tempHpValues);
+    // An eidolon and its summoner share the HP (eidolons.js)
+    shareHitPoints(target, tempHpValues);
     const unIdentified = target.identified === false;
     let targetName = !unIdentified ? target.name || target.record.name : target.unidentifiedName || target.record.unidentifiedName;
     targetName = targetName.replace(/'/g, ''); // Just remove the single quotes

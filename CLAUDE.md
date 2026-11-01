@@ -318,6 +318,9 @@ Animal companions are characters, as Foundry's PF2e Companion Compendia builds t
 - `syncEidolonWithSummoner`: the summoner's level, maximum, current and temporary HP in one write, then the summoner's link if missing; the sheet is worked out again when the level changed.
 - Shared Hit Points (Impossible Magic pg. 63): `shareHitPoints(creature, values)` copies `data.hitpoints`, `data.curhp` and `data.tempHp` just written to an eidolon or its summoner to the other, reading it fresh and writing only what differs (dying and wounded aren't shared). It's called by applyDamage (common.js), damageScript.js, healingScript.js and dying.js's healing; a summoner's new maximum in `updateAttribute` goes to its eidolon, and a linked eidolon's maximum isn't recomputed.
 - An eidolon goes just after its summoner in initiative through the companion master link (summons.js).
+- Gear (Impossible Magic pg. 70): `getSummonerGear` snapshots the summoner's armor potency, resilient rune or bands of force, and worn, invested handwraps into the eidolon's `data.summonerGear` (on sync, and when the summoner's sheet works out its Hit Points: `shareSummonerGear`). `getEidolonGearModifiers` (called beside `getAbpModifiers`) adds the AC and save bonuses, and `getWornHandwraps` returns the summoner's handwraps for an eidolon, so their runes go on its unarmed attacks. Nothing with Automatic Bonus Progression.
+- HP is also shared by rest, temporary HP from actions and the healing card, Orc Ferocity and Undying Ferocity, and Rage's end.
+- A ranged unarmed attack (Ranged Combatant) uses Dexterity but no ammunition (performAttackRoll's `isRangedUnarmed`).
 ### Data Structure
 
 - Character data is nested under `record.data`

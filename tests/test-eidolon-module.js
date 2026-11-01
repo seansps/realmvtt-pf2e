@@ -25,12 +25,15 @@ const setPath = (target, dotted, value) => {
 // The options a player picks, added as the choice prompt adds them: features
 // to the ancestry's or class's features, items to the inventory
 function pick(record, owner, choiceStart, optionName) {
-  const holder = owner.data.features.find((f) => (f.data.choices || []).some((c) => c.name.startsWith(choiceStart)));
+  const holder = owner.data.choices ? owner : owner.data.features.find((f) => (f.data.choices || []).some((c) => c.name.startsWith(choiceStart)));
   const choiceObj = holder.data.choices.find((c) => c.name.startsWith(choiceStart));
   const option = choiceObj.data.options.find((o) => o.name === optionName);
-  choiceObj.data.choices = [JSON.stringify({ _id: option._id, name: option.name })];
+  const optionSlug = option.data.slug || option.name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+  const prefix = choiceObj.data.rollOption;
+  choiceObj.data.choices = [JSON.stringify({ _id: option._id, name: option.name, slug: optionSlug, ...(prefix ? { selectedRollOption: `${prefix}:${optionSlug}` } : {}) })];
   option.data.value.forEach((item) => {
-    if (item.recordType === "features") owner.data.features.push(copy(item));
+    // A feat's choice adds its features to the class's (as the prompt does)
+    if (item.recordType === "features") (owner.data.features || record.data.classes[0].data.features).push(copy(item));
     if (item.recordType === "items") record.data.inventory.push({ ...copy(item), data: { ...copy(item.data), carried: "equipped", count: 1 } });
   });
 }
@@ -38,7 +41,7 @@ function pick(record, owner, choiceStart, optionName) {
 // An eidolon character from the module's records: its type's ancestry and the
 // Eidolon class, with its choices, worked out as the sheet does
 // (onAddEditFeature, run until it settles)
-function eidolon(type, level, { key, primary = "1d8, Trip", tradition } = {}) {
+function eidolon(type, level, { key, primary = "1d8, Trip", tradition, feats = [], featPicks = [], summonerGear } = {}) {
   const ancestry = copy(RECORDS.ancestry.find((a) => a.name === type));
   const eidolonClass = copy(RECORDS.class[0]);
   const record = {
@@ -53,20 +56,23 @@ function eidolon(type, level, { key, primary = "1d8, Trip", tradition } = {}) {
       classes: [eidolonClass],
       ancestries: [ancestry],
       heritages: [],
-      feats: [],
+      feats: feats.map((name) => copy(RECORDS.feats.find((f) => f.name === name))),
       bonusFeats: [],
       features: [],
       inventory: [],
       actions: [],
       size: ancestry.data.size,
+      senses: ancestry.data.vision,
       speed: ancestry.data.speed,
       traits: [...(ancestry.data.traits || [])],
       toggles: [],
+      ...(summonerGear ? { summonerGear } : {}),
     },
   };
   if (key) pick(record, ancestry, "Choose your", key);
   if (tradition) pick(record, ancestry, "Choose your dragon", tradition);
   pick(record, eidolonClass, "Choose your eidolon's primary", primary);
+  featPicks.forEach(([featName, choiceStart, optionName]) => pick(record, record.data.feats.find((f) => f.name === featName), choiceStart, optionName));
   const write = (values, cb) => {
     Object.entries(values).forEach(([path, value]) => setPath(record, path, value));
     if (cb) cb(record);
@@ -78,13 +84,13 @@ function eidolon(type, level, { key, primary = "1d8, Trip", tradition } = {}) {
 }
 
 // A Strike with the named unarmed attack: its bonus and damage
-function strike(record, weaponName) {
+function strike(record, weaponName, attackNumber = 1) {
   const index = record.data.inventory.findIndex((item) => item.name === weaponName);
   let captured = { mods: [], meta: {} };
   const saved = ctx.api.promptRoll;
   ctx.api.promptRoll = (name, dice, mods, meta) => (captured = { mods: mods || [], meta: meta || {} });
   try {
-    ctx.performAttackRoll(record, record.data.inventory[index], `data.inventory.${index}`, 1);
+    ctx.performAttackRoll(record, record.data.inventory[index], `data.inventory.${index}`, attackNumber);
   } finally {
     ctx.api.promptRoll = saved;
   }
@@ -139,6 +145,48 @@ section("Named arrays and the dragon's tradition");
   assert("primordial elemental: Str +4, Dex +2, Con +3, Int -1, Wis +1, Cha +0", ["str", "dex", "con", "int", "wis", "cha"].map((a) => elemental.data[`${a}Mod`]), [4, 2, 3, -1, 1, 0]);
   const dragon = eidolon("Dragon Eidolon", 1, { key: "Strength", tradition: "Arcane" });
   assert("arcane dragon: Intimidation and Arcana trained", [dragon.data.intimidation, dragon.data.arcana], ["1", "1"]);
+}
+
+section("Evolution feats (Impossible Magic pg. 79-86)");
+{
+  assert("40 evolution feats and the dedication's, named for the eidolon", [RECORDS.feats.length, RECORDS.feats.every((f) => / \(Eidolon\)$/.test(f.name))], [41, true]);
+  // Physical resistance is listed as bludgeoning, piercing and slashing
+  const resistance = (record, type) => ctx.getIWR(record).resistances?.[type === "physical" ? "bludgeoning" : type]?.value || 0;
+  const heart = (level, feats = ["Energy Heart (Eidolon)"]) =>
+    eidolon("Angel Eidolon", level, { key: "Strength", feats, featPicks: [["Energy Heart (Eidolon)", "Choose Energy Heart", "Fire"]] });
+  assert("Energy Heart: fire resistance half the level, minimum 1", [resistance(heart(1), "fire"), resistance(heart(7), "fire"), resistance(heart(20), "fire")], [1, 3, 10]);
+  assert("... none to the other energies", resistance(heart(7), "cold"), 0);
+  assert("Energy Resistance: the level", resistance(heart(8, ["Energy Heart (Eidolon)", "Energy Resistance (Eidolon)"]), "fire"), 8);
+  const senses = eidolon("Beast Eidolon", 1, { key: "Strength", feats: ["Expanded Senses (Eidolon)"] });
+  assert("Expanded Senses: darkvision and scent", [/darkvision/i.test(senses.data.senses), /scent/i.test(senses.data.senses)], [true, true]);
+  const fast = eidolon("Angel Eidolon", 2, { key: "Strength", feats: ["Alacritous Action (Eidolon)"] });
+  assert("Alacritous Action: Speed 35", parseInt(fast.data.speed, 10), 35);
+  const hulk = eidolon("Angel Eidolon", 8, { key: "Strength", feats: ["Hulking Size (Eidolon)"] });
+  assert("Hulking Size: Large", String(hulk.data.size).toLowerCase(), "large");
+  const ranged = eidolon("Angel Eidolon", 2, { key: "Dexterity", feats: ["Ranged Combatant (Eidolon)"], featPicks: [["Ranged Combatant (Eidolon)", "Choose your eidolon's ranged", "Fire"]] });
+  assert("Ranged Combatant: 1d4 fire, +8 at 2nd (2 + 2 trained + Dex 4)", [strike(ranged, "Ranged Attack").bonus, strike(ranged, "Ranged Attack").damage.split("+")[0]], [8, "1d4"]);
+  const nimble = eidolon("Angel Eidolon", 10, { key: "Dexterity", feats: ["Nimble Form (Eidolon)"] });
+  const plain = eidolon("Angel Eidolon", 10, { key: "Dexterity" });
+  assert("Nimble Form: the agile attack's second Strike at -3, not -4", strike(nimble, "Secondary Attack", 2).bonus - strike(plain, "Secondary Attack", 2).bonus, 1);
+  const shell = (level) => resistance(eidolon("Angel Eidolon", level, { key: "Strength", feats: ["Resilient Shell (Eidolon)"] }), "physical");
+  assert("Resilient Shell: physical 5, 6 at 17th", [shell(14), shell(17)], [5, 6]);
+  const dedication = (level, key) => eidolon("Angel Eidolon", level, { key, feats: ["Summoner Dedication (Eidolon)"] });
+  assert("Summoner Dedication: key attribute +3 until 5th, then +4", [dedication(2, "Strength").data.strMod, dedication(2, "Dexterity").data.dexMod, dedication(5, "Strength").data.strMod], [3, 3, 4]);
+  assert("... the other stays +2", dedication(2, "Strength").data.dexMod, 2);
+}
+
+section("Item bonuses from the summoner's gear");
+{
+  const handwraps = { _id: "hw", name: "Handwraps of Mighty Blows", data: { handwraps: true, carried: "equipped", invested: "true", runes: { potency: "1", striking: "1" } } };
+  const geared = eidolon("Angel Eidolon", 5, { key: "Strength", summonerGear: { armorPotency: 1, resilient: 1, handwraps } });
+  const bare = eidolon("Angel Eidolon", 5, { key: "Strength" });
+  assert("+1 armor potency raises its AC by 1", geared.data.ac - bare.data.ac, 1);
+  // The sheet's save totals show attribute and proficiency only; a save roll
+  // adds the item bonus
+  const saveMods = (record) => ctx.getEffectsAndModifiersForToken(record, ["saveBonus", "savePenalty"], ["fortitude", "saving-throw"]).map((m) => [m.name, m.value]);
+  assert("+1 resilient: +1 item bonus on its save rolls", [saveMods(geared), saveMods(bare)], [[["Summoner's Resilient +1", 1]], []]);
+  const primary = geared.data.inventory.find((item) => item.name === "Primary Attack");
+  assert("+1 striking handwraps: +1 to hit and a striking rune on its attacks", [strike(geared, "Primary Attack").bonus - strike(bare, "Primary Attack").bonus, ctx.getStrikingRuneForRecord(geared, ctx.getAlteredWeapon(geared, primary))], [1, 1]);
 }
 
 process.exitCode = summary() > 0 ? 1 : 0;

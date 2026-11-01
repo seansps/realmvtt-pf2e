@@ -3696,6 +3696,8 @@ function getEffectsAndModifiersForToken(
     results = withoutAnimalCompanionItemBonuses(results, bestArmor?.armor?.acBonus || 0);
   }
   results.push(...getAbpModifiers(target));
+  // An eidolon's item bonuses from its summoner's gear (eidolons.js)
+  results.push(...getEidolonGearModifiers(target));
 
   // Process AdjustModifier rules - these modify existing modifiers by slug
   const adjustModifiers = results.filter(
@@ -4402,7 +4404,10 @@ function applyActionTemporaryHitPoints(amount, sourceName = "") {
   getActionApplyTargets().forEach((target) => {
     // Kept with where they came from, so Rage's go when it ends
     // (class-extras.js)
-    api.setValuesOnTokenById(target._id, target.recordType, getActionTempHpValues(target, amount, sourceName));
+    const tempHpValues = getActionTempHpValues(target, amount, sourceName);
+    api.setValuesOnTokenById(target._id, target.recordType, tempHpValues);
+    // An eidolon and its summoner share the HP (eidolons.js)
+    shareHitPoints(target, tempHpValues);
     const from = sourceName ? ` from ${sourceName}` : "";
     api.sendMessage(
       `${getTokenDisplayName(target)} gains ${amount} temporary Hit Points${from}.`,
@@ -5640,8 +5645,11 @@ function updateAttribute({
     if (record.data?.curhp === undefined) {
       valuesToSet[`data.curhp`] = totalHp;
     }
-    // A summoner's eidolon has the same maximum (eidolons.js)
-    if (getSummonerEidolonId(record)) shareHitPoints(record, { "data.hitpoints": totalHp });
+    // A summoner's eidolon has the same maximum, and the summoner's gear
+    // (eidolons.js)
+    if (getSummonerEidolonId(record)) {
+      shareHitPoints(record, { "data.hitpoints": totalHp }, () => shareSummonerGear(record));
+    }
   }
 
   // You can carry an amount of Bulk equal to 5 plus your Strength modifier without penalty
@@ -12349,7 +12357,19 @@ function performAttackRoll(record, weapon, weaponDataPath, attackNumber) {
   // Bombs and thrown weapons don't use ammo select
   const isBomb = !isNPCAttack && weapon?.data?.group?.toLowerCase() === "bomb";
 
-  if (!isNPCAttack && (isThrown || !isMelee)) {
+  // A ranged unarmed attack (an eidolon's Ranged Combatant, a spit or
+  // spine) uses Dexterity as any ranged attack does, but no ammunition
+  const isRangedUnarmed =
+    !isNPCAttack &&
+    !isMelee &&
+    !isThrown &&
+    (String(weapon.data?.itemCategory || "").toLowerCase() === "unarmed" ||
+      (weapon.data?.traits || []).some((trait) => String(trait).toLowerCase() === "unarmed"));
+
+  if (isRangedUnarmed) {
+    abilityScore = "dex";
+    addStrengthToDamage = false;
+  } else if (!isNPCAttack && (isThrown || !isMelee)) {
     // Thrown and ranged always use dex
     abilityScore = "dex";
     // Only if thrown

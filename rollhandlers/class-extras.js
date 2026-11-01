@@ -96,6 +96,8 @@ function clearRageTempHp(tokens) {
     const values = getRageEndTempHpValues(token);
     if (!values) return;
     api.setValuesOnTokenById(token._id, token.recordType, values);
+    // An eidolon and its summoner share the HP (eidolons.js)
+    shareHitPoints(token, values);
     lines.push(`${getCreatureName(token)} loses ${token.data.tempHp} temporary Hit Points from Rage.`);
   });
   return lines;
