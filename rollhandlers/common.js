@@ -3696,6 +3696,8 @@ function getEffectsAndModifiersForToken(
     results = withoutAnimalCompanionItemBonuses(results, bestArmor?.armor?.acBonus || 0);
   }
   results.push(...getAbpModifiers(target));
+  // An eidolon's item bonuses from its summoner's gear (eidolons.js)
+  results.push(...getEidolonGearModifiers(target));
 
   // Process AdjustModifier rules - these modify existing modifiers by slug
   const adjustModifiers = results.filter(
@@ -4402,7 +4404,10 @@ function applyActionTemporaryHitPoints(amount, sourceName = "") {
   getActionApplyTargets().forEach((target) => {
     // Kept with where they came from, so Rage's go when it ends
     // (class-extras.js)
-    api.setValuesOnTokenById(target._id, target.recordType, getActionTempHpValues(target, amount, sourceName));
+    const tempHpValues = getActionTempHpValues(target, amount, sourceName);
+    api.setValuesOnTokenById(target._id, target.recordType, tempHpValues);
+    // An eidolon and its summoner share the HP (eidolons.js)
+    shareHitPoints(target, tempHpValues);
     const from = sourceName ? ` from ${sourceName}` : "";
     api.sendMessage(
       `${getTokenDisplayName(target)} gains ${amount} temporary Hit Points${from}.`,
@@ -5622,8 +5627,9 @@ function updateAttribute({
     return acc + (parseInt(mod.value || 0, 10) || 0);
   }, 0);
 
-  // If this was constitution, update hitpoints
-  if (attribute === "con") {
+  // If this was constitution, update hitpoints. A linked eidolon's are its
+  // summoner's, shared (eidolons.js)
+  if (attribute === "con" && !getEidolonSummonerId(record)) {
     // hitpoints = CON MOD + hp rolled at each level (min 1)
     const conMod = value;
     // Hit Points in PF2e is Ancestry HP + (Class HP + Con Mod)*Level
@@ -5638,6 +5644,11 @@ function updateAttribute({
     // If curhp is not set, set it to hitpoints
     if (record.data?.curhp === undefined) {
       valuesToSet[`data.curhp`] = totalHp;
+    }
+    // A summoner's eidolon has the same maximum, and the summoner's gear
+    // (eidolons.js)
+    if (getSummonerEidolonId(record)) {
+      shareHitPoints(record, { "data.hitpoints": totalHp }, () => shareSummonerGear(record));
     }
   }
 
@@ -7589,6 +7600,14 @@ function updateProficiencies(record, valuesToSet) {
     }
   });
 
+  // An eidolon's ranks that are its summoner's (eidolons.js): its skills,
+  // and its Perception and saves with Summoner Dedication. They're exact,
+  // so a rank stored before doesn't hold them up.
+  const sharedRanks = getEidolonSharedRanks(record);
+  Object.assign(proficiencies, sharedRanks);
+  const storedRank = (key) =>
+    key in sharedRanks ? 0 : parseInt(record.data?.[key] || "0", 10);
+
   // Set Class DC
   const keyAbility = record.data?.keyAbility;
   let keyAbilityScore = 0;
@@ -7632,7 +7651,7 @@ function updateProficiencies(record, valuesToSet) {
   const wisMod = getAbilityScore("wis");
 
   // Reflex (DEX + proficiency bonus)
-  const currentReflex = parseInt(record.data?.reflex || "0", 10);
+  const currentReflex = storedRank("reflex");
   const effectiveReflex = Math.max(currentReflex, proficiencies.reflex);
   const reflexProficiencyBonus = calculateProficiencyBonus(
     record,
@@ -7644,7 +7663,7 @@ function updateProficiencies(record, valuesToSet) {
   }
 
   // Fortitude (CON + proficiency bonus)
-  const currentFortitude = parseInt(record.data?.fortitude || "0", 10);
+  const currentFortitude = storedRank("fortitude");
   const effectiveFortitude = Math.max(
     currentFortitude,
     proficiencies.fortitude,
@@ -7662,7 +7681,7 @@ function updateProficiencies(record, valuesToSet) {
   }
 
   // Will (WIS + proficiency bonus)
-  const currentWill = parseInt(record.data?.will || "0", 10);
+  const currentWill = storedRank("will");
   const effectiveWill = Math.max(currentWill, proficiencies.will);
   const willProficiencyBonus = calculateProficiencyBonus(record, effectiveWill);
   valuesToSet["data.willMod"] = wisMod + willProficiencyBonus;
@@ -7671,7 +7690,7 @@ function updateProficiencies(record, valuesToSet) {
   }
 
   // Perception (WIS + proficiency bonus)
-  const currentPerception = parseInt(record.data?.perception || "0", 10);
+  const currentPerception = storedRank("perception");
   const effectivePerception = Math.max(
     currentPerception,
     proficiencies.perception,
@@ -7699,10 +7718,7 @@ function updateProficiencies(record, valuesToSet) {
     const abilityMod = getAbilityScore(effectiveAbilityKey);
 
     // Get the current skill proficiency from the record
-    const currentSkillProficiency = parseInt(
-      record.data?.[skillName] || "0",
-      10,
-    );
+    const currentSkillProficiency = storedRank(skillName);
 
     // Use the higher of current proficiency or calculated proficiency for the modifier
     const effectiveProficiency = Math.max(
@@ -7737,7 +7753,7 @@ function updateProficiencies(record, valuesToSet) {
 
     // Only update the proficiency value if the calculated one is higher
     // Don't override manually set higher values
-    if (currentSkillProficiency < skillProficiency) {
+    if (currentSkillProficiency < skillProficiency || skillName in sharedRanks) {
       valuesToSet[`data.${skillName}`] = skillProficiency.toString();
     }
   }
@@ -8472,7 +8488,8 @@ function onAddEditFeature(
 
   // The Notes tab's Animal Companion box (master, level) shows for a
   // character whose class is Animal Companion
-  const hideCompanionBox = !isAnimalCompanionCharacter(record);
+  // (or Eidolon: its summoner, eidolons.js)
+  const hideCompanionBox = !isAnimalCompanionCharacter(record) && !isEidolonCharacter(record);
   if ((record.fields?.companionProperties?.hidden ?? true) !== hideCompanionBox) {
     valuesToSet["fields.companionProperties.hidden"] = hideCompanionBox;
   }
@@ -12345,7 +12362,19 @@ function performAttackRoll(record, weapon, weaponDataPath, attackNumber) {
   // Bombs and thrown weapons don't use ammo select
   const isBomb = !isNPCAttack && weapon?.data?.group?.toLowerCase() === "bomb";
 
-  if (!isNPCAttack && (isThrown || !isMelee)) {
+  // A ranged unarmed attack (an eidolon's Ranged Combatant, a spit or
+  // spine) uses Dexterity as any ranged attack does, but no ammunition
+  const isRangedUnarmed =
+    !isNPCAttack &&
+    !isMelee &&
+    !isThrown &&
+    (String(weapon.data?.itemCategory || "").toLowerCase() === "unarmed" ||
+      (weapon.data?.traits || []).some((trait) => String(trait).toLowerCase() === "unarmed"));
+
+  if (isRangedUnarmed) {
+    abilityScore = "dex";
+    addStrengthToDamage = false;
+  } else if (!isNPCAttack && (isThrown || !isMelee)) {
     // Thrown and ranged always use dex
     abilityScore = "dex";
     // Only if thrown
@@ -15205,6 +15234,12 @@ function applyDamage(
     targets = api.getSelectedOwnedTokens().map((target) => target.token);
   }
 
+  // An eidolon and its summoner share one pool of Hit Points: one effect on
+  // both applies once, the greater (eidolons.js). Apply by Saves passes the
+  // pool and every creature on its card, as it applies them one at a time.
+  const sharedPools = options.sharedPools || {};
+  const poolCreatures = options.poolCreatures || targets;
+
   targets.forEach((target) => {
     // Apply damage
     if (target && target.data) {
@@ -15969,9 +16004,21 @@ function applyDamage(
         }
       }
 
-      var curhp = target.data?.curhp || 0;
+      // The second of an eidolon and its summoner takes only what its amount
+      // adds to the first's, from the pool as the first left it
+      const poolKey = getSharedPoolKey(target, poolCreatures);
+      const pooled = poolKey ? sharedPools[poolKey] : null;
+      const fullDamage = damage;
+      let poolNote = "";
+      if (pooled) {
+        damage = getSharedPoolDamage(damage, pooled.damage);
+        const greater = Math.max(Math.abs(fullDamage), Math.abs(pooled.damage));
+        poolNote = `\nShares Hit Points with ${pooled.name}: one effect on both applies once, the greater (${greater}).`;
+      }
+
+      var curhp = pooled ? pooled.curhp : target.data?.curhp || 0;
       const maxHp = target.data?.hitpoints || 0;
-      const oldTempHp = parseInt(target.data?.tempHp || "0", 10);
+      const oldTempHp = pooled ? pooled.tempHp : parseInt(target.data?.tempHp || "0", 10);
 
       // Check for Massive Damage (instant death)
       // "You die instantly if you ever take damage equal to or greater than double your maximum Hit Points in one blow."
@@ -16048,6 +16095,14 @@ function applyDamage(
       }
 
       valuesToSet["data.curhp"] = curhp;
+      if (poolKey) {
+        sharedPools[poolKey] = {
+          name: getCreatureName(target),
+          damage: pooled && Math.abs(pooled.damage) > Math.abs(fullDamage) ? pooled.damage : fullDamage,
+          curhp,
+          tempHp: valuesToSet["data.tempHp"] ?? oldTempHp,
+        };
+      }
 
       // Healing from 0 Hit Points ends dying and unconscious (dying.js)
       let wakes = false;
@@ -16130,10 +16185,13 @@ function applyDamage(
       if (damage < 0 && valuesToSet["data.dying"] === 0) {
         message += ` No longer dying (wounded ${valuesToSet["data.wounded"]}).`;
       }
+      message += poolNote;
 
       // Handle death conditions. Buttons (Heroic Recovery, Orc Ferocity) go
       // after the message, as its Undo button repeats the message's text.
       let dyingButtons = [];
+      // The summoner's values before, when a linked eidolon's 0 HP went to it
+      let eidolonZeroUndo = null;
       if (instantDeath) {
         message += `\n**[center][color=red]INSTANT DEATH (${deathReason})[/color][/center]**`;
         // For characters, set dying to 4+ (dead)
@@ -16155,21 +16213,34 @@ function applyDamage(
           (target.data?.type === "hazard" || target.data?.type === "vehicle");
         const isCompanion =
           target.recordType === "npcs" && target.data?.type === "familiar";
-        if (target.recordType === "characters" || isCompanion) {
+        const zeroOptions = {
+          critical:
+            typeof isCritical !== "undefined" && isCritical && !immuneToCritical,
+          // Double damage from a critically failed basic save is a
+          // critical failure, not a critical hit (basic-saves.js)
+          criticalLabel: options.criticalLabel,
+          nonlethal: isNonlethalDamage(traits),
+        };
+        if (getEidolonSummonerId(target)) {
+          // A linked eidolon at 0 HP: its summoner is, and gains dying; the
+          // eidolon unmanifests (eidolons.js)
+          const zero = applyEidolonZeroHitPoints(target, zeroOptions);
+          message += `\n${zero.lines.join("\n")}`;
+          dyingButtons = zero.buttons;
+          eidolonZeroUndo = zero.undo;
+        } else if (target.recordType === "characters" || isCompanion) {
           // Characters and their companions gain dying, or are knocked out
           // by nonlethal damage (dying.js). If the target is immune to
           // critical hits, a critical hit counts as a normal one.
           const { lines, buttons } = getZeroHitPointsChanges(target, {
-            critical:
-              typeof isCritical !== "undefined" && isCritical && !immuneToCritical,
-            // Double damage from a critically failed basic save is a
-            // critical failure, not a critical hit (basic-saves.js)
-            criticalLabel: options.criticalLabel,
-            nonlethal: isNonlethalDamage(traits),
+            ...zeroOptions,
             valuesToSet,
             oldValues,
           });
           message += `\n${lines.join("\n")}`;
+          // A summoner at 0 HP: its eidolon unmanifests (eidolons.js)
+          const unmanifest = getEidolonUnmanifestLine(target);
+          if (unmanifest) message += `\n${unmanifest}`;
           dyingButtons = buttons;
         } else if (target.recordType === "npcs") {
           // Other NPCs die at 0 HP, unless nonlethal damage knocks them out
@@ -16212,8 +16283,10 @@ function applyDamage(
         if (confusedButton) dyingButtons.push(confusedButton);
       }
 
-      // Apply all value changes in a single batch
+      // Apply all value changes in a single batch; an eidolon and its
+      // summoner share the HP (eidolons.js)
       if (Object.keys(valuesToSet).length > 0) {
+        shareHitPoints(target, valuesToSet);
         api.setValuesOnTokenById(
           target._id,
           target.recordType,
@@ -16247,7 +16320,7 @@ function applyDamage(
               target._id
             }', '${target.recordType}', ${JSON.stringify(
               oldValues,
-            )}); api.editMessage(null, \`~${message}~\`); } else { api.showNotification('Only the GM can undo damage.', 'yellow', 'Notice'); }\n\`\`\``
+            )}); ${getSharedHitPointUndo(target, oldValues, eidolonZeroUndo)} api.editMessage(null, \`~${message}~\`); } else { api.showNotification('Only the GM can undo damage.', 'yellow', 'Notice'); }\n\`\`\``
           : "";
 
       // Build tags array for armor specialization

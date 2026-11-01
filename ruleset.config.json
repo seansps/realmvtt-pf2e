@@ -5456,6 +5456,9 @@
         },
         "Summons": {
           "file": "rollhandlers/summons.js"
+        },
+        "Eidolons": {
+          "file": "rollhandlers/eidolons.js"
         }
       },
       "defaultDice": "default",

@@ -1,0 +1,513 @@
+[
+  {
+    "name": "Advanced Weaponry",
+    "level": 1,
+    "actions": "",
+    "traits": [
+      "Evolution",
+      "Summoner"
+    ],
+    "text": "Your eidolon’s attack evolves. Choose one of your eidolon’s starting melee unarmed attacks to gain one of the following traits, chosen when you gain the feat: disarm; grapple; nonlethal; shove; trip; or versatile B, P, or S.",
+    "page": "pg. 78",
+    "url": "/Feats.aspx?ID=9221"
+  },
+  {
+    "name": "Energy Heart",
+    "level": 1,
+    "actions": "",
+    "traits": [
+      "Evolution",
+      "Summoner"
+    ],
+    "text": "Your eidolon’s heart beats with energy. Choose acid, cold, electricity, or fire. One of their unarmed attacks changes its damage type to the chosen type, and they gain resistance to that type equal to half your level (minimum 1).",
+    "page": "pg. 78",
+    "url": "/Feats.aspx?ID=9223"
+  },
+  {
+    "name": "Expanded Senses",
+    "level": 1,
+    "actions": "",
+    "traits": [
+      "Evolution",
+      "Summoner"
+    ],
+    "text": "Your eidolon evolves more acute senses. Your eidolon gains low-light vision and darkvision, as well as scent as an imprecise sense with a range of 30 feet.",
+    "page": "pg. 78",
+    "url": "/Feats.aspx?ID=9224"
+  },
+  {
+    "name": "Glider Form",
+    "level": 1,
+    "actions": "oneAction",
+    "traits": [
+      "Eidolon",
+      "Evolution",
+      "Move",
+      "Summoner"
+    ],
+    "text": "Your eidolon evolves wings, a buoyant body, or some other means to control descent. They glide slowly toward the ground, 5 feet down and up to 25 feet forward through the air. As long as they spend at least 1 action gliding each round and have not yet reached the ground, they remain in the air at the end of your turn.",
+    "page": "pg. 78",
+    "url": "/Feats.aspx?ID=9226"
+  },
+  {
+    "name": "Alacritous Action",
+    "level": 2,
+    "actions": "",
+    "traits": [
+      "Evolution",
+      "Summoner"
+    ],
+    "text": "Your eidolon moves more quickly. Your eidolon’s Speed increases by 10 feet.",
+    "page": "pg. 79",
+    "url": "/Feats.aspx?ID=9229"
+  },
+  {
+    "name": "Amphibious Form",
+    "level": 2,
+    "actions": "",
+    "traits": [
+      "Evolution",
+      "Summoner"
+    ],
+    "text": "Your eidolon adapts to life on land and underwater. They gain the amphibious trait, allowing them to breathe in water and air and to avoid the normal –2 penalty for making bludgeoning and slashing unarmed Strikes underwater. They gain a swim Speed equal to their land Speed or 25 feet, whichever is less; if they’re normally aquatic, they gain a land Speed equal to their swim Speed or 25 feet, whichever is less.",
+    "page": "pg. 79",
+    "url": "/Feats.aspx?ID=9230"
+  },
+  {
+    "name": "Magical Understudy",
+    "level": 2,
+    "actions": "",
+    "traits": [
+      "Evolution",
+      "Summoner"
+    ],
+    "text": "Your eidolon evolves to cast spells. They gain the Cast a Spell activity and learn two cantrips of their tradition, which they can cast as innate spells.",
+    "page": "pg. 79",
+    "url": "/Feats.aspx?ID=9231"
+  },
+  {
+    "name": "Ranged Combatant",
+    "level": 2,
+    "actions": "",
+    "traits": [
+      "Evolution",
+      "Summoner"
+    ],
+    "text": "Spines, flame jets, and holy blasts are just some of the ways your eidolon might strike from a distance. Your eidolon gains a ranged unarmed attack with a range increment of 30 feet that deals 1d4 damage and has the magical and propulsive traits. When you select this feat, choose a damage type for the attack: acid, bludgeoning, cold, electricity, fire, piercing, slashing, spirit, vitality, or void.",
+    "page": "pg. 79",
+    "url": "/Feats.aspx?ID=9232"
+  },
+  {
+    "name": "Steed Form",
+    "level": 2,
+    "actions": "",
+    "traits": [
+      "Evolution",
+      "Summoner"
+    ],
+    "text": "Your eidolon changes to make them particularly effective as your mount. While you ride them, you get your full number of actions each round instead of reducing them to 2. This applies only when you ride your eidolon, not when anyone else does (see the Riding Sapient Creatures sidebar). Your eidolon still must be at least one size category larger than you to ride them. Since you work together to move, your eidolon’s move actions while you’re mounted gain the tandem trait.\n\nRiding Sapient Creatures Riding along on a sapient creature that isn’t a minion requires a lot of coordination and timing. Both the riding creature and the mount regain only 2 actions at the start of their turns each round, as both the mount and the riding creature interfere with one another’s actions. If you ride your eidolon, you reduce your total actions to 2 and continue to share actions normally—you don’t reduce the number of actions twice.",
+    "page": "pg. 80",
+    "url": "/Feats.aspx?ID=9234"
+  },
+  {
+    "name": "Bloodletting Claws",
+    "level": 4,
+    "actions": "",
+    "traits": [
+      "Evolution",
+      "Summoner"
+    ],
+    "text": "Your eidolon inflicts bleeding wounds on a telling blow. If your eidolon critically hits with a melee unarmed Strike that deals slashing or piercing damage, their target takes 1d6 persistent bleed damage. Your eidolon gains an item bonus to this bleed damage equal to the unarmed attack’s item bonus to attack rolls. This is a critical specialization effect.",
+    "page": "pg. 80",
+    "url": "/Feats.aspx?ID=9235"
+  },
+  {
+    "name": "Defend Summoner",
+    "level": 4,
+    "actions": "oneAction",
+    "traits": [
+      "Eidolon",
+      "Evolution",
+      "Summoner"
+    ],
+    "text": "Your eidolon blocks attacks against you. After your eidolon uses this action, you gain a +2 circumstance bonus to AC until the beginning of your next turn. This bonus applies only while you’re within your eidolon’s reach (in most cases, this means your eidolon is adjacent to you or in your space).",
+    "page": "pg. 80",
+    "url": "/Feats.aspx?ID=9236"
+  },
+  {
+    "name": "Dual Energy Heart",
+    "level": 4,
+    "actions": "",
+    "traits": [
+      "Evolution",
+      "Summoner"
+    ],
+    "prerequisites": "Energy Heart",
+    "text": "A second energy dwells in your eidolon. Choose an additional damage type from the list in Energy Heart. Your eidolon’s unarmed attack that deals energy damage gains the versatile trait for the second energy damage type, and your eidolon gains resistance to the second type of energy damage equal to half your level.",
+    "page": "pg. 80",
+    "url": "/Feats.aspx?ID=9237"
+  },
+  {
+    "name": "Shrink Down",
+    "level": 4,
+    "actions": "oneAction",
+    "traits": [
+      "Concentrate",
+      "Eidolon",
+      "Evolution",
+      "Summoner"
+    ],
+    "text": "Your eidolon can shrink to fit into small spaces. Your eidolon reduces to a smaller size of your choosing, to a minimum of size Small. They can Dismiss this action to return to their normal size. Their reach becomes 5 feet, or 10 feet if shrinking to Large with Towering Size.",
+    "page": "pg. 81",
+    "url": "/Feats.aspx?ID=9240"
+  },
+  {
+    "name": "Vibration Sense",
+    "level": 4,
+    "actions": "",
+    "traits": [
+      "Evolution",
+      "Summoner"
+    ],
+    "text": "Your eidolon gains tremorsense as an imprecise sense with a range of 30 feet. If aquatic, they instead gain wavesense as an imprecise sense with a range of 30 feet. If amphibious, they gain both.",
+    "page": "pg. 81",
+    "url": "/Feats.aspx?ID=9243"
+  },
+  {
+    "name": "Blood Frenzy",
+    "level": 6,
+    "actions": "free",
+    "traits": [
+      "Eidolon",
+      "Evolution",
+      "Summoner"
+    ],
+    "prerequisites": "Bloodletting Claws",
+    "requirements": "Your eidolon’s last action dealt bleed damage to a living creature.",
+    "text": "Your eidolon flies into a frenzy. While in the frenzy, your eidolon is affected by _boost eidolon_ and gains temporary HP equal to your level, but takes a –1 penalty to AC. The temporary HP last until the frenzy ends. They can’t voluntarily end the frenzy or start another frenzy while in the frenzy. The frenzy lasts for 1 minute or until your eidolon is no longer manifested, whichever comes first, after which your eidolon can’t start another frenzy for 1 minute.",
+    "page": "pg. 81",
+    "url": "/Feats.aspx?ID=9244"
+  },
+  {
+    "name": "Eidolon's Retort",
+    "level": 6,
+    "actions": "reaction",
+    "traits": [
+      "Eidolon",
+      "Evolution",
+      "Summoner"
+    ],
+    "trigger": "A creature within your eidolon’s reach uses a manipulate action or a move action, makes a ranged attack, or leaves a square during a move action it’s using.",
+    "text": "Your eidolon makes a melee Strike against the triggering creature. If the attack is a critical hit and the trigger was a manipulate action, your eidolon disrupts that action. This Strike doesn’t count toward your multiple attack penalty, and your multiple attack penalty doesn’t apply to this Strike.",
+    "page": "pg. 81",
+    "url": "/Feats.aspx?ID=9245"
+  },
+  {
+    "name": "Eidolon's Wrath",
+    "level": 6,
+    "actions": "",
+    "traits": [
+      "Evolution",
+      "Summoner"
+    ],
+    "text": "Your eidolon gains the _eidolon’s wrath_ link spell, which they cast, instead of you. You determine the damage type when you gain the feat: acid, cold, electricity, fire, sonic, spirit, vitality, or void. As normal, your eidolon shares your Focus Points.",
+    "page": "pg. 81",
+    "url": "/Feats.aspx?ID=9246"
+  },
+  {
+    "name": "Phase Out",
+    "level": 6,
+    "actions": "threeActions",
+    "traits": [
+      "Concentrate",
+      "Evolution",
+      "Summoner"
+    ],
+    "prerequisites": "Your eidolon is a phantom.",
+    "text": "Your eidolon phases out of reality slightly, gaining resistance to all damage (except force, spirit, and vitality) equal to half your level. They’re not incorporeal, but can’t use Strikes or actions that require a fully physical form, such as Grapple, Reposition, Shove, or Trip. Your eidolon can Dismiss this effect to return to their normal form.",
+    "page": "pg. 81",
+    "url": "/Feats.aspx?ID=9249"
+  },
+  {
+    "name": "Constricting Hold",
+    "level": 8,
+    "actions": "oneAction",
+    "traits": [
+      "Eidolon",
+      "Evolution",
+      "Summoner"
+    ],
+    "requirements": "Your eidolon has a creature grabbed or restrained.",
+    "text": "Your eidolon constricts the creature, dealing bludgeoning damage equal to your eidolon’s level plus their Strength modifier, with a basic Fortitude save against your spell DC.",
+    "page": "pg. 82",
+    "url": "/Feats.aspx?ID=9252"
+  },
+  {
+    "name": "Energy Resistance",
+    "level": 8,
+    "actions": "",
+    "traits": [
+      "Evolution",
+      "Summoner"
+    ],
+    "prerequisites": "Energy Heart",
+    "text": "Your eidolon has stronger resistance. Their resistance from Energy Heart and Dual Energy Heart increases to your level.",
+    "page": "pg. 82",
+    "url": "/Feats.aspx?ID=9253"
+  },
+  {
+    "name": "Hulking Size",
+    "level": 8,
+    "actions": "",
+    "traits": [
+      "Evolution",
+      "Summoner"
+    ],
+    "text": "Your eidolon grows substantially. Your eidolon becomes Large, instead of their previous size, and their reach increases to 10 feet. This doesn’t change any of their other statistics.",
+    "page": "pg. 82",
+    "url": "/Feats.aspx?ID=9254"
+  },
+  {
+    "name": "Magical Adept",
+    "level": 8,
+    "actions": "",
+    "traits": [
+      "Evolution",
+      "Summoner"
+    ],
+    "prerequisites": "Magical Understudy",
+    "text": "Your eidolon gains more magic. Choose one 2nd-rank spell and one 1st-rank spell of your eidolon’s tradition. Your eidolon can cast them each once per day as innate spells. At every even level after you take this feat, your eidolon can swap one of these innate spells for a new innate spell that’s 2 or more ranks lower than your highest-rank spell slot.",
+    "page": "pg. 82",
+    "url": "/Feats.aspx?ID=9255"
+  },
+  {
+    "name": "Miniaturize",
+    "level": 8,
+    "actions": "",
+    "traits": [
+      "Evolution",
+      "Summoner"
+    ],
+    "prerequisites": "Shrink Down",
+    "text": "Your eidolon can shrink even further. When using Shrink Down, your eidolon can reduce their size to Tiny. When Tiny, their reach is 0 feet.",
+    "page": "pg. 83",
+    "url": "/Feats.aspx?ID=9256"
+  },
+  {
+    "name": "Surprising Leap",
+    "level": 8,
+    "actions": "twoActions",
+    "traits": [
+      "Eidolon",
+      "Evolution",
+      "Summoner"
+    ],
+    "text": "Your eidolon jumps into the air to attack a foe. Your eidolon makes a Leap, High Jump, or Long Jump and attempts one melee Strike at any point during that jump. Immediately after the Strike, your eidolon falls to the ground if they’re in the air, even if they haven’t reached the maximum distance of their jump. If the distance your eidolon falls is no more than the height of their jump, your eidolon takes no damage and lands upright.\n\nWhen attempting a High Jump or Long Jump during a Surprising Leap, determine the jump distance using Long Jump’s rules, and change your eidolon’s maximum distance to double their Speed.",
+    "page": "pg. 83",
+    "url": "/Feats.aspx?ID=9257"
+  },
+  {
+    "name": "Burrowing Form",
+    "level": 10,
+    "actions": "",
+    "traits": [
+      "Evolution",
+      "Summoner"
+    ],
+    "text": "Your eidolon can burrow through loose dirt. Your eidolon gains a burrow Speed of 15 feet.",
+    "page": "pg. 83",
+    "url": "/Feats.aspx?ID=9258"
+  },
+  {
+    "name": "Merciless Rend",
+    "level": 10,
+    "actions": "oneAction",
+    "traits": [
+      "Eidolon",
+      "Evolution",
+      "Summoner"
+    ],
+    "requirements": "Your eidolon hit the same enemy with two consecutive unarmed Strikes this turn and dealt slashing damage with both.",
+    "text": "Your eidolon rends their foes. They automatically deal the damage from their secondary attack to the enemy.",
+    "page": "pg. 83",
+    "url": "/Feats.aspx?ID=9260"
+  },
+  {
+    "name": "Nimble Form",
+    "level": 10,
+    "actions": "",
+    "traits": [
+      "Evolution",
+      "Summoner"
+    ],
+    "text": "Your eidolon evolves into a figure of pure grace. Your multiple attack penalty from your eidolon’s agile unarmed attacks becomes –3 for a second attack and –6 for subsequent attacks (rather than –4 and –8).",
+    "page": "pg. 83",
+    "url": "/Feats.aspx?ID=9261"
+  },
+  {
+    "name": "Protective Bond",
+    "level": 10,
+    "actions": "reaction",
+    "traits": [
+      "Evolution",
+      "Summoner"
+    ],
+    "trigger": "You and your eidolon are in a damaging effect’s area.",
+    "text": "The power of your bond can protect you and your eidolon from harm. If you and your eidolon would take different amounts of damage from the area effect, you take the lower amount of damage instead of the greater amount of damage.\n\n**Special** This feat has the trait matching your eidolon’s tradition (arcane, divine, occult, or primal).",
+    "page": "pg. 83",
+    "url": "/Feats.aspx?ID=9262"
+  },
+  {
+    "name": "Weighty Impact",
+    "level": 10,
+    "actions": "",
+    "traits": [
+      "Evolution",
+      "Summoner"
+    ],
+    "prerequisites": "Your eidolon has an unarmed attack with the shove or trip trait.",
+    "text": "Your eidolon hurls enemies to the ground or across the battlefield. Choose one of the eidolon’s unarmed attacks that has the shove or trip trait. The attack gains the other trait as well, and your eidolon gains the Knockdown and Push actions for that attack.",
+    "page": "pg. 83",
+    "url": "/Feats.aspx?ID=9264"
+  },
+  {
+    "name": "Airborne Form",
+    "level": 12,
+    "actions": "",
+    "traits": [
+      "Evolution",
+      "Summoner"
+    ],
+    "prerequisites": "Glider Form",
+    "text": "Your eidolon can fly. They gain a fly Speed equal to their Speed.",
+    "page": "pg. 83",
+    "url": "/Feats.aspx?ID=9265"
+  },
+  {
+    "name": "Grasping Limbs",
+    "level": 12,
+    "actions": "",
+    "traits": [
+      "Evolution",
+      "Summoner"
+    ],
+    "text": "Your eidolon grabs enemies. Choose one of the eidolon’s unarmed attacks with the grapple trait. Your eidolon gains the Grab action on that unarmed attack.",
+    "page": "pg. 83",
+    "url": "/Feats.aspx?ID=9267"
+  },
+  {
+    "name": "Towering Size",
+    "level": 12,
+    "actions": "",
+    "traits": [
+      "Evolution",
+      "Summoner"
+    ],
+    "prerequisites": "Hulking Size",
+    "text": "Your eidolon becomes even bigger. They become Huge, instead of Large, and the reach on all of their attacks increases to 15 feet.",
+    "page": "pg. 84",
+    "url": "/Feats.aspx?ID=9270"
+  },
+  {
+    "name": "Guiding Retort",
+    "level": 14,
+    "actions": "",
+    "traits": [
+      "Eidolon",
+      "Evolution",
+      "Summoner"
+    ],
+    "prerequisites": "Eidolon's Retort",
+    "text": "With a cunning twist of their unarmed attack, your eidolon shifts the position of a foe. When your eidolon uses Eidolon’s Retort to Strike and hits, your eidolon can Reposition the target up to 10 feet.",
+    "page": "pg. 84",
+    "url": "/Feats.aspx?ID=9271"
+  },
+  {
+    "name": "Piercing Jab",
+    "level": 14,
+    "actions": "twoActions",
+    "traits": [
+      "Eidolon",
+      "Evolution",
+      "Summoner"
+    ],
+    "requirements": "Your eidolon’s primary attack deals piercing damage.",
+    "text": "Your eidolon runs an enemy through with a horn or similar attack. Your eidolon makes a melee Strike with their primary attack. If the Strike hits and deals damage, the target is grabbed by your eidolon until it successfully Escapes, your eidolon attacks with their primary attack again, or your eidolon is no longer manifested, whichever comes first. When the target is no longer grabbed, it takes persistent bleed damage equal to the primary attack’s number of weapon damage dice.",
+    "page": "pg. 84",
+    "url": "/Feats.aspx?ID=9272"
+  },
+  {
+    "name": "Resilient Shell",
+    "level": 14,
+    "actions": "",
+    "traits": [
+      "Evolution",
+      "Summoner"
+    ],
+    "text": "Your eidolon is resilient against attacks. They gain resistance 5 to physical damage. At 17th level, the resistance increases to 6.",
+    "page": "pg. 84",
+    "url": "/Feats.aspx?ID=9273"
+  },
+  {
+    "name": "Spell-Repelling Form",
+    "level": 14,
+    "actions": "",
+    "traits": [
+      "Evolution",
+      "Summoner"
+    ],
+    "text": "Your eidolon evolves to protect itself from the danger of spells. They gain a +1 status bonus to all saving throws against magic.",
+    "page": "pg. 85",
+    "url": "/Feats.aspx?ID=9275"
+  },
+  {
+    "name": "Eidolon's Trample",
+    "level": 16,
+    "actions": "threeActions",
+    "traits": [
+      "Eidolon",
+      "Evolution",
+      "Summoner"
+    ],
+    "text": "Your eidolon Strides up to double their Speed and can move through the spaces of creatures at least one size smaller, Trampling each creature whose space they enter. They can attempt to Trample the same creature only once in a single Trample. Your eidolon deals bludgeoning damage equal to the damage of their secondary attack against these creatures, with a basic Reflex save against your spell DC.",
+    "page": "pg. 85",
+    "url": "/Feats.aspx?ID=9276"
+  },
+  {
+    "name": "Ever-Vigilant Senses",
+    "level": 16,
+    "actions": "",
+    "traits": [
+      "Evolution",
+      "Summoner"
+    ],
+    "text": "Your eidolon has enhanced senses. They gain a +2 circumstance bonus to Perception and can’t be flanked except by creatures that are higher level than them. They can see invisible creatures and objects, which appear translucent and are concealed. When your eidolon moves within 30 feet of an illusion that can be disbelieved, the GM rolls a secret check to disbelieve it, even if your eidolon didn’t spend an action to Interact.",
+    "page": "pg. 85",
+    "url": "/Feats.aspx?ID=9277"
+  },
+  {
+    "name": "Hobbling Criticals",
+    "level": 18,
+    "actions": "",
+    "traits": [
+      "Evolution",
+      "Summoner"
+    ],
+    "text": "Your eidolon’s unarmed attacks batter your foes into submission, hampering their movement. Whenever your eidolon gets a critical hit with one of their unarmed Strikes, the target must attempt a Fortitude save against your spell DC after taking the damage. This is a critical specialization effect.\n\n**Critical Success** The target takes no additional effect.\n\n**Success** The target takes a –10-foot circumstance penalty to its Speeds for 1 round.\n\n**Failure** The target is slowed 1 and takes a –10-foot circumstance penalty to its Speeds for 1 round.\n\n**Critical Failure** The target is slowed 2 and takes a –15-foot circumstance penalty to its Speeds for 1 round.",
+    "page": "pg. 85",
+    "url": "/Feats.aspx?ID=9278"
+  },
+  {
+    "name": "Magical Master",
+    "level": 18,
+    "actions": "",
+    "traits": [
+      "Evolution",
+      "Summoner"
+    ],
+    "prerequisites": "Magical Adept",
+    "text": "Your eidolon gains a bevy of lower-rank spells. Choose an innate spell of your eidolon’s tradition of each of the spell ranks from 1 to 7 in which your eidolon doesn’t currently have an innate spell from Magical Adept. Your eidolon can cast each once per day as innate spells. You can swap these spells at every even level, but your eidolon can never know more than one spell of each spell rank 1 through 7.",
+    "page": "pg. 85",
+    "url": "/Feats.aspx?ID=9279"
+  }
+]

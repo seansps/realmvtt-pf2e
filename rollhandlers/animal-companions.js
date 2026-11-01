@@ -139,6 +139,13 @@ function getRecordIdFromValue(value) {
 function onCompanionMasterChange(value) {
   const masterId = getRecordIdFromValue(value);
   if (!masterId) return;
+  // An eidolon takes its summoner's level and Hit Points (eidolons.js)
+  if (isEidolonCharacter(record)) {
+    syncEidolonWithSummoner(record, masterId, (updated) => {
+      api.showNotification(`${record?.name || "The eidolon"} is level ${updated?.data?.level}, and shares its summoner's Hit Points.`, "green", "Eidolon");
+    });
+    return;
+  }
   syncCompanionLevel(record, masterId, (updated) => {
     const level = updated?.data?.level;
     if (level !== undefined) {
@@ -182,6 +189,12 @@ function onCompanionArtChange(value) {
 function onCompanionMatchLevel() {
   if (!getCompanionMasterId(record)) {
     api.showNotification("Choose the companion's master first.", "yellow", "Animal Companion");
+    return;
+  }
+  if (isEidolonCharacter(record)) {
+    syncEidolonWithSummoner(record, getCompanionMasterId(record), (updated) => {
+      api.showNotification(`${record?.name || "The eidolon"} is level ${updated?.data?.level}, and shares its summoner's Hit Points.`, "green", "Eidolon");
+    });
     return;
   }
   syncCompanionLevel(record, getCompanionMasterId(record), (updated) => {

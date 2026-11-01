@@ -100,6 +100,9 @@ function applyDamageBySaves(roll) {
   const source =
     roll?.metadata?.basicSave?.source || roll?.metadata?.attack || roll?.metadata?.rollName || "Damage";
   const lines = [];
+  // An eidolon and its summoner on the same card take the greater amount
+  // once (eidolons.js): one pool for the card, and all its creatures
+  const pool = { sharedPools: {}, poolCreatures: creatures };
   creatures.forEach((creature) => {
     const name = getTokenDisplayName(creature);
     const save = getLastSave(creature);
@@ -111,7 +114,7 @@ function applyDamageBySaves(roll) {
     // One bold line (Sean): "Fireball: applied by Reflex critical success,
     // no damage"
     const saveLine = `**${source}: applied by ${capitalize(save.saveType || "save")} ${result.name}, ${result.label}**`;
-    const header = { header: saveLine };
+    const header = { header: saveLine, ...pool };
     if (result.multiplier === 0) {
       lines.push(`${saveLine} (${name})`);
     } else if (result.multiplier === 0.5) {
