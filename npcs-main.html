@@ -955,10 +955,8 @@
             ...getFamiliarSpeedValues(familiar),
             "fields.familiarFocusBtn.hidden": !hasFamiliarAbility(familiar, "familiar focus"),
           };
-          api.setValues(values, () => {
-            const note = getFamiliarAbilityExcessNote(familiar, getFamiliarAbilityLimit(familiar, null));
-            if (note) api.showNotification(note, "yellow", "Familiar Abilities");
-          });
+          // The abilities the master's feats give aren't counted
+          api.setValues(values, () => notifyFamiliarAbilityExcess(familiar));
         };
         // Fast Movement raises one Speed; ask which when there's a choice
         const fast = added.find((ability) => String(ability?.name || "").toLowerCase() === "fast movement");

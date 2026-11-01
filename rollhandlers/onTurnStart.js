@@ -68,6 +68,12 @@ if (token && token.recordType === "npcs") {
   }
 }
 
+// Temporary Hit Points gained at the start of the creature's turn
+// (turnStartTempHp: Inexorable Iron), once per round (class-extras.js)
+if (token && getTurnStartTempHp(token)) {
+  getCombatRound((round) => runTurnStartTempHp(token, round));
+}
+
 // Recharging abilities ready again this round: the GM is told
 // (combat-riders.js)
 if (token && Array.isArray(token.data?.recharges) && token.data.recharges.length > 0) {

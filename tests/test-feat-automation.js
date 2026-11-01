@@ -478,6 +478,50 @@ section("weapon die size and trait modifiers");
   assertNotIncludes("a trait can be removed", ctx.getAlteredWeapon(remover, fist).data.traits, "agile");
 }
 
+section("weapon trait from an effect rule (Arcane Cascade)");
+{
+  const config = JSON.parse(fs.readFileSync(`${__dirname}/../ruleset.config.json`, "utf8"));
+  const effectTypes = config.settings.effects.map((type) => type.type);
+  assertIncludes("weaponTrait is an effect type the editor lists", effectTypes, "weaponTrait");
+  assertIncludes("so is turnStartTempHp", effectTypes, "turnStartTempHp");
+
+  // The campaign's Stance: Arcane Cascade rule (Impossible Magic pg. 12:
+  // "your melee Strikes gain the arcane trait (making them magical)")
+  const cascade = {
+    _id: "e-cascade",
+    name: "Stance: Arcane Cascade",
+    rules: [{ type: "weaponTrait", field: "", valueType: "string", value: "arcane", data: { predicate: ["item:melee", { not: "item:thrown-melee" }] } }],
+  };
+  const sword = weapon("Longsword");
+  const fist = weapon("Fist", { itemCategory: "unarmed", group: "brawling", traits: ["agile", "unarmed"], damage: { dice: 1, die: "d4", damageType: "bludgeoning" } });
+  const bow = weapon("Shortbow", { group: "bow", range: 60, usage: "held-in-one-plus-hands", damage: { dice: 1, die: "d6", damageType: "piercing" } });
+  const dagger = weapon("Dagger", { itemCategory: "simple", group: "knife", traits: ["agile", "thrown-10"], damage: { dice: 1, die: "d4", damageType: "piercing" } });
+  const inStance = (record) => Object.assign(record, { effects: [cascade], effectIds: ["e-cascade"] });
+  const magus = inStance(pc({ inventory: [sword, fist, bow, dagger] }));
+  assertIncludes("a melee Strike gains arcane", ctx.getAlteredWeapon(magus, sword).data.traits, "arcane");
+  assertIncludes("an unarmed Strike too", ctx.getAlteredWeapon(magus, fist).data.traits, "arcane");
+  assertIncludes("a thrown weapon's melee Strike too", ctx.getAlteredWeapon(magus, dagger).data.traits, "arcane");
+  assertNotIncludes("a ranged Strike doesn't", ctx.getAlteredWeapon(magus, bow).data.traits, "arcane");
+  const thrown = { ...dagger, data: { ...dagger.data, rangeToggleBtn: "ranged" } };
+  assertNotIncludes("nor a thrown weapon's ranged Strike", ctx.getAlteredWeapon(magus, thrown).data.traits, "arcane");
+  assertNotIncludes("out of the stance: no trait", ctx.getAlteredWeapon(pc({ inventory: [sword] }), sword).data.traits, "arcane");
+  assert("the stored weapon is untouched", sword.data.traits.length, 0);
+
+  // Arcane makes the Strike magical: no non-magical damage category, and
+  // item:magical for predicates and IWR definitions
+  const damage = capturePrompt(() => ctx.performDamageRoll(magus, sword, "data.inventory.0", false)).metadata;
+  assertIncludes("the damage card lists arcane", damage.traits, "arcane");
+  assertNotIncludes("the arcane Strike isn't non-magical", damage.damageCategories || [], "non-magical");
+  assert("its damage source is magical", damage.damageSource?.magical, true);
+  assertIncludes("item:magical for IWR", [...ctx.getDamageSourceAtoms({ metadata: damage })], "item:magical");
+  assertIncludes("item:magical for the Strike's own predicates", traitsFor(magus, { weapon: ctx.getAlteredWeapon(magus, sword) }), "item:magical");
+  const plain = capturePrompt(() => ctx.performDamageRoll(pc({ inventory: [sword] }), sword, "data.inventory.0", false)).metadata;
+  assertIncludes("without the stance: non-magical", plain.damageCategories, "non-magical");
+  assert("... and not a magical source", plain.damageSource?.magical, undefined);
+  const ranged = capturePrompt(() => ctx.performDamageRoll(magus, bow, "data.inventory.2", false)).metadata;
+  assertIncludes("the ranged Strike in the stance stays non-magical", ranged.damageCategories, "non-magical");
+}
+
 section("weapon dice tokens");
 {
   const sword = weapon("Longsword", { runes: { potency: 1, striking: 2, property: [] } });

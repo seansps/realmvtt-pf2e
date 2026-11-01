@@ -112,6 +112,91 @@ section("Rage's temporary Hit Points (Q21)");
   assert("... the GM line", lines, ["Amiri loses 5 temporary Hit Points from Rage."]);
 }
 
+section("Temporary Hit Points at turn start (Inexorable Iron)");
+{
+  // The campaign's Inexorable Iron (Impossible Magic pg. 13): entering
+  // Arcane Cascade (actionTempHp) and the start of each turn in it
+  // (turnStartTempHp), wielding a melee weapon in two hands
+  const hands = '"self:weapon:melee","self:weapon:hands-held:2"';
+  const modifier = (type, predicate) => ({
+    name: "Inexorable Iron",
+    data: { active: true, type, modifierType: "none", valueType: "string", value: "{max(floor(@actor.level/2),1)}", predicate },
+  });
+  const iron = {
+    _id: "f-iron",
+    name: "Inexorable Iron",
+    recordType: "features",
+    data: {
+      level: 1,
+      modifiers: [
+        modifier("actionTempHp", `["action:arcane-cascade",${hands}]`),
+        modifier("turnStartTempHp", `["self:effect:stance-arcane-cascade",${hands}]`),
+      ],
+    },
+  };
+  const item = (name, data) => ({ _id: `w-${name}`, name, recordType: "items", data: { type: "weapon", carried: "equipped", range: 0, traits: [], ...data } });
+  const greatsword = item("Greatsword", { usage: "held-in-two-hands" });
+  const longsword = item("Longsword", { usage: "held-in-one-hand" });
+  const bastard = item("Bastard Sword", { usage: "held-in-one-plus-hands", handBtn: "two" });
+  const longbow = item("Longbow", { usage: "held-in-one-plus-hands", range: 100 });
+  const stance = { _id: "e-cascade", name: "Stance: Arcane Cascade", rules: [] };
+  const magus = ({ level = 7, inventory = [greatsword], inStance = true, tempHp = 0, extra = {} } = {}) =>
+    character(
+      { level, tempHp, classes: [{ name: "Magus", data: { features: [iron] } }], inventory, ...extra },
+      { id: "magus", name: "Sora", effects: inStance ? [stance] : [], effectIds: inStance ? ["e-cascade"] : [] },
+    );
+
+  assertIncludes("a greatsword held: self:weapon:melee", [...ctx.collectTraitsAndProperties(magus())], "self:weapon:melee");
+  assertIncludes("... in two hands", [...ctx.collectTraitsAndProperties(magus())], "self:weapon:hands-held:2");
+  assertIncludes("a longbow: self:weapon:ranged", ctx.getHeldWeaponAtoms(magus({ inventory: [longbow] })), "self:weapon:ranged");
+  assert("a stowed weapon isn't held", ctx.getHeldWeaponAtoms(magus({ inventory: [{ ...greatsword, data: { ...greatsword.data, carried: "carried" } }] })), []);
+
+  assert("in the stance with a greatsword: half level", ctx.getTurnStartTempHp(magus()), { amount: 3, source: "Inexorable Iron" });
+  assert("level 1: at least 1", ctx.getTurnStartTempHp(magus({ level: 1 }))?.amount, 1);
+  assert("a bastard sword in two hands counts", ctx.getTurnStartTempHp(magus({ inventory: [bastard] }))?.amount, 3);
+  assert("a longsword in one hand: none", ctx.getTurnStartTempHp(magus({ inventory: [longsword] })), null);
+  assert("a longbow in two hands: none", ctx.getTurnStartTempHp(magus({ inventory: [longbow] })), null);
+  assert("out of the stance: none", ctx.getTurnStartTempHp(magus({ inStance: false })), null);
+
+  // Entering the stance: the Arcane Cascade card's Apply button, only with
+  // the weapon in two hands
+  ctx.record = magus({ inStance: false });
+  assertIncludes("entering the stance: Apply 3", ctx.getActionHealingMacros({ name: "Arcane Cascade" }), "Apply_Temporary_HP_3");
+  ctx.record = magus({ inStance: false, inventory: [longsword] });
+  assert("... not with a one-handed weapon", ctx.getActionHealingMacros({ name: "Arcane Cascade" }), "");
+  ctx.record = undefined;
+
+  // The start of each turn in the stance
+  reset();
+  const token = magus({ tempHp: 1 });
+  ctx.runTurnStartTempHp(token, 2);
+  assert(
+    "turn start: gained, with the source and the round",
+    calls,
+    [["set", "magus", { "data.tempHp": 3, "data.tempHpSource": { name: "Inexorable Iron", amount: 3 }, "data.turnStartTempHpRound": 2 }]],
+  );
+  assertIncludes("... the chat line", state.messages[0], "Sora gains 3 temporary Hit Points from Inexorable Iron.");
+  reset();
+  ctx.runTurnStartTempHp(magus({ extra: { turnStartTempHpRound: 2 } }), 2);
+  assert("the same turn again (Next after Previous): nothing", calls, []);
+  reset();
+  ctx.runTurnStartTempHp(magus({ tempHp: 5 }), 3);
+  assert("more temporary HP already: kept, nothing written", [calls, state.messages], [[], []]);
+  reset();
+  ctx.runTurnStartTempHp(magus({ inventory: [longsword] }), 3);
+  assert("a one-handed weapon: nothing", calls, []);
+
+  // The onTurnStart hook
+  reset();
+  ctx.api.getCombatTracker = (cb) => cb({ round: 4 });
+  runHandler("onTurnStart.js", { token: magus(), tokens: [], round: 4 });
+  assert("onTurnStart grants them", calls.find((call) => call[2]?.["data.turnStartTempHpRound"] === 4)?.[2]?.["data.tempHp"], 3);
+  reset();
+  runHandler("onTurnStart.js", { token: magus({ inStance: false }), tokens: [], round: 4 });
+  assert("... not out of the stance", calls.some((call) => call[2]?.["data.tempHp"] !== undefined), false);
+  ctx.api.getCombatTracker = () => {};
+}
+
 section("Panache from bravado (Q22)");
 {
   const swash = character({}, { id: "sw", name: "Ta'lir" });

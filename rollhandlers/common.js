@@ -1396,8 +1396,11 @@ function collectTraitsAndProperties(
   // self:participant:initiative:stat:<statistic>
   getEncounterAtoms(token).forEach((atom) => traits.add(atom));
 
-  // Hands: hands-free:<n> and hands-free:but-really:<n> (weapon-traits.js)
+  // Hands: hands-free:<n> and hands-free:but-really:<n>, and the held
+  // weapons: self:weapon:melee|ranged, self:weapon:hands-held:<n>
+  // (weapon-traits.js)
   getHandsFreeAtoms(token).forEach((atom) => traits.add(atom));
+  getHeldWeaponAtoms(token).forEach((atom) => traits.add(atom));
 
   // Add item:proficiency:rank:{value} for items in context
   const item = context.item || context.weapon || context.spell;
@@ -1656,14 +1659,15 @@ function getFoundryItemAtoms(item) {
   }
   const category = String(item.data?.itemCategory || "").toLowerCase();
   if (category === "unarmed") atoms.push("item:unarmed");
-  // Foundry: item:magical for any potency/property rune or the magical trait
+  // Foundry: item:magical for any potency/property rune, the magical trait
+  // or a tradition trait (Arcane Cascade's arcane melee Strikes)
   const runes = item.data?.runes || {};
   const traitNames = (Array.isArray(item.data?.traits) ? item.data.traits : [])
     .map((t) => String(typeof t === "string" ? t : t?.name || "").toLowerCase());
   if (
     (runes.potency || 0) > 0 ||
     (Array.isArray(runes.property) && runes.property.length > 0) ||
-    traitNames.includes("magical")
+    isMagicalSource(traitNames)
   ) {
     atoms.push("item:magical");
   }
@@ -3378,7 +3382,7 @@ function getEffectsAndModifiersForToken(
     if (item) {
       // Check if the item has ammo
       const ammo = item.data?.ammoSelect;
-      if (ammo) {
+      if (ammo && ammo !== itemId) {
         // Find the ammo item
         const ammoItem = items.find((item) => item._id === ammo);
         if (ammoItem) {
@@ -3391,6 +3395,19 @@ function getEffectsAndModifiersForToken(
       }
     }
   }
+
+  // Ammunition's modifiers only reach the Strikes of the weapon it's
+  // selected for (ammoEffects above), so equipped ammunition, or ammunition
+  // a weapon has selected, isn't a source of its own: that would apply its
+  // modifiers twice to that weapon and to every other roll
+  const selectedAmmoIds = new Set(
+    items
+      .filter((item) => item.data?.ammoSelect && item.data.ammoSelect !== item._id)
+      .map((item) => item.data.ammoSelect),
+  );
+  const modifierItems = equippedItems.filter(
+    (item) => !isAmmunitionItem(item) && !selectedAmmoIds.has(item._id),
+  );
 
   // Add traits to the traitsSet for each feature's name in kebab-case
   // Unless that feature had a toggleable predicate of the same value
@@ -3410,7 +3427,7 @@ function getEffectsAndModifiersForToken(
     }
   });
 
-  [...features, ...equippedItems, ...runeModifiers].forEach((feature) => {
+  [...features, ...modifierItems, ...ammoEffects, ...runeModifiers].forEach((feature) => {
     const modifiers = feature.data?.modifiers || [];
     // A feature's own predicates also see what granted it
     // (parent:granter:slug:crossblooded-evolution)
@@ -4336,6 +4353,17 @@ function isMagicalSource(traits) {
   );
 }
 
+// The Hit Points a temporary HP or healing modifier's value comes to (its
+// math worked out, at least 0). @tempHp is the temporary Hit Points the same
+// action gives (Superstition Instinct).
+function getHitPointAmount(value, tempHp = 0) {
+  const text = String(value ?? "").replace(/@tempHp/g, String(tempHp));
+  const number = /^[\d\s+\-*/().]+$/.test(text.trim())
+    ? evaluateMath(text)
+    : parseInt(text, 10);
+  return Math.max(0, Math.floor(Number(number) || 0));
+}
+
 /**
  * Apply buttons for what an action gives its user (Rage): the highest
  * actionTempHp (temporary Hit Points) and the total actionHealing (Hit
@@ -4358,20 +4386,13 @@ function getActionHealingMacros(action) {
       undefined,
       context,
     ).filter((mod) => mod.active !== false);
-  const amountOf = (value, tempHp = 0) => {
-    const text = String(value ?? "").replace(/@tempHp/g, String(tempHp));
-    const number = /^[\d\s+\-*/().]+$/.test(text.trim())
-      ? evaluateMath(text)
-      : parseInt(text, 10);
-    return Math.max(0, Math.floor(Number(number) || 0));
-  };
   const tempHp = lookup("actionTempHp").reduce(
-    (best, mod) => Math.max(best, amountOf(mod.value)),
+    (best, mod) => Math.max(best, getHitPointAmount(mod.value)),
     0,
   );
   const healing = lookup("actionHealing");
   const healingAmount = healing.reduce(
-    (sum, mod) => sum + amountOf(mod.value, tempHp),
+    (sum, mod) => sum + getHitPointAmount(mod.value, tempHp),
     0,
   );
   const cooldowns = healing
@@ -14302,10 +14323,11 @@ function getDamageSource(creature, item = null, tradition = "") {
       if (source.type === "weapon") {
         source.range = (parseInt(item.data?.range, 10) || 0) > 0 ? "ranged" : "melee";
       }
-      // Foundry's item:magical: the magical trait or a rune
+      // Foundry's item:magical: the magical trait, a tradition trait (an
+      // arcane Strike in Arcane Cascade) or a rune
       const runes = item.data?.runes || {};
       if (
-        traits.includes("magical") ||
+        isMagicalSource(traits) ||
         (parseInt(runes.potency, 10) || 0) > 0 ||
         (Array.isArray(runes.property) && runes.property.length > 0)
       ) {

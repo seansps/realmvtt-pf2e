@@ -971,6 +971,7 @@ const FOCUS_SPELLCASTING = {
   cleric: { name: "Domain Spells", feats: ["Domain Initiate"] },
   druid: { name: "Order Spells" },
   magus: { name: "Conflux Spells" },
+  necromancer: { name: "Grave Spells" },
   monk: {
     name: "Qi Spells",
     legacyName: "Ki Spells",
@@ -1856,11 +1857,55 @@ function getFocusPoolValues(record, spent, entries = record?.data?.spells || [])
   return values;
 }
 
-// The Focus Points Refocus gives back (Player Core pg. 300): 1. Class
-// abilities that change it (an oracle's cursebound, a necromancer's thralls)
-// belong here.
-function getRefocusPoints(record) {
-  return 1;
+// The features that give a necromancer's Refocus options: the class's Grave
+// Spells, and Necrotic Bomber, which lets the archetype Refocus "by doing the
+// necromancer's Refocus options" (Impossible Magic pg. 27, 89)
+const THRALL_REFOCUS_FEATURES = ["Grave Spells", "Necrotic Bomber"];
+
+// Whether a character can destroy a thrall as they Refocus (Grave Spells: "If
+// you have a thrall when you begin Refocusing, you can destroy it to regain 2
+// Focus Points")
+function canDestroyThrallToRefocus(record) {
+  const isNecromancer = (record?.data?.classes || []).some(
+    (classObj) => toSlug(`${classObj?.name || ""}`.replace(/\s*\([^)]*\)\s*$/, "").trim()) === "necromancer",
+  );
+  return isNecromancer || THRALL_REFOCUS_FEATURES.some((name) => hasFeatNamed(record, name));
+}
+
+// The Focus Points Refocus gives back (Player Core pg. 300): 1, or 2 for a
+// necromancer who destroys a thrall (options.destroyThrall). An oracle's
+// cursebound is class-extras.js's removeCursebound.
+function getRefocusPoints(record, options = {}) {
+  return options.destroyThrall && canDestroyThrallToRefocus(record) ? 2 : 1;
+}
+
+// Refocus (the sheet's shortRest): a necromancer with 2 or more Focus Points
+// spent is asked whether they destroy a thrall; anyone else Refocuses as
+// usual. Thralls aren't tracked, so the player says whether they have one and
+// removes its token. Cancel doesn't Refocus.
+function promptRefocusOptions(record, callback) {
+  if (!canDestroyThrallToRefocus(record) || getFocusPointsSpent(record) < 2) {
+    callback({});
+    return;
+  }
+  api.showPrompt(
+    "Refocus",
+    "If you have a thrall when you begin Refocusing, you can destroy it to regain 2 Focus Points instead of 1.",
+    "Select...",
+    [
+      { label: "Destroy a thrall (2 Focus Points)", value: "thrall" },
+      { label: "Don't destroy a thrall (1 Focus Point)", value: "none" },
+    ],
+    null,
+    (choice) => {
+      const value = Array.isArray(choice) ? choice[0] : choice;
+      if (value === "thrall") callback({ destroyThrall: true });
+      else if (value === "none") callback({});
+    },
+    "Refocus",
+    "Cancel",
+    1,
+  );
 }
 
 // The values for a Focus Pool Max typed on one of a character's focus

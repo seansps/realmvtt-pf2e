@@ -3289,6 +3289,16 @@
         "fields": []
       },
       {
+        "label": "Add Weapon Trait (or -trait to Remove)",
+        "type": "weaponTrait",
+        "fields": []
+      },
+      {
+        "label": "Temporary Hit Points at Turn Start",
+        "type": "turnStartTempHp",
+        "fields": []
+      },
+      {
         "label": "All Checks and DCs Bonus (Untyped)",
         "type": "allBonus",
         "fields": [

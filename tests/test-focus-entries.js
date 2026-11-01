@@ -105,6 +105,7 @@ section("Which classes make one");
     ["Oracle", "Revelation Spells", "Divine", "cha"],
     ["Magus", "Conflux Spells", "Arcane", "int"],
     ["Animist", "Vessel Spells", "Divine", "wis"],
+    ["Necromancer", "Grave Spells", "Occult", "int"],
   ]) {
     const made = focusEntry(synced(character(className, 1)));
     assert(
@@ -215,6 +216,11 @@ section("The focus pool");
   assert("the new entry shows a pool of 1", [champion.data.focusPoolMax, focusEntry(champion).data.focusPoolMax], [1, 1]);
   champion = synced(apply(champion, { "data.spells.0.data.spells1": [spell("Lay on Hands"), spell("Shield of the Spirit")] }));
   assert("two focus spells dropped in: 2", [champion.data.focusPoolMax, focusEntry(champion).data.focusPoolMax], [2, 2]);
+  // Necrotic bomb and the grim fascination's grave spell (Impossible Magic pg. 27)
+  let necromancer = synced(character("Necromancer", 1));
+  assert("a necromancer's Grave Spells entry comes first", names(necromancer), ["Grave Spells", "Necromancer Spells"]);
+  necromancer = synced(apply(necromancer, { "data.spells.0.data.spells1": [spell("Necrotic Bomb"), spell("Muscle Barrier")] }));
+  assert("its two grave spells: a pool of 2", [necromancer.data.focusPoolMax, focusEntry(necromancer).data.focusPoolMax], [2, 2]);
 }
 
 section("Slots and the Level Up summary skip it");
@@ -242,6 +248,7 @@ section("Settles after one sync: nothing written on later loads");
     ["a new champion", character("Champion", 1)],
     ["a new monk with Qi Spells", character("Monk", 1, {}, ["Qi Spells"])],
     ["a new witch before the patron", character("Witch", 1)],
+    ["a new necromancer", character("Necromancer", 1)],
     ["a new cleric with Domain Initiate", character("Cleric", 1, { flags: { divineFont: "healing" } }, ["Domain Initiate"])],
     ["a champion from before", character("Champion", 3, { autoSpellcasting: undefined, autoFocusSpellcasting: undefined })],
     ["a deleted focus entry", character("Champion", 1, { spellcastingDismissed: ["class:champion:focus"] })],

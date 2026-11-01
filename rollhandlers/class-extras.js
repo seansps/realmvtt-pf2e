@@ -6,6 +6,9 @@
 //     awards 1 to the selected characters, up to 3
 //   - Rage (Player Core 2): its temporary Hit Points are noted where they came
 //     from, and when the encounter ends Rage, the ones left go with it
+//   - Temporary Hit Points at turn start: turnStartTempHp modifiers and
+//     effect rules (Inexorable Iron) are gained at the start of the
+//     creature's turn, once per round
 //   - Panache (Player Core 2): a check with the bravado trait (Tumble Through,
 //     and the actions a swashbuckler's style gives it, as module roll
 //     options) shows Gain Panache on a success, and Panache until the end of
@@ -101,6 +104,54 @@ function clearRageTempHp(tokens) {
     lines.push(`${getCreatureName(token)} loses ${token.data.tempHp} temporary Hit Points from Rage.`);
   });
   return lines;
+}
+
+// ---------------------------------------- Temporary Hit Points at turn start
+
+// What a creature gains at the start of each of its turns: the highest of
+// its turnStartTempHp modifiers and effect rules whose predicates hold
+// (Inexorable Iron: in Arcane Cascade, wielding a melee weapon in two
+// hands). { amount, source }, or null
+function getTurnStartTempHp(creature) {
+  if (!creature || isTokenDead(creature)) return null;
+  let best = null;
+  getEffectsAndModifiersForToken(creature, ["turnStartTempHp"])
+    .filter((mod) => mod.active !== false)
+    .forEach((mod) => {
+      const amount = getHitPointAmount(mod.value);
+      if (amount > 0 && (!best || amount > best.amount)) {
+        best = { amount, source: mod.name || "" };
+      }
+    });
+  return best;
+}
+
+// Turn start (onTurnStart.js): the temporary Hit Points, when they're more
+// than the creature has (they don't add up). Once per round, as Next after
+// Previous starts the same turn again.
+function runTurnStartTempHp(token, round) {
+  const gain = getTurnStartTempHp(token);
+  if (!gain) return;
+  const hasRound = round !== null && round !== undefined;
+  if (hasRound && token.data?.turnStartTempHpRound === round) return;
+  const oldTempHp = parseInt(token.data?.tempHp || "0", 10) || 0;
+  if (gain.amount <= oldTempHp) return;
+  const tempHpValues = getActionTempHpValues(token, gain.amount, gain.source);
+  const values = hasRound
+    ? { ...tempHpValues, "data.turnStartTempHpRound": round }
+    : tempHpValues;
+  api.setValuesOnTokenById(token._id, token.recordType, values);
+  // An eidolon and its summoner share the HP (eidolons.js)
+  shareHitPoints(token, tempHpValues);
+  const from = gain.source ? ` from ${gain.source}` : "";
+  api.sendMessage(
+    `${getCreatureName(token)} gains ${gain.amount} temporary Hit Points${from}.`,
+    undefined,
+    [],
+    [],
+    token,
+  );
+  api.floatText(token, `+${gain.amount}`, "#1165ed");
 }
 
 // ---------------------------------------------------------------- Panache

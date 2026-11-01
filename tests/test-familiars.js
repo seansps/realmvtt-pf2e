@@ -84,11 +84,63 @@ section("Ability allowance");
   assert("Improved Familiar Attunement: +1, +2 at 6th, +4 at 18th", [allowance(thesis(1)), allowance(thesis(6)), allowance(thesis(18))], [3, 4, 6]);
   const later = { level: 4, classes: [{ name: "Wizard", data: { features: [{ name: "Improved Familiar Attunement", data: { level: 5 } }] } }] };
   assert("a class feature above the level doesn't count", allowance(later), 2);
+  assert("Undead Familiar: 1, not 2", allowance({ feats: [feat("Undead Familiar")] }), 1);
+  assert("Enhanced Undead Familiar: 3", allowance({ feats: [feat("Undead Familiar"), feat("Enhanced Undead Familiar")] }), 3);
+  assert("Glyph Familiar: 1, not 2", allowance({ feats: [feat("Glyph Familiar")] }), 1);
+  assert("Enhanced Glyph Familiar: 2", allowance({ feats: [feat("Glyph Familiar"), feat("Enhanced Glyph Familiar")] }), 2);
+  assert(
+    "... and its source",
+    ctx.getFamiliarAbilityAllowance(master({ feats: [feat("Enhanced Glyph Familiar"), feat("Glyph Familiar")] })).sources,
+    ["Enhanced Glyph Familiar 2"],
+  );
+  assert("a higher feat still counts with them (Enhanced Familiar 4)", allowance({ feats: [feat("Undead Familiar"), feat("Enhanced Familiar")] }), 4);
   assert("the sync writes it", ctx.getFamiliarSyncValues(familiar(), master({ feats: [feat("Enhanced Familiar")] }))["data.numAbilities"], 4);
   assert("... unless a number was typed", ctx.getFamiliarSyncValues(familiar([], { numAbilitiesOverride: 5 }), master())["data.numAbilities"], 5);
   const three = familiar([ability("Flier"), ability("Climber"), tough]);
   assert("a note when there are more abilities than that", ctx.getFamiliarAbilityExcessNote(three, 2), "Nibbles has 3 familiar and master abilities; its master can pick 2 a day.");
   assert("... none within it", ctx.getFamiliarAbilityExcessNote(three, 4), "");
+}
+
+section("A glyph familiar's Construct, Flier and Tough don't count");
+{
+  const glyphMaster = master({ feats: [feat("Glyph Familiar")] });
+  const glyph = familiar([ability("Construct"), ability("Flier"), tough, ability("Darkvision")]);
+  assert("with Glyph Familiar: only the daily pick counts", ctx.getFamiliarAbilityExcessNote(glyph, 1, glyphMaster), "");
+  const two = familiar([ability("Construct"), ability("Flier"), tough, ability("Darkvision"), ability("Climber")]);
+  assert(
+    "... a second pick is still too many",
+    ctx.getFamiliarAbilityExcessNote(two, 1, glyphMaster),
+    "Nibbles has 2 familiar and master abilities (not counting the 3 its master's feats give); its master can pick 1 a day.",
+  );
+  assert(
+    "Enhanced Glyph Familiar: 2 picks on top",
+    ctx.getFamiliarAbilityExcessNote(two, 2, master({ feats: [feat("Glyph Familiar"), feat("Enhanced Glyph Familiar")] })),
+    "",
+  );
+  const doubled = familiar([ability("Flier"), ability("Flier"), ability("Construct"), tough]);
+  assert("each counts free once", ctx.getFamiliarAbilityExcessNote(doubled, 1, glyphMaster), "");
+  assert("... and a second copy counts", ctx.getFamiliarAbilityExcessNote(familiar([ability("Flier"), ability("Flier"), ability("Climber")]), 1, glyphMaster).startsWith("Nibbles has 2 "), true);
+  assert("without the feat, they count", ctx.getFamiliarAbilityExcessNote(glyph, 2, master()), "Nibbles has 4 familiar and master abilities; its master can pick 2 a day.");
+  assert("Undead Familiar gives none", ctx.getFamiliarAbilityExcessNote(glyph, 1, master({ feats: [feat("Undead Familiar")] })).startsWith("Nibbles has 4 "), true);
+  assert("without the master, they count", ctx.getFamiliarAbilityExcessNote(glyph, 1).startsWith("Nibbles has 4 "), true);
+
+  // The sync's note reads the master
+  const notes = [];
+  ctx.api.showNotification = (text) => notes.push(text);
+  ctx.api.getRecord = (type, id, cb) => cb(glyphMaster);
+  ctx.api.setValuesOnRecord = (record, values, cb) => {
+    if (cb) cb(record);
+  };
+  ctx.syncFamiliarWithMaster(familiar(glyph.data.actions, { master: JSON.stringify({ _id: "wiz" }) }), "wiz");
+  assert("the sync shows no note for a glyph familiar's free abilities", notes, []);
+
+  // The picker's note (npcs-main.html) reads the master too
+  ctx.notifyFamiliarAbilityExcess(familiar(glyph.data.actions, { numAbilities: 1, master: JSON.stringify({ _id: "wiz" }) }));
+  assert("the picker shows none either", notes, []);
+  ctx.notifyFamiliarAbilityExcess(familiar(two.data.actions, { numAbilities: 1, master: JSON.stringify({ _id: "wiz" }) }));
+  assert("... but does for a second pick", notes.length, 1);
+  ctx.notifyFamiliarAbilityExcess(familiar(glyph.data.actions, { numAbilities: 1 }));
+  assert("... and counts them all without a master", notes.length, 2);
 }
 
 section("Master abilities and Rest");

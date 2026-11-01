@@ -15,7 +15,9 @@
 //   - Hands: equipped held items use hands (Foundry's handsHeld). The Actions
 //     tab shows "Hands n/2"; holding more than 2 is a note, never a block.
 //     Roll options hands-free:<n> (shields and free-hand weapons don't count)
-//     and hands-free:but-really:<n> (they do), as Foundry's
+//     and hands-free:but-really:<n> (they do), as Foundry's. The held
+//     weapons: self:weapon:melee|ranged and self:weapon:hands-held:<n>
+//     (getHeldWeaponAtoms)
 //   - Capacity N and double barrel: the weapon holds N (or 2) loaded shots.
 //     Each Reload loads one; each shot uses one. Firing both barrels of a
 //     double barrel weapon uses two and steps the damage and fatal dice up
@@ -173,6 +175,24 @@ function getHandsFreeAtoms(record) {
   if (record?.recordType !== "characters") return [];
   const hands = getHandsInUse(record);
   return [`hands-free:${hands.free}`, `hands-free:but-really:${hands.reallyFree}`];
+}
+
+// The weapons a character holds, as Foundry's self:weapon roll options:
+// self:weapon:melee or self:weapon:ranged, and self:weapon:hands-held:<n>,
+// for each held weapon (Inexorable Iron: a melee weapon in two hands).
+// Unarmed attacks, shields and worn weapons aren't held (getHandsHeld).
+function getHeldWeaponAtoms(record) {
+  if (record?.recordType !== "characters") return [];
+  const atoms = new Set();
+  (record?.data?.inventory || []).forEach((item) => {
+    if (item?.data?.type !== "weapon") return;
+    const hands = getHandsHeld(item);
+    if (!hands) return;
+    const ranged = (parseInt(item.data.range, 10) || 0) > 0;
+    atoms.add(ranged ? "self:weapon:ranged" : "self:weapon:melee");
+    atoms.add(`self:weapon:hands-held:${hands}`);
+  });
+  return [...atoms];
 }
 
 // The Actions tab's label, shown only past 2 hands; written only when it

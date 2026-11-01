@@ -90,12 +90,15 @@
       typeValue === "creatureSize" ||
       typeValue === "extraLanguages" ||
       typeValue === "actionTempHp" ||
+      typeValue === "turnStartTempHp" ||
       typeValue === "onMagicAccepted"
     ) {
       // Creature Size value: tiny, small, medium, large, huge or gargantuan.
       // Extra Languages value: the language slots added. Action Temporary
       // Hit Points value: the amount (@actor.level+@actor.abilities.con.mod),
-      // predicated on the action (action:rage). Condition When Accepting
+      // predicated on the action (action:rage). Temporary Hit Points at Turn
+      // Start value: the amount gained at the start of each of the
+      // creature's turns while the predicate holds. Condition When Accepting
       // Magic value: the condition and its value (frightened:1).
       showFieldField = false;
     } else if (typeValue === "actionHealing") {
@@ -337,6 +340,7 @@
       {"label": "Creature Size", "value": "creatureSize"},
       {"label": "Extra Languages", "value": "extraLanguages"},
       {"label": "Action Temporary Hit Points", "value": "actionTempHp"},
+      {"label": "Temporary Hit Points at Turn Start", "value": "turnStartTempHp"},
       {"label": "Action Healing", "value": "actionHealing"},
       {"label": "Condition When Accepting Magic", "value": "onMagicAccepted"},
       {"label": "Initiative Bonus", "value": "initiativeBonus"},

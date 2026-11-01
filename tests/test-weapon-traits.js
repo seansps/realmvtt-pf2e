@@ -304,4 +304,45 @@ section("Switching off magazine ammo (attack-list.html)");
   assert("never on a magazine: nothing extra written", "data.inventory.0.data.uses.max" in select(pepperbox, "rounds"), false);
 }
 
+section("Ammunition modifiers reach the weapon it's selected for");
+{
+  // Gravebane Ammunition (Impossible Magic): 1d10 vitality damage. One
+  // modifier marked for its item, one not, and an attack bonus.
+  const modifier = (data) => ({ data: { valueType: "string", field: "", ...data } });
+  const gravebane = (carried = "carried") => ({
+    _id: "gravebane",
+    name: "Gravebane Ammunition",
+    recordType: "items",
+    data: {
+      type: "consumable",
+      itemCategory: "ammo",
+      traits: ["Consumable", "Magical"],
+      count: 10,
+      carried,
+      modifiers: [
+        modifier({ type: "damageBonus", value: "1d10 vitality", itemOnly: true }),
+        modifier({ type: "damageBonus", value: "1 vitality" }),
+        modifier({ type: "attackBonus", value: "1", valueType: "number", modifierType: "item" }),
+      ],
+    },
+  });
+  const values = (mods) => named(mods, "Gravebane Ammunition").map((m) => m.value);
+  const loaded = gun("Arquebus", [], { ammoSelect: "gravebane", loadedAmmo: true });
+  const other = gun("Pistol", [], { loadedAmmo: true });
+
+  let result = strike(pc([loaded, gravebane(), other, rounds]), loaded);
+  assert("its damage, on the weapon it's selected for", values(result.metadata.damageModifiers), ["1d10 vitality", "1 vitality"]);
+  assert("and its attack bonus", values(result.modifiers), [1]);
+  result = strike(pc([other, gravebane(), loaded, rounds]), other);
+  assert("not on another weapon", [values(result.metadata.damageModifiers), values(result.modifiers)], [[], []]);
+
+  // Equipped ammunition isn't a source of its own
+  result = strike(pc([loaded, gravebane("equipped"), other, rounds]), loaded);
+  assert("equipped: once, not twice", values(result.metadata.damageModifiers), ["1d10 vitality", "1 vitality"]);
+  result = strike(pc([other, gravebane("equipped"), loaded, rounds]), other);
+  assert("... and still not on another weapon", [values(result.metadata.damageModifiers), values(result.modifiers)], [[], []]);
+  const lookup = ctx.getEffectsAndModifiersForToken(pc([gravebane("equipped")]), ["damageBonus", "attackBonus"]);
+  assert("... or on a roll with no weapon", values(lookup), []);
+}
+
 process.exitCode = summary() > 0 ? 1 : 0;

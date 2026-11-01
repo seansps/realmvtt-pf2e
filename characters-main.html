@@ -1017,11 +1017,18 @@ ${getLevelUpSummary(gains)}`,
     onAddEditFeature(record, undefined, true);
   }
 
+  // A necromancer is asked first whether they destroy a thrall
+  // (spell-entries.js)
   function shortRest() {
+    promptRefocusOptions(record, (refocusOptions) => refocusWith(refocusOptions));
+  }
+
+  function refocusWith(refocusOptions = {}) {
     // Refocus: Focus Points back into the character's one focus pool, 1
-    // however many entries give focus spells (spell-entries.js)
+    // however many entries give focus spells, 2 for a necromancer who
+    // destroys a thrall (spell-entries.js)
     const spent = getFocusPointsSpent(record);
-    const focusPointsRecovered = Math.min(spent, getRefocusPoints(record));
+    const focusPointsRecovered = Math.min(spent, getRefocusPoints(record, refocusOptions));
     const valuesToSet =
       focusPointsRecovered > 0
         ? getFocusPoolValues(record, spent - focusPointsRecovered)
@@ -1034,9 +1041,10 @@ ${getLevelUpSummary(gains)}`,
     // Uses per 10 minutes and less come back (limited-uses.js)
     const recharges = getLimitedUseRecharges(record, "refocus");
     Object.assign(valuesToSet, recharges);
+    const thrallText = refocusOptions.destroyThrall ? "Destroyed a thrall. " : "";
     const focusText =
       focusPointsRecovered > 0
-        ? `Recovered ${focusPointsRecovered} Focus Point${focusPointsRecovered !== 1 ? "s" : ""}.`
+        ? `${thrallText}Recovered ${focusPointsRecovered} Focus Point${focusPointsRecovered !== 1 ? "s" : ""}.`
         : "No Focus Points to recover.";
     const woundedText = woundedChanges["data.wounded"] === 0 ? " No longer wounded." : "";
     // Refocusing reduces an oracle's cursebound by 1 (class-extras.js)

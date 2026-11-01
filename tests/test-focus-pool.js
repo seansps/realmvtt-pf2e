@@ -190,4 +190,59 @@ section("Refocus and rest");
   assert("with nothing spent, nothing is written", written, null);
 }
 
+section("A necromancer's Refocus: destroying a thrall");
+{
+  const grave = [focusEntry("Grave Spells", [spell("Necrotic Bomb"), spell("Grasping Spirits"), spell("Bone Spear")])];
+  const necromancer = (data = {}, feats = []) => ({
+    ...character(grave, data, feats),
+    data: { ...character(grave, data, feats).data, classes: [{ name: "Necromancer", data: { features: [] } }] },
+  });
+  assert("1 point without a thrall", ctx.getRefocusPoints(necromancer()), 1);
+  assert("2 points for a necromancer who destroys a thrall", ctx.getRefocusPoints(necromancer(), { destroyThrall: true }), 2);
+  assert("anyone else still gets 1", ctx.getRefocusPoints(character(grave), { destroyThrall: true }), 1);
+  assert("the archetype's Necrotic Bomber gives the option", ctx.canDestroyThrallToRefocus(character(grave, {}, ["Necrotic Bomber"])), true);
+  assert("the Grave Spells feature gives the option", ctx.canDestroyThrallToRefocus(character(grave, {}, ["Grave Spells"])), true);
+  assert("a cleric doesn't have it", ctx.canDestroyThrallToRefocus(character(grave, {}, ["Domain Initiate"])), false);
+
+  let written = null;
+  let messages = [];
+  let prompts = [];
+  let answer = null;
+  ctx.api.setValues = (values, callback) => {
+    written = values;
+    if (typeof callback === "function") callback();
+  };
+  ctx.api.sendMessage = (text) => messages.push(text);
+  ctx.api.showPrompt = (title, text, placeholder, options, value, callback) => {
+    prompts.push({ title, options: options.map((option) => option.value) });
+    if (answer !== null) callback([answer]);
+  };
+  const refocus = (record, choice) => {
+    written = null;
+    messages = [];
+    prompts = [];
+    answer = choice;
+    ctx.record = record;
+    ctx.shortRest();
+  };
+
+  refocus(necromancer({ focusPool: 3 }), "thrall");
+  assert("a necromancer with 2+ spent is asked", prompts, [{ title: "Refocus", options: ["thrall", "none"] }]);
+  assert("destroying a thrall gives back 2 points", written["data.focusPool"], 1);
+  assert("the card says so", /Destroyed a thrall\. Recovered 2 Focus Points\./.test(messages[0]), true);
+
+  refocus(necromancer({ focusPool: 3 }), "none");
+  assert("not destroying one gives back 1", [written["data.focusPool"], /thrall/.test(messages[0])], [2, false]);
+
+  refocus(necromancer({ focusPool: 3 }), null);
+  assert("cancelling doesn't Refocus", [written, messages], [null, []]);
+
+  refocus(necromancer({ focusPool: 1 }), "thrall");
+  assert("with 1 spent, no question: 1 point back", [prompts.length, written["data.focusPool"]], [0, 0]);
+
+  const two = [focusEntry("Domain Spells", [spell("Fire Ray")]), focusEntry("School Spells", [spell("Force Bolt")])];
+  refocus(character(two, { focusPool: 2 }), "thrall");
+  assert("anyone else isn't asked", [prompts.length, written["data.focusPool"]], [0, 1]);
+}
+
 process.exitCode = summary();

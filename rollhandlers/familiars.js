@@ -30,7 +30,10 @@ const FAST_MOVEMENT_SPEED = 40;
 
 // Feats that set the number of abilities (the highest counts), as Foundry's
 // "upgrade" rules: Pet and the Familiar feat 2, Familiar Master Dedication 2,
-// Basic Witchcraft 3, Enhanced Familiar 4, Incredible Familiar 6
+// Basic Witchcraft 3, Enhanced Familiar 4, Incredible Familiar 6. A
+// necromancer's undead familiar and a runesmith's glyph familiar start with
+// fewer (Impossible Magic pg. 32-34, 48): Undead Familiar 1, Enhanced Undead
+// Familiar 3, Glyph Familiar 1, Enhanced Glyph Familiar 2.
 const FAMILIAR_ABILITY_BASES = {
   pet: 2,
   familiar: 2,
@@ -39,6 +42,18 @@ const FAMILIAR_ABILITY_BASES = {
   "enhanced familiar": 4,
   "incredible familiar": 6,
   "incredible familiar (familiar master)": 6,
+  "undead familiar": 1,
+  "enhanced undead familiar": 3,
+  "glyph familiar": 1,
+  "enhanced glyph familiar": 2,
+};
+
+// Abilities a master's feat gives the familiar on top of its daily picks, by
+// feat: a glyph familiar "always has three additional familiar abilities:
+// construct, flier, and tough" (Impossible Magic pg. 48). Undead Familiar
+// gives none. They don't count against the allowance.
+const FAMILIAR_FREE_ABILITIES = {
+  "glyph familiar": ["construct", "flier", "tough"],
 };
 
 const familiarName = (entry) => String(entry?.name || "").trim().toLowerCase();
@@ -80,11 +95,13 @@ function getMasterFeatNames(master) {
 // (Player Core pg. 212): 2, or the highest a feat sets (Enhanced Familiar 4,
 // Incredible Familiar 6), plus a witch's extra ones (2, and 1 more at 6th,
 // 12th and 18th) and Improved Familiar Attunement's (1, and 1 more at 6th,
-// 12th and 18th). Returns { value, sources }.
+// 12th and 18th). A feat that sets fewer than 2 (Undead Familiar, Glyph
+// Familiar) replaces the 2, so the highest feat counts alone. Returns
+// { value, sources }.
 function getFamiliarAbilityAllowance(master) {
   const names = getMasterFeatNames(master);
   const level = parseInt(master?.data?.level, 10) || 0;
-  let value = 2;
+  let value = names.some((name) => FAMILIAR_ABILITY_BASES[name] < 2) ? 0 : 2;
   const sources = [];
   for (const name of names) {
     const base = FAMILIAR_ABILITY_BASES[name];
@@ -113,11 +130,38 @@ function getFamiliarAbilityLimit(familiar, master) {
   return master ? getFamiliarAbilityAllowance(master).value : parseInt(familiar?.data?.numAbilities, 10) || 0;
 }
 
-// A note when the familiar has more abilities than it can have, or ""
-function getFamiliarAbilityExcessNote(familiar, limit) {
-  const count = getFamiliarAbilities(familiar).length;
+// The abilities a master's feats give their familiar for free, lowercase
+function getFreeFamiliarAbilityNames(master) {
+  return [...new Set(getMasterFeatNames(master).flatMap((name) => FAMILIAR_FREE_ABILITIES[name] || []))];
+}
+
+// The familiar's abilities that count against the allowance: all of them but
+// one of each its master's feats give for free (none without the master)
+function getCountedFamiliarAbilities(familiar, master) {
+  const free = new Set(master ? getFreeFamiliarAbilityNames(master) : []);
+  return getFamiliarAbilities(familiar).filter((ability) => !free.delete(familiarName(ability)));
+}
+
+// A note when the familiar has more abilities than it can have, or "". With
+// the master, the abilities their feats give for free aren't counted.
+function getFamiliarAbilityExcessNote(familiar, limit, master = null) {
+  const count = getCountedFamiliarAbilities(familiar, master).length;
   if (!(limit > 0) || count <= limit) return "";
-  return `${familiar?.name || "The familiar"} has ${count} familiar and master abilities; its master can pick ${limit} a day.`;
+  const freeCount = getFamiliarAbilities(familiar).length - count;
+  const freeText = freeCount > 0 ? ` (not counting the ${freeCount} its master's feats give)` : "";
+  return `${familiar?.name || "The familiar"} has ${count} familiar and master abilities${freeText}; its master can pick ${limit} a day.`;
+}
+
+// The picker's note (npcs-main.html): reads the master, when there is one, so
+// the abilities their feats give aren't counted
+function notifyFamiliarAbilityExcess(familiar) {
+  const notify = (master) => {
+    const note = getFamiliarAbilityExcessNote(familiar, getFamiliarAbilityLimit(familiar, null), master);
+    if (note) api.showNotification(note, "yellow", "Familiar Abilities");
+  };
+  const masterId = getRecordIdFromValue(familiar?.data?.master);
+  if (!masterId) return notify(null);
+  api.getRecord("characters", masterId, (master) => notify(master || null));
 }
 
 // The Speeds the familiar's abilities give: { land, other: { swim: 25 } }.
@@ -265,7 +309,7 @@ function syncFamiliarWithMaster(familiar, masterId, callback) {
       if (getRecordIdFromValue(master.data?.familiar) !== familiar._id) {
         api.setValuesOnRecord(master, { "data.familiar": getFamiliarLink(familiar) });
       }
-      const note = getFamiliarAbilityExcessNote(familiar, values["data.numAbilities"]);
+      const note = getFamiliarAbilityExcessNote(familiar, values["data.numAbilities"], master);
       if (note) api.showNotification(note, "yellow", "Familiar Abilities");
       done(updated);
     });
