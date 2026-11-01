@@ -73,6 +73,11 @@ section("Pick Creature and Mark Summoned");
   ctx.showSummonPicker({ spellName: "Summon Animal", rank: 2, filter: { traits: ["animal"], names: [] }, casterTokenId: "caster", casterName: "Ezren" });
   assert("the picker asks for the rank's cap", query["data.level"], { $lte: 1 });
   assert("the pick opens to drag onto the map", opened?._id, "wolf");
+  assert(
+    "... and a record link to drag from (an NPC link with its size)",
+    ctx.getSummonCreatureLink({ ...wolf, data: { ...wolf.data, size: "Small" } }),
+    { type: "npcs", tooltip: "Wolf", value: { _id: "wolf", name: "Wolf", recordType: "npcs", data: { size: "small" } } },
+  );
   assert("... with a Mark Summoned button", ctx.__state.messages[0].includes("Mark_Summoned") && ctx.__state.messages[0].includes('"tokenId":"caster"'), true);
 
   const summoned = token("wolf-token");

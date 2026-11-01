@@ -154,10 +154,25 @@ function showSummonPicker(info) {
         const creature = (creatures || []).find((entry) => entry?._id === id);
         if (!creature) return;
         api.openRecord(creature);
-        api.sendMessage(getSummonPickedMessage(info, creature), undefined, [], []);
+        api.sendMessage(getSummonPickedMessage(info, creature), undefined, [getSummonCreatureLink(creature)], []);
       },
     );
   });
+}
+
+// The picked creature's record link on the card, to drag onto the map (an
+// NPC link: type "npcs", with its size)
+function getSummonCreatureLink(creature) {
+  return {
+    type: "npcs",
+    tooltip: creature?.name || "",
+    value: {
+      _id: creature?._id,
+      name: creature?.name || "",
+      recordType: "npcs",
+      data: { size: `${creature?.data?.size || "medium"}`.toLowerCase() },
+    },
+  };
 }
 
 function getSummonPickedMessage(info, creature) {
@@ -165,7 +180,7 @@ function getSummonPickedMessage(info, creature) {
   const fence = "```";
   return [
     `**${info?.spellName || "Summon"}: ${creature.name}**`,
-    `Drag ${creature.name} onto the map, then drop Mark Summoned on its token. It's a minion of ${caster.name}: it acts on ${caster.name}'s turn, when the spell is Sustained.`,
+    `Drag ${creature.name} onto the map from its link on this card, then drop Mark Summoned on its token. It's a minion of ${caster.name}: it acts on ${caster.name}'s turn, when the spell is Sustained.`,
     `${fence}Mark_Summoned\nmarkSummoned(${JSON.stringify(caster)});\n${fence}`,
   ].join("\n");
 }
