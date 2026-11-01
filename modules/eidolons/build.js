@@ -262,7 +262,7 @@ function buildClass() {
       trainedSkillsAdditional: 0,
       ancestryFeatLevels: [],
       // Evolution feats taken for the eidolon
-      classFeatLevels: [1, 2, 4, 6, 8, 10, 12, 14, 16, 18, 20],
+      classFeatLevels: ["1", "2", "4", "6", "8", "10", "12", "14", "16", "18", "20"],
       generalFeatLevels: [],
       skillFeatLevels: [],
       skillIncreaseLevels: [],
