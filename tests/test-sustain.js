@@ -38,11 +38,38 @@ section("Sustained spells");
   setup(token);
   round = 3;
   ctx.startSustainingSpell(token, "Bless");
-  assert("casting again starts it over this round", lastList(), [{ name: "Bless", castRound: 3, sustainedRound: 3 }]);
+  assert("casting again starts it over this round", lastList(), [{ name: "Bless", castRound: 3, sustainedRound: 3, limitRounds: 100, limitLabel: "10 minutes" }]);
   ctx.startSustainingSpell(caster([{ name: "Bless", castRound: 1, sustainedRound: 1 }]), "Light");
   assert("another spell joins the list", lastList().map((e) => e.name), ["Bless", "Light"]);
   assert("written on the caster's token", writes[0].slice(0, 2), ["t-ez", "tokens"]);
   assert("the cast card's button", ctx.getSustainButton(token, "Bless").includes('sustainSpell("t-ez", "Bless")'), true);
+}
+
+section("Each spell's own limit (Sustain, pg. 419)");
+{
+  const limit = (value) => ctx.getSustainLimit({ data: { duration: { value, sustained: true } } });
+  assert("1 minute: 10 rounds", limit("1 minute"), { rounds: 10, label: "1 minute" });
+  assert("4 rounds, 10 minutes, 1 hour", [limit("4 rounds").rounds, limit("10 minutes").rounds, limit("1 hour").rounds], [4, 100, 600]);
+  assert("the \"up to\" part: 1 round or sustained up to 1 minute", limit("1 round or sustained up to 1 minute"), { rounds: 10, label: "1 minute" });
+  assert("none listed: 10 minutes", limit(""), { rounds: 100, label: "10 minutes" });
+  const token = caster();
+  setup(token);
+  round = 1;
+  ctx.startSustainingSpell(token, "Fear", { data: { duration: { value: "1 minute", sustained: true } } });
+  assert("the cast records it", lastList(), [{ name: "Fear", castRound: 1, sustainedRound: 1, limitRounds: 10, limitLabel: "1 minute" }]);
+  const minute = caster([{ name: "Fear", castRound: 1, sustainedRound: 11, limitRounds: 10, limitLabel: "1 minute" }]);
+  setup(minute);
+  round = 11;
+  ctx.sustainSpell("t-ez", "Fear");
+  assert("Sustained at its limit: the GM note names it", ctx.__state.messages[0].includes("has lasted 1 minute, the most it can be Sustained"), true);
+  setup(minute);
+  ctx.endUnsustainedSpells(minute);
+  assert("and it ends at the end of that turn, 90 rounds before 10 minutes", [lastList(), ctx.__state.messages[0].includes("has Sustained it for 1 minute, the most it can be")], [[], true]);
+  const before = caster([{ name: "Fear", castRound: 1, sustainedRound: 10, limitRounds: 10, limitLabel: "1 minute" }]);
+  setup(before);
+  round = 10;
+  ctx.endUnsustainedSpells(before);
+  assert("a round before its limit: kept", writes, []);
 }
 
 section("Sustain");
@@ -57,7 +84,7 @@ section("Sustain");
   setup(old);
   round = 101;
   ctx.sustainSpell("t-ez", "Bless");
-  assert("10 minutes: a GM note that it ends this turn (nothing refused)", [ctx.__state.messages[0].includes("the most a spell can be Sustained"), lastList()[0].sustainedRound], [true, 101]);
+  assert("no limit listed: 10 minutes, then a GM note that it ends this turn (nothing refused)", [ctx.__state.messages[0].includes("has lasted 10 minutes, the most it can be Sustained"), lastList()[0].sustainedRound], [true, 101]);
 }
 
 section("The end of the caster's turn");
@@ -71,7 +98,7 @@ section("The end of the caster's turn");
   round = 3;
   ctx.endUnsustainedSpells(token);
   assert("Sustained or cast this round: kept", lastList().map((e) => e.name), ["Bless", "Fear"]);
-  assert("not Sustained: it ends, with the GM's button", [ctx.__state.messages[0].includes("**Light ends**: Ezren didn't Sustain it this turn."), ctx.__state.messages[0].includes('removeSpellEffects("Light")')], [true, true]);
+  assert("not Sustained: it ends, with the GM's button", [ctx.__state.messages[0].includes("**Light ends**: Ezren didn't Sustain it this turn."), ctx.__state.messages[0].includes('removeSpellEffects("Light", "t-ez")')], [true, true]);
 
   const tenMinutes = caster([{ name: "Bless", castRound: 1, sustainedRound: 101 }]);
   setup(tenMinutes);
@@ -124,6 +151,42 @@ section("Removing a spell's effects (the GM's button)");
   ctx.removeSpellEffects("Bless");
   assert("the effects named for it, and only those", removed, [["t-al", "e1"]]);
   assert("and a line saying where", ctx.__state.messages[0], "Bless's effects removed from Kyra (Aura: Bless).");
+}
+
+section("Only this caster's effects, named for the spell");
+{
+  const blessEffect = { _id: "bl", name: "Aura: Bless" };
+  const ally = {
+    _id: "t-al",
+    name: "Kyra",
+    identified: true,
+    effects: [blessEffect, { _id: "bw", name: "Blessed Ward" }],
+    effectIds: ["bl", "bl", "bw"],
+    effectValues: { bl: [{ tokenId: "t-other" }, { tokenId: "t-ez" }] },
+    data: {},
+  };
+  const other = { _id: "t-ot", name: "Valeros", identified: true, effects: [blessEffect], effectIds: ["bl"], effectValues: { bl: [{ tokenId: "t-other" }] }, data: {} };
+  const removed = [];
+  ctx.api.getOtherTokens = () => [ally, other];
+  ctx.api.removeEffectById = (id, token, cb, options) => {
+    removed.push([token._id, id, options?.instanceIndex ?? "all"]);
+    if (cb) cb();
+  };
+  ctx.__state.messages.length = 0;
+  ctx.removeSpellEffects("Bless", "t-ez");
+  assert("this caster's instance only; another caster's Bless stays; Blessed Ward isn't Bless", removed, [["t-al", "bl", 1]]);
+  assert("the line says where", ctx.__state.messages[0], "Bless's effects removed from Kyra (Aura: Bless).");
+  // As Realm stores two casters' Bless on one token: two instances, only the
+  // latest applier kept
+  const stacked = { _id: "t-st", name: "Merisiel", identified: true, effects: [blessEffect], effectIds: ["bl", "bl"], effectValues: { bl: { tokenId: "t-ez" } }, data: {} };
+  removed.length = 0;
+  ctx.api.getOtherTokens = () => [stacked];
+  ctx.removeSpellEffects("Bless", "t-ez");
+  assert("two instances, one applier stored (this caster): only one instance goes", removed, [["t-st", "bl", 1]]);
+  removed.length = 0;
+  ctx.removeSpellEffects("Bless", "t-other");
+  assert("... the stored applier is another caster: nothing goes", removed, []);
+  assert("the names that match", [ctx.isSpellEffectName("Bless", "Bless"), ctx.isSpellEffectName("Aura: Bless", "bless"), ctx.isSpellEffectName("Blessed Ward", "Bless")], [true, true, false]);
 }
 
 section("The encounter's end");
