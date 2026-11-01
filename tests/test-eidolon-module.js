@@ -41,7 +41,7 @@ function pick(record, owner, choiceStart, optionName) {
 // An eidolon character from the module's records: its type's ancestry and the
 // Eidolon class, with its choices, worked out as the sheet does
 // (onAddEditFeature, run until it settles)
-function eidolon(type, level, { key, primary = "1d8, Trip", tradition, feats = [], featPicks = [], summonerGear } = {}) {
+function eidolon(type, level, { key, primary = "1d8, Trip", tradition, feats = [], featPicks = [], summonerGear, summonerRanks } = {}) {
   const ancestry = copy(RECORDS.ancestry.find((a) => a.name === type));
   const eidolonClass = copy(RECORDS.class[0]);
   const record = {
@@ -67,6 +67,7 @@ function eidolon(type, level, { key, primary = "1d8, Trip", tradition, feats = [
       traits: [...(ancestry.data.traits || [])],
       toggles: [],
       ...(summonerGear ? { summonerGear } : {}),
+      ...(summonerRanks ? { summonerRanks } : {}),
     },
   };
   if (key) pick(record, ancestry, "Choose your", key);
@@ -187,6 +188,40 @@ section("Item bonuses from the summoner's gear");
   assert("+1 resilient: +1 item bonus on its save rolls", [saveMods(geared), saveMods(bare)], [[["Summoner's Resilient +1", 1]], []]);
   const primary = geared.data.inventory.find((item) => item.name === "Primary Attack");
   assert("+1 striking handwraps: +1 to hit and a striking rune on its attacks", [strike(geared, "Primary Attack").bonus - strike(bare, "Primary Attack").bonus, ctx.getStrikingRuneForRecord(geared, ctx.getAlteredWeapon(geared, primary))], [1, 1]);
+}
+
+section("Ranks shared with the summoner (pg. 69)");
+{
+  const skills = { acrobatics: 0, arcana: 2, athletics: 3, crafting: 0, deception: 0, diplomacy: 1, intimidation: 0, medicine: 0, nature: 0, occultism: 0, performance: 0, religion: 1, society: 0, stealth: 1, survival: 0, thievery: 0 };
+  const ranks = { perception: 1, fortitude: 1, reflex: 2, will: 3, skills };
+  const shared = eidolon("Angel Eidolon", 5, { key: "Strength", summonerRanks: ranks });
+  assert("its skills are the summoner's: master Athletics, expert Arcana", [shared.data.athletics, shared.data.arcana, shared.data.stealth], ["3", "2", "1"]);
+  assert("Athletics 5 + 6 master + Str 4", shared.data.athleticsMod, 15);
+  assert("its Perception and saves stay its own (expert Perception from Shared Vigilance at 3rd)", [shared.data.perception, shared.data.fortitude, shared.data.will], ["2", "2", "2"]);
+
+  const dedication = eidolon("Angel Eidolon", 7, { key: "Strength", summonerRanks: ranks, feats: ["Summoner Dedication (Eidolon)"] });
+  assert("Summoner Dedication: the summoner's Perception and save ranks, even below the class's", [dedication.data.perception, dedication.data.fortitude, dedication.data.reflex, dedication.data.will], ["1", "1", "2", "3"]);
+  const full = eidolon("Angel Eidolon", 7, { key: "Strength", summonerRanks: ranks });
+  assert("... and none of the class features: trained unarmed at 7th (2 lower than expert)", strike(full, "Primary Attack").bonus - strike(dedication, "Primary Attack").bonus, 2);
+  const unarmedSpecialization = (record) => strike(record, "Primary Attack").damage;
+  assert("... no weapon specialization", [unarmedSpecialization(full), unarmedSpecialization(dedication)], ["1d8+6 bludgeoning", "1d8+4 bludgeoning"]);
+}
+
+section("Item bonuses to Perception and skills from the summoner's invested items (pg. 70)");
+{
+  const item = (name, mods, invested = "true") => ({ _id: name, name, data: { type: "equipment", carried: "equipped", invested, traits: ["Invested", "Magical"], modifiers: mods.map((m) => ({ data: { active: true, modifierType: "item", valueType: "number", ...m } })) } });
+  const summonerRecord = {
+    _id: "s",
+    recordType: "characters",
+    effects: [],
+    effectIds: [],
+    data: { level: 5, inventory: [item("Goggles", [{ type: "perceptionBonus", field: "", value: "1" }]), item("Climbing Kit", [{ type: "skillBonus", field: "athletics", value: "2" }]), item("Cloak", [{ type: "skillBonus", field: "stealth", value: "1" }], "false")] },
+  };
+  const gear = ctx.getSummonerGear(summonerRecord);
+  assert("the best invested item bonus to Perception and each skill; uninvested ones don't count", [gear.perception, gear.skills], [1, { athletics: 2 }]);
+  const geared = eidolon("Angel Eidolon", 5, { key: "Strength", summonerGear: gear });
+  const mods = (types, field) => ctx.getEffectsAndModifiersForToken(geared, types, field).map((m) => [m.name, m.value]);
+  assert("its Perception and Athletics take them", [mods(["perceptionBonus"], "perception"), mods(["skillBonus"], "athletics"), mods(["skillBonus"], "stealth")], [[["Summoner's Item +1", 1]], [["Summoner's Item +2", 2]], []]);
 }
 
 process.exitCode = summary() > 0 ? 1 : 0;

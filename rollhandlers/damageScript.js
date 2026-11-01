@@ -19,9 +19,11 @@ if (damage > 0) {
   }
   curhp -= damage;
   let diesNow = false;
+  // A linked eidolon's 0 HP is its summoner's (eidolons.js)
+  const linkedEidolon = !!getEidolonSummonerId(record);
   if (curhp <= 0) {
     curhp = 0;
-    if (record.recordType !== "npcs") {
+    if (record.recordType !== "npcs" && !linkedEidolon) {
       // Dying 1 plus wounded, or 1 more while dying, up to the dying value
       // the character dies at (dying.js)
       const threshold = getDeathThreshold(record);
@@ -43,7 +45,12 @@ if (damage > 0) {
   // If damage > 0, float text
   const token = api.getToken();
   if (value > 0 && token) {
-    if (curhp <= 0) {
+    if (curhp <= 0 && linkedEidolon) {
+      // Its summoner gains dying, and it unmanifests (eidolons.js)
+      api.sendMessage(applyEidolonZeroHitPoints(token).lines.join("\n"), undefined, [], [], token);
+    } else if (curhp <= 0) {
+      const unmanifest = getEidolonUnmanifestLine(record);
+      if (unmanifest) api.sendMessage(unmanifest, undefined, [], [], token);
       if (token.recordType === "npcs" || diesNow) {
         api.addEffect("Dead", token);
       } else if (!getTokenCondition(token, "unconscious")) {

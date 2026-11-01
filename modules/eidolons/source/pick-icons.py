@@ -54,7 +54,7 @@ HAND = {
     "feats|Defend Summoner (Eidolon)": "/icons/fantasy/spells/shield-other.webp",
     "feats|Advanced Weaponry (Eidolon)": "/icons/fantasy/skills/summoner/claw-of-summoning.webp",
     "feats|Airborne Form (Eidolon)": "/icons/fantasy/skills/summoner/dragon-wing.webp",
-    "feats|Glider Form (Eidolon)": "/icons/fantasy/conditions-2/status_fly.webp",
+    "feats|Glider Form (Eidolon)": "/icons/fantasy/spells/feather-fall.webp",
     "feats|Burrowing Form (Eidolon)": "/icons/fantasy/spells/burrow-ward.webp",
     "feats|Protective Bond (Eidolon)": "/icons/fantasy/spells/shield-other.webp",
     "feats|Ranged Combatant (Eidolon)": "/icons/fantasy/skills/summoner/targeted-strike.webp",

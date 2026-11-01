@@ -7248,14 +7248,15 @@
        },
        "proficiencies": [
         {
-         "_id": "eid-prof-perception-2-",
+         "_id": "eid-prof-perception-2-not-feat-summoner-dedication-eidolon",
          "name": "Proficiency",
          "recordType": "records",
          "identified": true,
          "data": {
           "name": "perception",
           "rank": "2",
-          "field": ""
+          "field": "",
+          "predicate": "[{\"not\":\"feat:summoner-dedication-eidolon\"}]"
          }
         }
        ]
@@ -7278,14 +7279,15 @@
        },
        "proficiencies": [
         {
-         "_id": "eid-prof-unarmed-2-",
+         "_id": "eid-prof-unarmed-2-not-feat-summoner-dedication-eidolon",
          "name": "Proficiency",
          "recordType": "records",
          "identified": true,
          "data": {
           "name": "unarmed",
           "rank": "2",
-          "field": ""
+          "field": "",
+          "predicate": "[{\"not\":\"feat:summoner-dedication-eidolon\"}]"
          }
         }
        ]
@@ -7325,7 +7327,7 @@
        },
        "modifiers": [
         {
-         "_id": "eid-mod-eidolon-weapon-specialization-damagebonus-all-2-item-category-unarmed-item-proficiency-rank-2",
+         "_id": "eid-mod-eidolon-weapon-specialization-damagebonus-all-2-item-category-unarmed-item-proficiency-rank-2-not-feat-summoner-dedication-eidolon",
          "name": "Eidolon Weapon Specialization",
          "unidentifiedName": "Modifier",
          "recordType": "records",
@@ -7337,11 +7339,11 @@
           "field": "all",
           "type": "damageBonus",
           "value": "2",
-          "predicate": "[\"item:category:unarmed\",\"item:proficiency:rank:2\"]"
+          "predicate": "[\"item:category:unarmed\",\"item:proficiency:rank:2\",{\"not\":\"feat:summoner-dedication-eidolon\"}]"
          }
         },
         {
-         "_id": "eid-mod-eidolon-weapon-specialization-damagebonus-all-3-item-category-unarmed-item-proficiency-rank-3",
+         "_id": "eid-mod-eidolon-weapon-specialization-damagebonus-all-3-item-category-unarmed-item-proficiency-rank-3-not-feat-summoner-dedication-eidolon",
          "name": "Eidolon Weapon Specialization",
          "unidentifiedName": "Modifier",
          "recordType": "records",
@@ -7353,7 +7355,7 @@
           "field": "all",
           "type": "damageBonus",
           "value": "3",
-          "predicate": "[\"item:category:unarmed\",\"item:proficiency:rank:3\"]"
+          "predicate": "[\"item:category:unarmed\",\"item:proficiency:rank:3\",{\"not\":\"feat:summoner-dedication-eidolon\"}]"
          }
         }
        ]
@@ -7376,14 +7378,15 @@
        },
        "proficiencies": [
         {
-         "_id": "eid-prof-reflex-2-",
+         "_id": "eid-prof-reflex-2-not-feat-summoner-dedication-eidolon",
          "name": "Proficiency",
          "recordType": "records",
          "identified": true,
          "data": {
           "name": "reflex",
           "rank": "2",
-          "field": ""
+          "field": "",
+          "predicate": "[{\"not\":\"feat:summoner-dedication-eidolon\"}]"
          }
         }
        ]
@@ -7406,14 +7409,15 @@
        },
        "proficiencies": [
         {
-         "_id": "eid-prof-fortitude-3-",
+         "_id": "eid-prof-fortitude-3-not-feat-summoner-dedication-eidolon",
          "name": "Proficiency",
          "recordType": "records",
          "identified": true,
          "data": {
           "name": "fortitude",
           "rank": "3",
-          "field": ""
+          "field": "",
+          "predicate": "[{\"not\":\"feat:summoner-dedication-eidolon\"}]"
          }
         }
        ]
@@ -7436,14 +7440,15 @@
        },
        "proficiencies": [
         {
-         "_id": "eid-prof-unarmored-2-",
+         "_id": "eid-prof-unarmored-2-not-feat-summoner-dedication-eidolon",
          "name": "Proficiency",
          "recordType": "records",
          "identified": true,
          "data": {
           "name": "unarmored",
           "rank": "2",
-          "field": ""
+          "field": "",
+          "predicate": "[{\"not\":\"feat:summoner-dedication-eidolon\"}]"
          }
         }
        ]
@@ -7466,14 +7471,15 @@
        },
        "proficiencies": [
         {
-         "_id": "eid-prof-unarmed-3-",
+         "_id": "eid-prof-unarmed-3-not-feat-summoner-dedication-eidolon",
          "name": "Proficiency",
          "recordType": "records",
          "identified": true,
          "data": {
           "name": "unarmed",
           "rank": "3",
-          "field": ""
+          "field": "",
+          "predicate": "[{\"not\":\"feat:summoner-dedication-eidolon\"}]"
          }
         }
        ]
@@ -7496,14 +7502,15 @@
        },
        "proficiencies": [
         {
-         "_id": "eid-prof-will-3-",
+         "_id": "eid-prof-will-3-not-feat-summoner-dedication-eidolon",
          "name": "Proficiency",
          "recordType": "records",
          "identified": true,
          "data": {
           "name": "will",
           "rank": "3",
-          "field": ""
+          "field": "",
+          "predicate": "[{\"not\":\"feat:summoner-dedication-eidolon\"}]"
          }
         }
        ]
@@ -7526,7 +7533,7 @@
        },
        "modifiers": [
         {
-         "_id": "eid-mod-greater-eidolon-specialization-damagebonus-all-2-item-category-unarmed-item-proficiency-rank-2",
+         "_id": "eid-mod-greater-eidolon-specialization-damagebonus-all-2-item-category-unarmed-item-proficiency-rank-2-not-feat-summoner-dedication-eidolon",
          "name": "Greater Eidolon Specialization",
          "unidentifiedName": "Modifier",
          "recordType": "records",
@@ -7538,11 +7545,11 @@
           "field": "all",
           "type": "damageBonus",
           "value": "2",
-          "predicate": "[\"item:category:unarmed\",\"item:proficiency:rank:2\"]"
+          "predicate": "[\"item:category:unarmed\",\"item:proficiency:rank:2\",{\"not\":\"feat:summoner-dedication-eidolon\"}]"
          }
         },
         {
-         "_id": "eid-mod-greater-eidolon-specialization-damagebonus-all-3-item-category-unarmed-item-proficiency-rank-3",
+         "_id": "eid-mod-greater-eidolon-specialization-damagebonus-all-3-item-category-unarmed-item-proficiency-rank-3-not-feat-summoner-dedication-eidolon",
          "name": "Greater Eidolon Specialization",
          "unidentifiedName": "Modifier",
          "recordType": "records",
@@ -7554,7 +7561,7 @@
           "field": "all",
           "type": "damageBonus",
           "value": "3",
-          "predicate": "[\"item:category:unarmed\",\"item:proficiency:rank:3\"]"
+          "predicate": "[\"item:category:unarmed\",\"item:proficiency:rank:3\",{\"not\":\"feat:summoner-dedication-eidolon\"}]"
          }
         }
        ]
@@ -7872,14 +7879,15 @@
        },
        "proficiencies": [
         {
-         "_id": "eid-prof-unarmored-3-",
+         "_id": "eid-prof-unarmored-3-not-feat-summoner-dedication-eidolon",
          "name": "Proficiency",
          "recordType": "records",
          "identified": true,
          "data": {
           "name": "unarmored",
           "rank": "3",
-          "field": ""
+          "field": "",
+          "predicate": "[{\"not\":\"feat:summoner-dedication-eidolon\"}]"
          }
         }
        ]
@@ -8846,7 +8854,7 @@
    "recordType": "feats",
    "identified": true,
    "unidentifiedName": "Unidentified Feat",
-   "portrait": "/icons/fantasy/conditions-2/status_fly.webp",
+   "portrait": "/icons/fantasy/spells/feather-fall.webp",
    "data": {
     "level": 1,
     "levelLabel": "Eidolon",
@@ -12278,7 +12286,7 @@
     "actionType": "passive",
     "actions": "",
     "prerequisites": "",
-    "description": "<p>Your eidolon's link to you is tenuous. Its key attribute starts at +3 instead of +4 (the other stays +2) and becomes +4 at 5th level, before its attribute boosts. It's trained in unarmed attacks and unarmored defense, and shares your proficiency rank for Perception, saving throws and skill checks: set its Perception and saves to yours if they differ. You can't use tandem actions.</p><p><em>Add this feat to the eidolon of a summoner who took Summoner Dedication. Impossible Magic.</em></p>",
+    "description": "<p>Your eidolon's link to you is tenuous. Its key attribute starts at +3 instead of +4 (the other stays +2) and becomes +4 at 5th level, before its attribute boosts. It's trained in unarmed attacks and unarmored defense, and shares your proficiency rank for Perception, saving throws and skill checks (the sync copies them from you). It doesn't get the summoner's class features (Shared Vigilance, Eidolon Unarmed Expertise, the specializations and the rest). You can't use tandem actions.</p><p><em>Add this feat to the eidolon of a summoner who took Summoner Dedication. Impossible Magic.</em></p>",
     "traits": [
      "Eidolon"
     ],

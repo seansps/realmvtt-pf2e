@@ -1082,15 +1082,19 @@ ${getLevelUpSummary(gains)}`,
     const curHp = record.data?.curhp || 0;
     const maxHp = record.data?.hitpoints || 0;
 
+    // A linked eidolon's Hit Points are its summoner's pool, which the
+    // summoner's rest heals; its own rest heals none (eidolons.js)
+    const sharesPool = !!getEidolonSummonerId(record);
     const restHealing = getRestHealing(record);
-    const healedBy = getRestHealingAmount(restHealing.amount, restOptions);
+    const healedBy = sharesPool ? 0 : getRestHealingAmount(restHealing.amount, restOptions);
     // Sleeping in armor without the comfort trait: wakes up fatigued
     const wakesFatigued = isRestFatiguing(record, restOptions);
     const newHp = Math.min(curHp + healedBy, maxHp);
 
-    valuesToSet["data.curhp"] = newHp;
+    if (!sharesPool) valuesToSet["data.curhp"] = newHp;
 
     let message = restOptions.days > 0 ? `Long-term rest.` : `Resting for the day.`;
+    if (sharesPool) message += " Its Hit Points are its summoner's: rest the summoner to recover them.";
     if (healedBy > 0) {
       const added =
         restHealing.names.length > 0 ? ` (${restHealing.names.join(", ")})` : "";

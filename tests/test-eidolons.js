@@ -74,10 +74,10 @@ section("The summoner link and level");
   let synced = null;
   ctx.onAddEditFeature = () => {};
   ctx.syncEidolonWithSummoner(store.eid, "sum", (updated) => (synced = updated));
-  assert("one write: the summoner's level, maximum, current and temporary HP", writes[0], ["eid", { "data.hitpoints": 60, "data.curhp": 55, "data.tempHp": 4, "data.level": 5 }]);
+  assert("one write: the summoner's level, maximum, current and temporary HP, and ranks", writes[0], ["eid", { "data.hitpoints": 60, "data.curhp": 55, "data.tempHp": 4, "data.level": 5, "data.summonerRanks": ctx.getSummonerRanks(store.sum) }]);
   assert("then the summoner links back to it", [writes[1][0], JSON.parse(writes[1][1]["data.eidolon"])._id], ["sum", "eid"]);
   assert("the eidolon after", [synced.data.level, synced.data.curhp], [5, 55]);
-  useStore(summoner(), eidolon({ level: 5, hitpoints: 60, curhp: 60 }));
+  useStore(summoner(), eidolon({ level: 5, hitpoints: 60, curhp: 60, summonerRanks: ctx.getSummonerRanks(summoner()) }));
   ctx.syncEidolonWithSummoner(store.eid, "sum");
   assert("in step and linked: nothing written", writes, []);
 }
@@ -93,7 +93,7 @@ section("Maximum HP");
   writes = [];
   const sum = { ...store.sum, data: { ...store.sum.data, ancestries: [{ data: { hp: 8 } }], classes: [{ name: "Summoner", data: { hp: 10 } }] } };
   ctx.updateAttribute({ record: sum, attribute: "con", value: 2 });
-  assert("the summoner's new maximum goes to its eidolon: 8 + (10 + 2) x 5", writes.filter(([id]) => id === "eid"), [["eid", { "data.hitpoints": 68 }]]);
+  assert("the summoner's new maximum goes to its eidolon: 8 + (10 + 2) x 5", writes.filter(([id, values]) => id === "eid" && values["data.hitpoints"]), [["eid", { "data.hitpoints": 68 }]]);
 }
 
 section("The tracker's damage and healing");
@@ -134,6 +134,76 @@ section("Gear from the summoner (Impossible Magic pg. 70)");
   useStore(armored, eidolon({ level: 5, hitpoints: 60, curhp: 60 }));
   ctx.shareSummonerGear(store.sum);
   assert("the summoner's gear goes to its eidolon", writes.map(([id, v]) => [id, v["data.summonerGear"]?.armorPotency]), [["eid", 2]]);
+}
+
+// An eidolon's and its summoner's tokens on the scene, and applyDamage's
+// writes and cards
+function damageScene({ eidHp = 60, sumHp = 60, sumData = {} } = {}) {
+  const eidToken = { _id: "t-eid", recordId: "eid", recordType: "characters", name: "Lumen", identified: true, effects: [], effectIds: [], data: { ...eidolon().data, curhp: eidHp, hitpoints: 60, tempHp: 0, level: 5 } };
+  const sumToken = { _id: "t-sum", recordId: "sum", recordType: "characters", name: "Ezren", identified: true, effects: [], effectIds: [], data: { ...summoner().data, curhp: sumHp, hitpoints: 60, tempHp: 0, ...sumData } };
+  useStore(summoner({ curhp: sumHp }), eidolon({ curhp: eidHp, hitpoints: 60, level: 5 }));
+  const tokenWrites = [];
+  const effects = [];
+  ctx.api.setValuesOnTokenById = (id, type, values, cb) => {
+    tokenWrites.push([id, values]);
+    if (cb) cb();
+  };
+  ctx.api.addEffects = (names, target) => effects.push([target._id, ...names]);
+  ctx.api.addEffect = (name, target) => effects.push([target._id, name]);
+  ctx.api.getOtherTokens = () => [eidToken, sumToken];
+  ctx.api.getToken = () => null;
+  ctx.api.getCombatTracker = () => {};
+  ctx.__state.messages = [];
+  return { eidToken, sumToken, tokenWrites, effects };
+}
+const fire = (total, metadata = {}) => ({ total, types: [{ type: "fire", value: total }], metadata: { damageType: "fire", ...metadata } });
+const hpOf = (tokenWrites, id) => tokenWrites.filter(([wid, v]) => wid === id && v["data.curhp"] !== undefined).map(([, v]) => v["data.curhp"]);
+
+section("One effect on both applies once, the greater (pg. 63)");
+{
+  const { eidToken, sumToken, tokenWrites } = damageScene();
+  ctx.api.getSelectedOrDroppedToken = () => [eidToken, sumToken];
+  ctx.applyDamage(null, fire(10));
+  assert("a fireball on both: the pool loses 10 once, not 20", [hpOf(tokenWrites, "t-eid"), hpOf(tokenWrites, "t-sum")], [[50], [50]]);
+  assert("the second card says so", ctx.__state.messages[1].includes("Shares Hit Points with Lumen: one effect on both applies once, the greater (10)."), true);
+
+  const second = damageScene();
+  const pool = { sharedPools: {}, poolCreatures: [second.eidToken, second.sumToken] };
+  ctx.applyDamage(second.eidToken, fire(10), true, null, false, pool);
+  ctx.applyDamage(second.sumToken, fire(10), false, null, false, pool);
+  assert("Apply by Saves: half (5) then full (10) takes 10 in all", [hpOf(second.tokenWrites, "t-eid"), hpOf(second.tokenWrites, "t-sum")], [[55], [50]]);
+  const third = damageScene();
+  const pool3 = { sharedPools: {}, poolCreatures: [third.eidToken, third.sumToken] };
+  ctx.applyDamage(third.sumToken, fire(10), false, null, false, pool3);
+  ctx.applyDamage(third.eidToken, fire(10), true, null, false, pool3);
+  assert("... full then half: the half adds nothing", [hpOf(third.tokenWrites, "t-sum"), hpOf(third.tokenWrites, "t-eid")], [[50], [50]]);
+  assert("the pool's arithmetic: damage and healing", [ctx.getSharedPoolDamage(8, 12), ctx.getSharedPoolDamage(12, 8), ctx.getSharedPoolDamage(-5, -3), ctx.getSharedPoolDamage(-3, -5)], [0, 4, -2, 0]);
+}
+
+section("0 Hit Points (Manifest Eidolon, pg. 64)");
+{
+  const { eidToken, tokenWrites, effects } = damageScene({ eidHp: 5, sumHp: 5 });
+  ctx.applyDamage(eidToken, fire(10));
+  const eidWrite = tokenWrites.find(([id]) => id === "t-eid")[1];
+  const sumWrite = tokenWrites.find(([id]) => id === "t-sum")?.[1];
+  assert("the eidolon: 0 HP, no dying of its own", [eidWrite["data.curhp"], eidWrite["data.dying"]], [0, undefined]);
+  assert("the summoner gains dying 1", sumWrite?.["data.dying"], 1);
+  assert("... and the conditions, on the summoner", effects, [["t-sum", "Unconscious", "Prone"]]);
+  assert("the card: the eidolon unmanifests", ctx.__state.messages[0].includes("Lumen unmanifests: its summoner drops to 0 HP."), true);
+  assert("the Undo restores the summoner's HP and dying too", [ctx.__state.messages[0].includes('restoreSharedHitPoints("sum", {"data.curhp":5,"data.tempHp":0})'), ctx.__state.messages[0].includes('api.setValuesOnTokenById("t-sum", "characters", {"data.dying":0})')], [true, true]);
+
+  const crit = damageScene({ eidHp: 5, sumHp: 5 });
+  ctx.applyDamage(crit.eidToken, fire(10, { critical: true }));
+  assert("a critical hit: dying 2", crit.tokenWrites.find(([id]) => id === "t-sum")?.[1]["data.dying"], 2);
+
+  const summonerDown = damageScene({ eidHp: 5, sumHp: 5 });
+  ctx.applyDamage(summonerDown.sumToken, fire(10));
+  assert("the summoner at 0: it gains dying, and its eidolon unmanifests", [summonerDown.tokenWrites.find(([id]) => id === "t-sum")[1]["data.dying"], ctx.__state.messages[0].includes("Lumen unmanifests.")], [1, true]);
+
+  damageScene({ eidHp: 5, sumHp: 5 });
+  ctx.api.getOtherTokens = () => [];
+  const offScene = ctx.applyEidolonZeroHitPoints({ ...eidolon(), _id: "t-eid" });
+  assert("its summoner not on the scene: a note to set dying by hand", offScene.lines[0].includes("give them dying on their sheet"), true);
 }
 
 section("Initiative");

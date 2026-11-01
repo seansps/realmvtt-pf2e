@@ -117,6 +117,9 @@ function syncEidolonWithSummoner(record, summonerId = getEidolonSummonerId(recor
     if (levelChanged) values["data.level"] = level;
     const gear = getSummonerGear(summoner);
     if (!isSameSummonerGear(record.data?.summonerGear, gear)) values["data.summonerGear"] = gear;
+    const ranks = getSummonerRanks(summoner);
+    const ranksChanged = JSON.stringify(record.data?.summonerRanks || null) !== JSON.stringify(ranks);
+    if (ranksChanged) values["data.summonerRanks"] = ranks;
     const linkBack = () => {
       if (getRecordIdFromValue(summoner.data?.eidolon) === record._id) return;
       api.setValuesOnRecord(summoner, { "data.eidolon": JSON.stringify({ _id: record._id, name: record.name, recordType: record.recordType || "characters" }) });
@@ -128,7 +131,8 @@ function syncEidolonWithSummoner(record, summonerId = getEidolonSummonerId(recor
     api.setValuesOnRecord(record, values, (updated) => {
       const current = updated || { ...record, data: { ...(record.data || {}), ...Object.fromEntries(Object.entries(values).map(([k, v]) => [k.slice(5), v])) } };
       linkBack();
-      if (levelChanged) onAddEditFeature(current, undefined, true);
+      // A new level or new ranks: the sheet is worked out again
+      if (levelChanged || ranksChanged) onAddEditFeature(current, undefined, true);
       done(current);
     });
   });
@@ -152,8 +156,12 @@ function getBandsOfForceBonus(item) {
 // its worn, invested handwraps of mighty blows' runes. With Automatic Bonus
 // Progression runes give nothing (the eidolon has its own potency).
 function getSummonerGear(summoner) {
-  const gear = { armorPotency: 0, resilient: 0, handwraps: null };
+  const gear = { armorPotency: 0, resilient: 0, handwraps: null, perception: 0, skills: {} };
   if (getVariantRules().automaticBonusProgression) return gear;
+  // Item bonuses to Perception and skills from its invested magic items
+  const itemBonuses = getSummonerItemBonuses(summoner);
+  gear.perception = itemBonuses.perception;
+  gear.skills = itemBonuses.skills;
   const invested = (summoner?.data?.inventory || []).filter(
     (item) => item?.data?.carried === "equipped" && item?.data?.invested === "true",
   );
@@ -177,7 +185,14 @@ function getSummonerGear(summoner) {
 
 // Whether two gear snapshots give the same; none is the same as no gear
 function isSameSummonerGear(a, b) {
-  const key = (gear) => JSON.stringify({ armorPotency: gear?.armorPotency || 0, resilient: gear?.resilient || 0, handwraps: gear?.handwraps || null });
+  const key = (gear) =>
+    JSON.stringify({
+      armorPotency: gear?.armorPotency || 0,
+      resilient: gear?.resilient || 0,
+      handwraps: gear?.handwraps || null,
+      perception: gear?.perception || 0,
+      skills: gear?.skills || {},
+    });
   return key(a) === key(b);
 }
 
@@ -192,10 +207,15 @@ function getEidolonGearModifiers(record) {
   // adds to it rather than competing with it
   if (gear.armorPotency > 0) results.push(modifier(`Summoner's Armor Potency +${gear.armorPotency}`, gear.armorPotency, "armorClassBonus", ""));
   if (gear.resilient > 0) results.push(modifier(`Summoner's Resilient +${gear.resilient}`, gear.resilient, "saveBonus", "item"));
+  if (gear.perception > 0) results.push(modifier(`Summoner's Item +${gear.perception}`, gear.perception, "perceptionBonus", "item"));
+  Object.entries(gear.skills || {}).forEach(([skill, value]) => {
+    if (value > 0) results.push({ ...modifier(`Summoner's Item +${value}`, value, "skillBonus", "item"), field: skill });
+  });
   return results;
 }
 
-// The summoner's gear written to its eidolon when it changed
+// The summoner's gear and proficiency ranks written to its eidolon when
+// they changed, in one write; new ranks work the eidolon's sheet out again
 function shareSummonerGear(summoner, callback) {
   const done = () => {
     if (callback) callback();
@@ -203,8 +223,167 @@ function shareSummonerGear(summoner, callback) {
   const eidolonId = getSummonerEidolonId(summoner);
   if (!eidolonId) return done();
   const gear = getSummonerGear(summoner);
+  const ranks = getSummonerRanks(summoner);
   api.getRecord("characters", eidolonId, (eidolon) => {
-    if (!eidolon || isSameSummonerGear(eidolon.data?.summonerGear, gear)) return done();
-    api.setValuesOnRecord(eidolon, { "data.summonerGear": gear }, () => done());
+    if (!eidolon) return done();
+    const values = {};
+    if (!isSameSummonerGear(eidolon.data?.summonerGear, gear)) values["data.summonerGear"] = gear;
+    const ranksChanged = JSON.stringify(eidolon.data?.summonerRanks || null) !== JSON.stringify(ranks);
+    if (ranksChanged) values["data.summonerRanks"] = ranks;
+    if (!Object.keys(values).length) return done();
+    api.setValuesOnRecord(eidolon, values, (updated) => {
+      if (ranksChanged) onAddEditFeature(updated || { ...eidolon, data: { ...eidolon.data, summonerRanks: ranks } }, undefined, true);
+      done();
+    });
   });
+}
+
+// ---------------------------------------------------------------- 0 HP, Undo, one effect on both
+
+// A creature's record id (a token's recordId, or a record's own id)
+function getEidolonRecordId(creature) {
+  return creature?.recordId || creature?.record?._id || creature?._id || null;
+}
+
+// The summoner's token on the scene, for a linked eidolon, or null
+function getEidolonSummonerToken(eidolon) {
+  const summonerId = getEidolonSummonerId(eidolon);
+  if (!summonerId) return null;
+  return getMinionSceneTokens().find((token) => getEidolonRecordId(token) === summonerId && token._id !== eidolon?._id) || null;
+}
+
+// The name in a record link (the summoner's data.eidolon), or ""
+function getLinkedName(value) {
+  if (!value) return "";
+  if (typeof value === "object") return value.name || "";
+  try {
+    return JSON.parse(value)?.name || "";
+  } catch (error) {
+    return "";
+  }
+}
+
+// A linked eidolon brought to 0 HP: its summoner is (Manifest Eidolon,
+// Impossible Magic pg. 64), so the summoner gains dying (2 on a crit) and
+// the conditions, and the eidolon unmanifests. The eidolon gets no dying of
+// its own. Returns { lines, buttons, undo }: the card's lines, the
+// summoner's buttons (Heroic Recovery, Orc Ferocity), and the summoner's
+// values before, for the card's Undo.
+function applyEidolonZeroHitPoints(eidolon, options = {}) {
+  const name = getCreatureName(eidolon);
+  const summoner = getEidolonSummonerToken(eidolon);
+  if (!summoner) {
+    return {
+      lines: [`${name} unmanifests: its summoner drops to 0 HP. Their token isn't on this scene, so give them dying on their sheet.`],
+      buttons: [],
+      undo: null,
+    };
+  }
+  const valuesToSet = {};
+  const oldValues = {};
+  const { lines, buttons } = getZeroHitPointsChanges(summoner, { ...options, valuesToSet, oldValues });
+  if (Object.keys(valuesToSet).length) api.setValuesOnTokenById(summoner._id, summoner.recordType, valuesToSet);
+  return {
+    lines: [`${name} unmanifests: its summoner drops to 0 HP.`, ...lines],
+    buttons,
+    undo: Object.keys(oldValues).length ? { tokenId: summoner._id, recordType: summoner.recordType, values: oldValues } : null,
+  };
+}
+
+// The line for a summoner brought to 0 HP: its eidolon unmanifests
+function getEidolonUnmanifestLine(summoner) {
+  if (!getSummonerEidolonId(summoner)) return "";
+  const eidolonName = getLinkedName(getEidolonCreatureData(summoner, "eidolon")) || "Their eidolon";
+  return `${eidolonName} unmanifests.`;
+}
+
+// The Undo button's code for the partner's shared HP (and the summoner's
+// dying when the eidolon's 0 HP went to it): the values before, written
+// back. "" when the creature shares no HP.
+function getSharedHitPointUndo(creature, oldValues, zeroUndo = null) {
+  const partnerId = getSharedHitPointPartnerId(creature);
+  const shared = getSharedHitPointValues(oldValues);
+  const parts = [];
+  if (partnerId && Object.keys(shared).length) parts.push(`restoreSharedHitPoints(${JSON.stringify(partnerId)}, ${JSON.stringify(shared)});`);
+  if (zeroUndo) parts.push(`api.setValuesOnTokenById(${JSON.stringify(zeroUndo.tokenId)}, ${JSON.stringify(zeroUndo.recordType)}, ${JSON.stringify(zeroUndo.values)});`);
+  return parts.join(" ");
+}
+
+function restoreSharedHitPoints(partnerId, values) {
+  api.getRecord("characters", partnerId, (partner) => {
+    if (partner) api.setValuesOnRecord(partner, values);
+  });
+}
+
+// One effect on both an eidolon and its summoner applies once, the greater
+// (Impossible Magic pg. 63). The pool's key (the summoner's record id) when
+// the creature's partner is among the creatures the effect is applied to,
+// or null.
+function getSharedPoolKey(creature, creatures) {
+  const partnerId = getSharedHitPointPartnerId(creature);
+  if (!partnerId) return null;
+  const ownId = getEidolonRecordId(creature);
+  if (!(creatures || []).some((other) => other && other._id !== creature._id && getEidolonRecordId(other) === partnerId)) return null;
+  return isEidolonCharacter(creature) ? partnerId : ownId;
+}
+
+// What the second of the pair takes, once the first took `previous`: only
+// what its amount adds to the greater (damage is positive, healing negative)
+function getSharedPoolDamage(damage, previous) {
+  if (damage >= 0 && previous >= 0) return Math.max(0, damage - previous);
+  if (damage < 0 && previous < 0) return Math.min(0, damage - previous);
+  return damage;
+}
+
+// ---------------------------------------------------------------- Shared ranks
+
+const SUMMONER_DEDICATION_EIDOLON = "Summoner Dedication (Eidolon)";
+const SHARED_SAVE_RANKS = ["perception", "fortitude", "reflex", "will"];
+
+// The summoner's proficiency ranks the eidolon shares: its skills (Impossible
+// Magic pg. 69, "They share your skill proficiencies"), and its Perception
+// and saves for a Summoner Dedication eidolon
+function getSummonerRanks(summoner) {
+  const rank = (key) => parseInt(summoner?.data?.[key] || "0", 10) || 0;
+  const ranks = { skills: {} };
+  SHARED_SAVE_RANKS.forEach((key) => {
+    ranks[key] = rank(key);
+  });
+  Object.keys(getPathfinderSkills()).forEach((skill) => {
+    ranks.skills[skill] = rank(skill);
+  });
+  return ranks;
+}
+
+function hasSummonerDedicationEidolon(record) {
+  return [...(record?.data?.feats || []), ...(record?.data?.bonusFeats || [])].some((feat) => feat?.name === SUMMONER_DEDICATION_EIDOLON);
+}
+
+// The ranks updateProficiencies takes from the summoner, as exact ranks:
+// { skill: rank, ... } plus perception and the saves for a Summoner
+// Dedication eidolon. {} for anyone else, or before the first sync.
+function getEidolonSharedRanks(record) {
+  if (!isEidolonCharacter(record)) return {};
+  const ranks = getEidolonCreatureData(record, "summonerRanks");
+  if (!ranks) return {};
+  const shared = { ...(ranks.skills || {}) };
+  if (hasSummonerDedicationEidolon(record)) {
+    SHARED_SAVE_RANKS.forEach((key) => {
+      shared[key] = parseInt(ranks[key] || 0, 10) || 0;
+    });
+  }
+  return shared;
+}
+
+// The summoner's item bonuses to Perception and to each skill from its
+// invested magic items (Impossible Magic pg. 70): the best of each
+function getSummonerItemBonuses(summoner) {
+  const best = (mods) =>
+    mods.filter((mod) => mod.active !== false && mod.type === "item").reduce((top, mod) => Math.max(top, parseInt(mod.value, 10) || 0), 0);
+  const bonuses = { perception: best(getEffectsAndModifiersForToken(summoner, ["perceptionBonus"], "perception")), skills: {} };
+  Object.keys(getPathfinderSkills()).forEach((skill) => {
+    const value = best(getEffectsAndModifiersForToken(summoner, ["skillBonus"], skill));
+    if (value > 0) bonuses.skills[skill] = value;
+  });
+  return bonuses;
 }

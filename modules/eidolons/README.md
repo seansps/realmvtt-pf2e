@@ -18,7 +18,11 @@ Eidolons for the PF2e ruleset as **characters**, the way Foundry's [PF2e Compani
   - the rest are their text, with an action for those that cost actions
 - **Summoner Dedication (Eidolon):** for an archetype summoner's eidolon. Its key attribute is +3 instead of +4 until 5th level.
 
-Its Hit Points are its summoner's, shared (the ruleset's part, `rollhandlers/eidolons.js`), so the ancestry and class give none. It also takes item bonuses from its summoner's gear: the armor potency rune or bands of force raise its item bonus to AC, the resilient rune or bands of force give an item bonus to its saves, and the runes on the summoner's worn, invested handwraps of mighty blows go on its unarmed attacks (Impossible Magic pg. 70). With Automatic Bonus Progression, runes give nothing, as for anyone.
+Its Hit Points are its summoner's, shared (the ruleset's part, `rollhandlers/eidolons.js`), so the ancestry and class give none. It also takes item bonuses from its summoner's gear: the armor potency rune or bands of force raise its item bonus to AC, the resilient rune or bands of force give an item bonus to its saves, and the runes on the summoner's worn, invested handwraps of mighty blows go on its unarmed attacks (Impossible Magic pg. 70). With Automatic Bonus Progression, runes give nothing, as for anyone. It also takes the summoner's best item bonus to Perception and to each skill from the summoner's invested magic items. The other way to share runes, a magic weapon the summoner invests and holds, isn't supported: put the runes on handwraps, or add them to the eidolon's attacks by hand.
+
+An eidolon shares its summoner's skill proficiency ranks (pg. 69), copied by the sync. A Summoner Dedication eidolon also shares the summoner's Perception and save ranks, and doesn't get the summoner's class features.
+
+A linked eidolon brought to 0 Hit Points unmanifests, and its summoner drops to 0 and gains dying (Manifest Eidolon, pg. 64). One effect that hits both applies once, the greater amount (pg. 63). A linked eidolon's Rest heals nothing: the pool is the summoner's.
 
 ## Making an eidolon
 

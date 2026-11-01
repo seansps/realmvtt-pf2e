@@ -169,9 +169,14 @@ function unarmed(id, name, die, traits, note) {
 // Eidolon weapon specialization: 2 extra damage with expert unarmed attacks,
 // 3 with master; greater specialization doubles it (Foundry's rank-gated
 // damage modifiers)
+// A Summoner Dedication eidolon doesn't get the summoner's class features:
+// their proficiencies and modifiers carry this predicate
+const NOT_DEDICATION = { not: "feat:summoner-dedication-eidolon" };
+const classProficiency = (name, rank) => proficiency(name, rank, JSON.stringify([NOT_DEDICATION]));
+
 const specialization = (name, expert, master) => [
-  modifier(name, { type: "damageBonus", field: "all", value: String(expert), predicate: JSON.stringify([UNARMED, "item:proficiency:rank:2"]) }),
-  modifier(name, { type: "damageBonus", field: "all", value: String(master), predicate: JSON.stringify([UNARMED, "item:proficiency:rank:3"]) }),
+  modifier(name, { type: "damageBonus", field: "all", value: String(expert), predicate: JSON.stringify([UNARMED, "item:proficiency:rank:2", NOT_DEDICATION]) }),
+  modifier(name, { type: "damageBonus", field: "all", value: String(master), predicate: JSON.stringify([UNARMED, "item:proficiency:rank:3", NOT_DEDICATION]) }),
 ];
 
 const TRANSCENDENCE_ATTRIBUTES = [
@@ -207,15 +212,15 @@ function classFeatures() {
         ],
       },
     ),
-    f("Shared Vigilance", 3, "Your eidolon's proficiency rank for Perception increases to expert.", { proficiencies: [proficiency("perception", 2)] }),
-    f("Eidolon Unarmed Expertise", 5, "Your eidolon's proficiency rank for unarmed attacks increases to expert.", { proficiencies: [proficiency("unarmed", 2)] }),
+    f("Shared Vigilance", 3, "Your eidolon's proficiency rank for Perception increases to expert.", { proficiencies: [classProficiency("perception", 2)] }),
+    f("Eidolon Unarmed Expertise", 5, "Your eidolon's proficiency rank for unarmed attacks increases to expert.", { proficiencies: [classProficiency("unarmed", 2)] }),
     f("Eidolon Symbiosis", 7, "Your eidolon gains the symbiosis ability of its type (its ancestry)."),
     f("Eidolon Weapon Specialization", 7, "Your eidolon's unarmed attacks deal 2 additional damage, 3 if it's a master in them.", { modifiers: specialization("Eidolon Weapon Specialization", 2, 3) }),
-    f("Shared Reflexes", 9, "Your eidolon's proficiency rank for Reflex saves increases to expert.", { proficiencies: [proficiency("reflex", 2)] }),
-    f("Twin Juggernauts", 11, "Your eidolon's proficiency rank for Fortitude saves increases to master.", { proficiencies: [proficiency("fortitude", 3)] }),
-    f("Eidolon Defensive Expertise", 11, "Your eidolon's proficiency rank for unarmored defense increases to expert.", { proficiencies: [proficiency("unarmored", 2)] }),
-    f("Eidolon Unarmed Mastery", 13, "Your eidolon's proficiency rank for unarmed attacks increases to master.", { proficiencies: [proficiency("unarmed", 3)] }),
-    f("Shared Resolve", 15, "Your eidolon's proficiency rank for Will saves increases to master.", { proficiencies: [proficiency("will", 3)] }),
+    f("Shared Reflexes", 9, "Your eidolon's proficiency rank for Reflex saves increases to expert.", { proficiencies: [classProficiency("reflex", 2)] }),
+    f("Twin Juggernauts", 11, "Your eidolon's proficiency rank for Fortitude saves increases to master.", { proficiencies: [classProficiency("fortitude", 3)] }),
+    f("Eidolon Defensive Expertise", 11, "Your eidolon's proficiency rank for unarmored defense increases to expert.", { proficiencies: [classProficiency("unarmored", 2)] }),
+    f("Eidolon Unarmed Mastery", 13, "Your eidolon's proficiency rank for unarmed attacks increases to master.", { proficiencies: [classProficiency("unarmed", 3)] }),
+    f("Shared Resolve", 15, "Your eidolon's proficiency rank for Will saves increases to master.", { proficiencies: [classProficiency("will", 3)] }),
     f("Greater Eidolon Specialization", 15, "Your eidolon's weapon specialization damage doubles: 4 additional damage, 6 if it's a master in its unarmed attacks.", { modifiers: specialization("Greater Eidolon Specialization", 2, 3) }),
     f("Eidolon Transcendence", 17, "Your eidolon gains the transcendence ability of its type (its ancestry), and one of its attribute modifiers increases by 1.", {
       choices: [
@@ -230,7 +235,7 @@ function classFeatures() {
         ),
       ],
     }),
-    f("Eidolon Defensive Mastery", 19, "Your eidolon's proficiency rank for unarmored defense increases to master.", { proficiencies: [proficiency("unarmored", 3)] }),
+    f("Eidolon Defensive Mastery", 19, "Your eidolon's proficiency rank for unarmored defense increases to master.", { proficiencies: [classProficiency("unarmored", 3)] }),
   ];
 }
 
@@ -615,7 +620,7 @@ function summonerDedicationFeat() {
       actions: "",
       prerequisites: "",
       description:
-        p("Your eidolon's link to you is tenuous. Its key attribute starts at +3 instead of +4 (the other stays +2) and becomes +4 at 5th level, before its attribute boosts. It's trained in unarmed attacks and unarmored defense, and shares your proficiency rank for Perception, saving throws and skill checks: set its Perception and saves to yours if they differ. You can't use tandem actions.") +
+        p("Your eidolon's link to you is tenuous. Its key attribute starts at +3 instead of +4 (the other stays +2) and becomes +4 at 5th level, before its attribute boosts. It's trained in unarmed attacks and unarmored defense, and shares your proficiency rank for Perception, saving throws and skill checks (the sync copies them from you). It doesn't get the summoner's class features (Shared Vigilance, Eidolon Unarmed Expertise, the specializations and the rest). You can't use tandem actions.") +
         p("<em>Add this feat to the eidolon of a summoner who took Summoner Dedication. Impossible Magic.</em>"),
       traits: ["Eidolon"],
       traitsList: traitsList(["Eidolon"]),
