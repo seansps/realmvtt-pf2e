@@ -376,13 +376,30 @@ function getEidolonSharedRanks(record) {
 }
 
 // The summoner's item bonuses to Perception and to each skill from its
-// invested magic items (Impossible Magic pg. 70): the best of each
+// invested magic items (Impossible Magic pg. 70): the best of each. Only
+// those items: not its effects (an elixir), feats, features or items that
+// aren't invested. One pass; a modifier with no field or "all" counts for
+// every skill, as getEffectsAndModifiersForToken's field filter does.
 function getSummonerItemBonuses(summoner) {
-  const best = (mods) =>
-    mods.filter((mod) => mod.active !== false && mod.type === "item").reduce((top, mod) => Math.max(top, parseInt(mod.value, 10) || 0), 0);
-  const bonuses = { perception: best(getEffectsAndModifiersForToken(summoner, ["perceptionBonus"], "perception")), skills: {} };
+  const inventory = (summoner?.data?.inventory || []).filter(
+    (item) => item?.data?.carried === "equipped" && item?.data?.invested === "true",
+  );
+  const itemsOnly = {
+    ...summoner,
+    effects: [],
+    effectIds: [],
+    data: { ...(summoner?.data || {}), inventory, features: [], feats: [], bonusFeats: [], ancestries: [], heritages: [], classes: [], actions: [] },
+  };
+  const mods = getEffectsAndModifiersForToken(itemsOnly, ["perceptionBonus", "skillBonus"], "", undefined, undefined, { keepEveryModifier: true }).filter(
+    (mod) => mod.active !== false && mod.type === "item",
+  );
+  const best = (modifierType, field) =>
+    mods
+      .filter((mod) => mod.modifierType === modifierType && (!mod.field || mod.field === "all" || mod.field === field))
+      .reduce((top, mod) => Math.max(top, parseInt(mod.value, 10) || 0), 0);
+  const bonuses = { perception: best("perceptionBonus", "perception"), skills: {} };
   Object.keys(getPathfinderSkills()).forEach((skill) => {
-    const value = best(getEffectsAndModifiersForToken(summoner, ["skillBonus"], skill));
+    const value = best("skillBonus", skill);
     if (value > 0) bonuses.skills[skill] = value;
   });
   return bonuses;

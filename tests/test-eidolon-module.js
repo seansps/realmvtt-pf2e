@@ -219,6 +219,16 @@ section("Item bonuses to Perception and skills from the summoner's invested item
   };
   const gear = ctx.getSummonerGear(summonerRecord);
   assert("the best invested item bonus to Perception and each skill; uninvested ones don't count", [gear.perception, gear.skills], [1, { athletics: 2 }]);
+  const notInvested = (name, mods) => ({ ...item(name, mods), data: { ...item(name, mods).data, invested: undefined, traits: ["Magical"] } });
+  const elixir = { _id: "elixir", name: "Eagle-Eye Elixir", data: { modifiers: [{ data: { active: true, modifierType: "item", valueType: "number", type: "perceptionBonus", field: "", value: "2" } }] } };
+  const feat = { _id: "feat", name: "Some Feat", data: { modifiers: [{ data: { active: true, modifierType: "item", valueType: "number", type: "skillBonus", field: "arcana", value: "1" } }] } };
+  const others = ctx.getSummonerGear({
+    ...summonerRecord,
+    effects: [elixir],
+    effectIds: ["elixir"],
+    data: { ...summonerRecord.data, feats: [feat], inventory: [...summonerRecord.data.inventory, notInvested("Toolkit", [{ type: "skillBonus", field: "thievery", value: "1" }]), item("Circlet", [{ type: "skillBonus", field: "all", value: "1" }])] },
+  });
+  assert("not an elixir's, a feat's or an item that isn't invested; an invested item's bonus to all skills counts for each", [others.perception, others.skills.thievery, others.skills.arcana, others.skills.athletics, others.skills.stealth], [1, 1, 1, 2, 1]);
   const geared = eidolon("Angel Eidolon", 5, { key: "Strength", summonerGear: gear });
   const mods = (types, field) => ctx.getEffectsAndModifiersForToken(geared, types, field).map((m) => [m.name, m.value]);
   assert("its Perception and Athletics take them", [mods(["perceptionBonus"], "perception"), mods(["skillBonus"], "athletics"), mods(["skillBonus"], "stealth")], [[["Summoner's Item +1", 1]], [["Summoner's Item +2", 2]], []]);
