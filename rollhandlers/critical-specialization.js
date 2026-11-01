@@ -77,8 +77,6 @@ function getCritSpecEffectLabel(effect) {
   return `${effect.name}${effect.value ? ` ${effect.value}` : ""}`;
 }
 
-// The buttons and lines for a critical hit's specialization effect, from the
-// attack's metadata (targetId, targetName, tokenId, tokenName, critSpec)
 // Whether the attack's weapon has a grievous rune (its runes, as the card's
 // grievous line reads them)
 function hasGrievousRune(runes) {
