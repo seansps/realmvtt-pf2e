@@ -108,3 +108,6 @@ if (token && isConditionUpkeepOn() && !isTokenDead(token)) {
     );
   });
 }
+
+// What the creature is sustaining, with Sustain buttons (sustain.js)
+remindSustainedSpells(token);

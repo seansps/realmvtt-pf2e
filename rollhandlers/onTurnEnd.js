@@ -84,3 +84,6 @@ if (isConditionUpkeepOn() && !isTurnEndUpkeepDone(token)) {
     );
   }
 }
+
+// A sustained spell the creature didn't Sustain this turn ends (sustain.js)
+endUnsustainedSpells(token);
