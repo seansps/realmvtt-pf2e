@@ -23,6 +23,12 @@
     performSkillAction(record, skill, actionName);
   }
 
+  // The exploration activity (the field saves it): the initiative skill, and
+  // a card when it has a note (exploration.js)
+  function onExplorationActivity(value) {
+    setExplorationActivity(record, value);
+  }
+
   function onSkillTrainingChange(value, skill) {
     onAddEditFeature(record);
   }
@@ -1173,6 +1179,40 @@
         onclick="chooseAbpSkillPotency()"
       ></button>
     </box>
+  </div>
+
+  <!-- Exploration activity, shown locked too since it's picked during play
+       (exploration.js): used when an encounter starts -->
+  <div
+    class="rvtt-sheet-section rvtt-sheet-corners"
+    style="background: var(--bg, transparent)"
+  >
+    <span class="rvtt-sheet-corner rvtt-sheet-corner--tl"></span>
+    <span class="rvtt-sheet-corner rvtt-sheet-corner--tr"></span>
+    <span class="rvtt-sheet-corner rvtt-sheet-corner--bl"></span>
+    <span class="rvtt-sheet-corner rvtt-sheet-corner--br"></span>
+
+    <div class="rvtt-sheet-divider">
+      <span class="rvtt-sheet-divider__label"
+        >&#10022; Exploration &#10022;</span
+      >
+    </div>
+    <dropdown
+      field="explorationActivity"
+      size="xs"
+      placeholder="None"
+      onchange="onExplorationActivity(value)"
+      options='[{"label": "None", "value": "none"},
+      {"label": "Avoid Notice", "value": "Avoid Notice"},
+      {"label": "Defend", "value": "Defend"},
+      {"label": "Detect Magic", "value": "Detect Magic"},
+      {"label": "Follow the Expert", "value": "Follow the Expert"},
+      {"label": "Hustle", "value": "Hustle"},
+      {"label": "Investigate", "value": "Investigate"},
+      {"label": "Repeat a Spell", "value": "Repeat a Spell"},
+      {"label": "Scout", "value": "Scout"},
+      {"label": "Search", "value": "Search"}]'
+    ></dropdown>
   </div>
 
   <!-- Downtime, shown only while the sheet is unlocked: Earn Income and the

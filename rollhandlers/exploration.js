@@ -1,11 +1,11 @@
 // Exploration activities (Player Core pg. 438, roadmap H20): each character
-// picks what they're doing while exploring (the Exploration dropdown by
-// Initiative on the Actions tab, also a party sheet column), and the
-// encounter's start uses it:
+// picks what they're doing while exploring (the Exploration section on the
+// Skills tab, also a party sheet column), and the encounter's start uses it:
 //   - Avoid Notice: picking it sets the initiative skill to Stealth (the
 //     player can change it back); at the encounter's start the GM gets a card
-//     of which foes' Perception DCs the Stealth initiative met (undetected by
-//     them, if it had cover or concealment: the GM's call)
+//     of the Sneak result against each foe's Perception DC: undetected if it
+//     met it, hidden if it missed by 1 to 9, observed by 10 or more (each only
+//     with cover or concealment: the GM's call)
 //   - Defend: the shield is raised when the encounter starts, if one is
 //     equipped and not broken (it lowers at the start of their turn as usual)
 //   - Scout: the scout and their allies get a +1 circumstance bonus to
@@ -15,18 +15,15 @@
 // The encounter's start card lists everyone's activity for the GM. Nothing
 // is enforced: the GM still decides what applies.
 
-// Picking an activity: the values to write (one write) and the card to post,
-// if any. Avoid Notice rolls Stealth for initiative; leaving it puts a Stealth
-// initiative back to Perception.
+// Picking an activity: the initiative skill to write, if it changes (the
+// dropdown saves the activity itself). Avoid Notice rolls Stealth for
+// initiative; any other choice puts a Stealth initiative back to Perception.
 function getExplorationActivityValues(record, activity) {
-  const values = { "data.explorationActivity": activity || "" };
   const initiativeSkill = record?.data?.initiativeSkill || "Perception";
   if (activity === "Avoid Notice") {
-    values["data.initiativeSkill"] = "Stealth";
-  } else if (record?.data?.explorationActivity === "Avoid Notice" && initiativeSkill === "Stealth") {
-    values["data.initiativeSkill"] = "Perception";
+    return initiativeSkill === "Stealth" ? {} : { "data.initiativeSkill": "Stealth" };
   }
-  return values;
+  return initiativeSkill === "Stealth" ? { "data.initiativeSkill": "Perception" } : {};
 }
 
 // What the activity gives, as a line for its card (none for the others)
@@ -41,22 +38,28 @@ function getExplorationActivityNote(record, activity) {
   }
   if (activity === "Hustle") {
     const con = parseInt(record?.data?.con, 10) || 0;
-    return `Moves at double Speed for up to ${Math.max(10, con * 10)} minutes (Constitution modifier x 10, minimum 10).`;
+    return `Travels at double their travel speed for up to ${Math.max(10, con * 10)} minutes (Constitution modifier x 10, minimum 10); a group hustling together uses its lowest Constitution modifier.`;
   }
   return "";
 }
 
-// The Exploration dropdown's onchange: one write, and a card for the table
+// The Exploration dropdown's onchange (the field has saved the activity): the
+// initiative skill, written only if it changes, and a card when the activity
+// has a note
 function setExplorationActivity(record, activity) {
   if (!record) return;
-  api.setValues(getExplorationActivityValues(record, activity));
-  if (!activity) return;
-  const note = getExplorationActivityNote(record, activity);
-  api.sendMessage(`**${record.name || "They"}: ${activity}**${note ? `\n${note}` : ""}`, undefined, [], [], api.getToken?.() || undefined);
+  const picked = activity === "none" ? "" : activity || "";
+  const values = getExplorationActivityValues(record, picked);
+  if (Object.keys(values).length) api.setValues(values);
+  const note = picked ? getExplorationActivityNote(record, picked) : "";
+  if (!note) return;
+  api.sendMessage(`**${record.name || "They"}: ${picked}**\n${note}`, undefined, [], [], api.getToken?.() || undefined);
 }
 
+// The activity picked ("none", the dropdown's None, is no activity)
 function getExplorationActivity(creature) {
-  return creature?.data?.explorationActivity || "";
+  const activity = creature?.data?.explorationActivity || "";
+  return activity === "none" ? "" : activity;
 }
 
 // The side a creature is on: enemies against everyone else
@@ -80,14 +83,16 @@ function getOtherSceneTokens() {
   return (api.getOtherTokens?.() || []).map((t) => t?.token || t).filter(Boolean);
 }
 
-// Avoid Notice at the encounter's start: each foe, with whether the Stealth
-// initiative met its Perception DC (Sneak: meet or exceed)
+// Avoid Notice at the encounter's start: each foe, with the Sneak result
+// against its Perception DC: "undetected" if the Stealth initiative met it,
+// "hidden" if it missed by 1 to 9, "observed" by 10 or more
 function getAvoidNoticeResults(sneaker, enemies) {
   const result = Math.floor(parseFloat(sneaker?.data?.initiative));
   if (!Number.isFinite(result)) return null;
   return enemies.map((enemy) => {
     const dc = getPerceptionDCForToken(enemy);
-    return { name: enemy.name || enemy.record?.name || "a foe", dc, undetected: result >= dc };
+    const state = result >= dc ? "undetected" : result > dc - 10 ? "hidden" : "observed";
+    return { name: enemy.name || enemy.record?.name || "a foe", dc, state };
   });
 }
 
@@ -112,10 +117,16 @@ function getExplorationStartCard(tokens, raised = []) {
       if (!stealth) {
         lines.push(`[gm]${name} didn't roll Stealth for initiative.[/gm]`);
       } else if (results?.length) {
-        const unnoticed = results.filter((r) => r.undetected).map((r) => `${r.name} (DC ${r.dc})`);
-        const noticed = results.filter((r) => !r.undetected).map((r) => `${r.name} (DC ${r.dc})`);
+        const foes = (state) => results.filter((r) => r.state === state).map((r) => `${r.name} (DC ${r.dc})`);
+        const parts = [
+          ["undetected by", foes("undetected")],
+          ["hidden from", foes("hidden")],
+          ["observed by", foes("observed")],
+        ]
+          .filter(([, names]) => names.length)
+          .map(([label, names]) => `${label} ${names.join(", ")}`);
         lines.push(
-          `[gm]Stealth ${Math.floor(parseFloat(token.data.initiative))}: ${unnoticed.length ? `undetected by ${unnoticed.join(", ")}, if it has cover or concealment` : "no foe's Perception DC met"}${noticed.length ? `; noticed by ${noticed.join(", ")}` : ""}.[/gm]`,
+          `[gm]Stealth ${Math.floor(parseFloat(token.data.initiative))}: ${parts.join("; ")} (with cover or concealment; without it, observed).[/gm]`,
         );
       }
     }
