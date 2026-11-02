@@ -2584,7 +2584,9 @@
       "onTokenAdd": {
         "file": "rollhandlers/onTokenAdd.js"
       },
-      "onEncounterStart": "",
+      "onEncounterStart": {
+        "file": "rollhandlers/onEncounterStart.js"
+      },
       "onEncounterEnd": {
         "file": "rollhandlers/onEncounterEnd.js"
       },
@@ -2704,6 +2706,14 @@
           "label": "Senses",
           "type": "string",
           "width": 100,
+          "editable": false,
+          "onChange": ""
+        },
+        {
+          "field": "explorationActivity",
+          "label": "Exploration",
+          "type": "string",
+          "width": 110,
           "editable": false,
           "onChange": ""
         },
@@ -5475,6 +5485,9 @@
         },
         "CriticalSpecialization": {
           "file": "rollhandlers/critical-specialization.js"
+        },
+        "Exploration": {
+          "file": "rollhandlers/exploration.js"
         }
       },
       "defaultDice": "default",
