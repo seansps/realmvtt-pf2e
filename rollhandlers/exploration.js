@@ -10,7 +10,7 @@
 //     equipped and not broken (it lowers at the start of their turn as usual)
 //   - Scout: the scout and their allies get a +1 circumstance bonus to
 //     initiative
-//   - Follow the Expert, Hustle: picking one posts what it gives (Hustle's
+//   - Picking any activity posts a line saying what it does (Hustle's
 //     minutes from Constitution)
 // The encounter's start card lists everyone's activity for the GM. Nothing
 // is enforced: the GM still decides what applies.
@@ -26,7 +26,7 @@ function getExplorationActivityValues(record, activity) {
   return initiativeSkill === "Stealth" ? { "data.initiativeSkill": "Perception" } : {};
 }
 
-// What the activity gives, as a line for its card (none for the others)
+// What the activity does, as a line for its card
 function getExplorationActivityNote(record, activity) {
   if (activity === "Avoid Notice") {
     return "Rolls Stealth for initiative; a foe whose Perception DC it meets doesn't notice them (if they have cover or concealment).";
@@ -40,12 +40,24 @@ function getExplorationActivityNote(record, activity) {
     const con = parseInt(record?.data?.con, 10) || 0;
     return `Travels at double their travel speed for up to ${Math.max(10, con * 10)} minutes (Constitution modifier x 10, minimum 10); a group hustling together uses its lowest Constitution modifier.`;
   }
+  if (activity === "Detect Magic") {
+    return "Casts detect magic at regular intervals while traveling at half speed or slower; at 150 feet per minute or slower, they find magic auras before the party moves into them.";
+  }
+  if (activity === "Investigate") {
+    return "Travels at half speed, using Recall Knowledge as secret checks to find clues; the GM decides which skills are relevant.";
+  }
+  if (activity === "Repeat a Spell") {
+    return "Travels at half speed, casting the same spell of 2 actions or fewer over and over (usually a cantrip, to have it in effect if combat breaks out); one that needs complex decisions can make them fatigued.";
+  }
+  if (activity === "Search") {
+    return "Travels at half speed, Seeking for hidden doors, hazards and the like; when they come across something hidden, the GM rolls a free secret check to Seek.";
+  }
   return "";
 }
 
 // The Exploration dropdown's onchange (the field has saved the activity): the
-// initiative skill, written only if it changes, and a card when the activity
-// has a note
+// initiative skill, written only if it changes, and a card saying what the
+// activity does
 function setExplorationActivity(record, activity) {
   if (!record) return;
   const picked = getExplorationActivity({ data: { explorationActivity: activity } });

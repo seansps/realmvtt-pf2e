@@ -42,7 +42,9 @@ section("Picking an activity (one write)");
   };
   const [defendWrites, defendCard] = pick({ explorationActivity: "Defend" }, "Defend");
   assert("Defend: no write, a card", [defendWrites.length, defendCard.includes("Amiri: Defend")], [0, true]);
-  assert("leaving Avoid Notice: Perception, no card for Search", pick({ explorationActivity: "Search", initiativeSkill: "Stealth" }, "Search"), [[{ "data.initiativeSkill": "Perception" }], ""]);
+  const [searchWrites, searchCard] = pick({ explorationActivity: "Search", initiativeSkill: "Stealth" }, "Search");
+  assert("leaving Avoid Notice: Perception, and Search's card", [searchWrites, searchCard.includes("Amiri: Search")], [[{ "data.initiativeSkill": "Perception" }], true]);
+  assert("every activity has a card", ["Avoid Notice", "Defend", "Detect Magic", "Follow the Expert", "Hustle", "Investigate", "Repeat a Spell", "Scout", "Search"].filter((a) => !ctx.getExplorationActivityNote({}, a)), []);
   assert("None: no write, no card", pick({ explorationActivity: "None" }, "None"), [[], ""]);
 }
 

@@ -24,7 +24,7 @@
   }
 
   // The exploration activity (the field saves it): the initiative skill, and
-  // a card when it has a note (exploration.js)
+  // a card saying what it does (exploration.js)
   function onExplorationActivity(value) {
     setExplorationActivity(record, value);
   }
@@ -1181,7 +1181,7 @@
     </box>
   </div>
 
-  <!-- Exploration activity, shown locked too since it's picked during play
+  <!-- Exploration activity, shown and editable locked too since it's picked during play
        (exploration.js): used when an encounter starts -->
   <div
     class="rvtt-sheet-section rvtt-sheet-corners"
@@ -1200,6 +1200,7 @@
     <dropdown
       field="explorationActivity"
       size="xs"
+      disablediflocked="false"
       placeholder="None"
       onchange="onExplorationActivity(value)"
       options='[{"label": "None", "value": "None"},
