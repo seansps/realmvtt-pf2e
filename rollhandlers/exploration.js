@@ -48,7 +48,7 @@ function getExplorationActivityNote(record, activity) {
 // has a note
 function setExplorationActivity(record, activity) {
   if (!record) return;
-  const picked = activity === "none" ? "" : activity || "";
+  const picked = getExplorationActivity({ data: { explorationActivity: activity } });
   const values = getExplorationActivityValues(record, picked);
   if (Object.keys(values).length) api.setValues(values);
   const note = picked ? getExplorationActivityNote(record, picked) : "";
@@ -56,10 +56,10 @@ function setExplorationActivity(record, activity) {
   api.sendMessage(`**${record.name || "They"}: ${picked}**\n${note}`, undefined, [], [], api.getToken?.() || undefined);
 }
 
-// The activity picked ("none", the dropdown's None, is no activity)
+// The activity picked (the dropdown's None is no activity)
 function getExplorationActivity(creature) {
   const activity = creature?.data?.explorationActivity || "";
-  return activity === "none" ? "" : activity;
+  return activity === "None" ? "" : activity;
 }
 
 // The side a creature is on: enemies against everyone else

@@ -25,8 +25,8 @@ section("Picking an activity (one write)");
   assert("Avoid Notice: Stealth for initiative", ctx.getExplorationActivityValues({ data: { explorationActivity: "Avoid Notice", initiativeSkill: "Perception" } }, "Avoid Notice"), { "data.initiativeSkill": "Stealth" });
   assert("... already Stealth: no write", ctx.getExplorationActivityValues({ data: { explorationActivity: "Avoid Notice", initiativeSkill: "Stealth" } }, "Avoid Notice"), {});
   assert("another choice: a Stealth initiative goes back to Perception", ctx.getExplorationActivityValues({ data: { explorationActivity: "Scout", initiativeSkill: "Stealth" } }, "Scout"), { "data.initiativeSkill": "Perception" });
-  assert("... another skill stays", ctx.getExplorationActivityValues({ data: { explorationActivity: "none", initiativeSkill: "Athletics" } }, ""), {});
-  assert("None is no activity", ctx.getExplorationActivity({ data: { explorationActivity: "none" } }), "");
+  assert("... another skill stays", ctx.getExplorationActivityValues({ data: { explorationActivity: "None", initiativeSkill: "Athletics" } }, ""), {});
+  assert("None is no activity", ctx.getExplorationActivity({ data: { explorationActivity: "None" } }), "");
   assert("Hustle: Constitution x 10 minutes, minimum 10", [ctx.getExplorationActivityNote({ data: { con: 3 } }, "Hustle").includes("30 minutes"), ctx.getExplorationActivityNote({ data: { con: 0 } }, "Hustle").includes("10 minutes")], [true, true]);
   assert("Hustle: travel speed, the group's lowest Constitution", [ctx.getExplorationActivityNote({}, "Hustle").includes("double their travel speed"), ctx.getExplorationActivityNote({}, "Hustle").includes("lowest Constitution")], [true, true]);
   assert("Follow the Expert: its bonuses", ctx.getExplorationActivityNote({}, "Follow the Expert").includes("+2 circumstance"), true);
@@ -43,7 +43,7 @@ section("Picking an activity (one write)");
   const [defendWrites, defendCard] = pick({ explorationActivity: "Defend" }, "Defend");
   assert("Defend: no write, a card", [defendWrites.length, defendCard.includes("Amiri: Defend")], [0, true]);
   assert("leaving Avoid Notice: Perception, no card for Search", pick({ explorationActivity: "Search", initiativeSkill: "Stealth" }, "Search"), [[{ "data.initiativeSkill": "Perception" }], ""]);
-  assert("None: no write, no card", pick({ explorationActivity: "none" }, "none"), [[], ""]);
+  assert("None: no write, no card", pick({ explorationActivity: "None" }, "None"), [[], ""]);
 }
 
 section("Scout: +1 circumstance to initiative for its side");
@@ -70,7 +70,7 @@ section("The encounter's start");
   assert("the Sneak boundaries: meet, miss by 9, miss by 10", [states(15, [goblin]), states(6, [goblin]), states(5, [goblin])], [["undetected"], ["hidden"], ["observed"]]);
   const perception = ctx.getExplorationStartCard([pc("Ezren", "Avoid Notice", { initiative: 18, initiativeStatistic: "perception" }), goblin]);
   assert("didn't roll Stealth: said so", perception.includes("didn't roll Stealth"), true);
-  assert("no activities: no card", ctx.getExplorationStartCard([pc("A", ""), pc("B", "none"), goblin]), "");
+  assert("no activities: no card", ctx.getExplorationStartCard([pc("A", ""), pc("B", "None"), goblin]), "");
 
   const recordWrites = [];
   ctx.api.getRecord = (type, id, cb) => cb({ _id: id, recordType: type, data: {} });
