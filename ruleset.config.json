@@ -5766,6 +5766,9 @@
         },
         "Travel": {
           "file": "rollhandlers/travel.js"
+        },
+        "Vehicles": {
+          "file": "rollhandlers/vehicles.js"
         }
       },
       "defaultDice": "default",

@@ -550,4 +550,40 @@
       </div>
     </accordion>
   </div>
+
+  <div
+    class="rvtt-sheet-section rvtt-sheet-corners"
+    style="background: var(--bg, transparent)"
+  >
+    <span class="rvtt-sheet-corner rvtt-sheet-corner--tl"></span>
+    <span class="rvtt-sheet-corner rvtt-sheet-corner--tr"></span>
+    <span class="rvtt-sheet-corner rvtt-sheet-corner--bl"></span>
+    <span class="rvtt-sheet-corner rvtt-sheet-corner--br"></span>
+
+    <!-- Vehicles (vehicles.js): the selected vehicle token's card, with its
+         piloting actions as buttons, and a crash's collision -->
+    <accordion size="xs" field="vehiclesOpen" label="Vehicles">
+      <label
+        label="Select a vehicle's token first."
+        size="xs"
+        color="dimmed"
+      ></label>
+      <div style="display: flex; gap: 4px; flex-wrap: wrap; margin-top: 10px">
+        <button
+          size="xs"
+          variant="light"
+          icon="IconSteeringWheel"
+          label="Vehicle Card"
+          onclick="postVehicleCard()"
+        ></button>
+        <button
+          size="xs"
+          variant="light"
+          icon="IconCarCrash"
+          label="Collision"
+          onclick="postVehicleCollision()"
+        ></button>
+      </div>
+    </accordion>
+  </div>
 </div>

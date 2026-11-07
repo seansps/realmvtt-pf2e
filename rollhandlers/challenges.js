@@ -109,16 +109,20 @@ function rollChallengeCheck(skill, dc, challenge) {
     return;
   }
   const metadata = challenge?.discover ? { challenge, action: "Discover" } : { challenge };
-  tokens.forEach((token) => {
-    if (/\blore\b/i.test(skill)) {
-      const lore = findLoreSkill(token, skill);
-      const mod = lore ? parseInt(lore.data?.mod, 10) || 0 : parseInt(token?.data?.intMod ?? 0, 10) || 0;
-      const rank = lore ? parseInt(lore.data?.rank, 10) || 0 : 0;
-      rollSkill(token, lore?.name || skill, dc, true, mod, rank, lore?.data?.ability || "int", true, false, undefined, metadata);
-    } else {
-      rollSkill(token, skill.toLowerCase(), dc, false, 0, 1, "int", true, false, undefined, metadata);
-    }
-  });
+  tokens.forEach((token) => rollNamedSkill(token, skill, dc, metadata));
+}
+
+// A check with a skill as a stat block names it ("Arcana", "Piloting
+// Lore"), for one token, with rollSkill's metadata (vehicles.js uses it too)
+function rollNamedSkill(token, skill, dc, metadata) {
+  if (/\blore\b/i.test(skill)) {
+    const lore = findLoreSkill(token, skill);
+    const mod = lore ? parseInt(lore.data?.mod, 10) || 0 : parseInt(token?.data?.intMod ?? 0, 10) || 0;
+    const rank = lore ? parseInt(lore.data?.rank, 10) || 0 : 0;
+    rollSkill(token, lore?.name || skill, dc, true, mod, rank, lore?.data?.ability || "int", true, false, undefined, metadata);
+  } else {
+    rollSkill(token, skill.toLowerCase(), dc, false, 0, 1, "int", true, false, undefined, metadata);
+  }
 }
 
 // The chat card for an obstacle's checks: the DCs are in the buttons only,
