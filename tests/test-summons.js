@@ -41,7 +41,7 @@ section("Summon spells");
     { "data.level": { $lte: 2 }, "data.traits": { $regex: "^(plant|fungus)$", $options: "i" } }
   );
   assert("the prompt's wording", [ctx.joinWithOr(["plant", "fungus"]), ctx.joinWithOr(["celestial", "fiend", "monitor"])], ["plant or fungus", "celestial, fiend, or monitor"]);
-  assert("... or the name", ctx.getSummonQuery({ traits: [], names: ["phantasmal minion"] }, -1).name, { $regex: "^(phantasmal minion)$", $options: "i" });
+  assert("... or the name, as $in (the server rejects $regex on name)", ctx.getSummonQuery({ traits: [], names: ["phantasmal minion"] }, -1).name, { $in: ["phantasmal minion", "Phantasmal Minion", "Phantasmal minion"] });
 
   const creature = (id, name, level, traits = ["Common", "Animal"]) => ({ _id: id, name, data: { level, traits } });
   const options = ctx.getSummonOptions([

@@ -76,13 +76,31 @@ function escapeSummonRegex(text) {
   return `${text}`.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 }
 
-// The records query for the picker
+// "phantasmal minion" -> as written, "Phantasmal Minion", "Phantasmal minion".
+// The server types `name` as a string, so it rejects $regex there and only
+// exact matches ($in) work; send the casings a record name is likely to use.
+function getSummonNameVariants(names) {
+  const variants = [];
+  const add = (name) => {
+    if (name && !variants.includes(name)) variants.push(name);
+  };
+  names.forEach((name) => {
+    const text = `${name}`.trim();
+    add(text);
+    add(text.replace(/(^|[\s-])([a-z])/g, (m, sep, ch) => sep + ch.toUpperCase()));
+    add(text.charAt(0).toUpperCase() + text.slice(1));
+  });
+  return variants;
+}
+
+// The records query for the picker. Traits live under data, where $regex is
+// allowed; names need $in (see getSummonNameVariants).
 function getSummonQuery(filter, maxLevel) {
   const query = { "data.level": { $lte: maxLevel } };
   if (filter.traits.length) {
     query["data.traits"] = { $regex: `^(${filter.traits.map(escapeSummonRegex).join("|")})$`, $options: "i" };
   } else if (filter.names.length) {
-    query.name = { $regex: `^(${filter.names.map(escapeSummonRegex).join("|")})$`, $options: "i" };
+    query.name = { $in: getSummonNameVariants(filter.names) };
   }
   return query;
 }
