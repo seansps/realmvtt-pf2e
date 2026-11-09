@@ -80,18 +80,6 @@ const CREATURE_TABLES = {
   },
 };
 
-const CREATURE_STAT_LABELS = {
-  perception: "Perception",
-  ac: "AC",
-  fort: "Fortitude",
-  ref: "Reflex",
-  will: "Will",
-  hp: "HP",
-  strike: "Strike attack",
-  damage: "Strike damage",
-  spell: "Spell DC",
-};
-
 // The table each buildable statistic reads
 const CREATURE_STAT_TABLES = {
   perception: "perception",
@@ -116,6 +104,12 @@ const CREATURE_ROAD_MAPS = {
   Soldier: { str: "high", ac: "high", fort: "high", strike: "high", damage: "high" },
   Spellcaster: { fort: "low", will: "high", hp: "low", strike: "low", spell: "high" },
   "All Moderate": {},
+};
+
+// The road maps whose high attribute depends on the creature, and its choices
+const CREATURE_ROAD_MAP_ATTRIBUTES = {
+  Spellcaster: ["int", "wis", "cha"],
+  "Skill Paragon": CREATURE_ATTRIBUTES,
 };
 
 // ------------------------------------------------------------- The tables
@@ -200,6 +194,9 @@ function scaleCreatureDice(formula, factor) {
   if (!parsed || !Number.isFinite(factor)) return formula;
   return formatCreatureDamage(Math.max(1, Math.round(parsed.count * factor)), parsed.die, Math.round(parsed.bonus * factor));
 }
+
+// How much a Strike's other dice grow between levels
+const getCreatureDiceFactor = (from, to) => getCreatureTableValue("damage", to, "moderate") / getCreatureTableValue("damage", from, "moderate");
 
 // How much an ability's damage grows between levels, by the area damage
 // column it's closest to (GM Core Table 2-12)
@@ -310,6 +307,15 @@ function setCreatureResistanceRows(values, data, field, from, to) {
   if (label !== undefined && rows.length) values[`data.${field}Label`] = label;
 }
 
+function setCreatureDescriptions(values, data, from, to) {
+  (data.actions || []).forEach((action, index) => {
+    const description = action.data?.description;
+    if (!description) return;
+    const rescaled = rescaleCreatureDescription(description, from, to);
+    if (rescaled !== description) values[`data.actions.${index}.data.description`] = rescaled;
+  });
+}
+
 // Every value a Rescale writes to the token (one write)
 function getCreatureRescaleValues(token, to) {
   const data = token.data || {};
@@ -338,7 +344,7 @@ function getCreatureRescaleValues(token, to) {
         formula:
           rollIndex === 0
             ? rescaleCreatureDamage(roll.data?.formula, from, to)
-            : scaleCreatureDice(roll.data?.formula, getCreatureTableValue("damage", to, "moderate") / getCreatureTableValue("damage", from, "moderate")),
+            : scaleCreatureDice(roll.data?.formula, getCreatureDiceFactor(from, to)),
       },
     }));
     setCreatureAttack(values, attack, index, rescaleCreatureValue("strike", getCreatureNumber(attack.data?.bonus), from, to), rolls);
@@ -348,12 +354,7 @@ function getCreatureRescaleValues(token, to) {
     if (getCreatureNumber(entry.data?.mod)) values[`data.spells.${index}.data.mod`] = rescaleCreatureValue("spellAttack", entry.data.mod, from, to);
   });
   ["weaknesses", "resistances"].forEach((field) => setCreatureResistanceRows(values, data, field, from, to));
-  (data.actions || []).forEach((action, index) => {
-    const description = action.data?.description;
-    if (!description) return;
-    const rescaled = rescaleCreatureDescription(description, from, to);
-    if (rescaled !== description) values[`data.actions.${index}.data.description`] = rescaled;
-  });
+  setCreatureDescriptions(values, data, from, to);
   return values;
 }
 
@@ -366,9 +367,11 @@ function getCreatureNewStrike(bonus, formula, ranged) {
 }
 
 // Every value a Build writes to the token, from a map of tiers (one write).
-// It sets the numbers; the creature's abilities and spells are the GM's.
+// It sets the numbers and moves the abilities' buttons from the old level;
+// which abilities and spells it has are the GM's.
 function getCreatureBuildValues(token, level, tiers, ranged = false) {
   const data = token.data || {};
+  const from = getCreatureNumber(data.level);
   const tierFor = (stat) => tiers[stat] || "moderate";
   const read = (stat) => getCreatureColumnValue(CREATURE_STAT_TABLES[stat], level, tierFor(stat));
   const values = {
@@ -392,7 +395,7 @@ function getCreatureBuildValues(token, level, tiers, ranged = false) {
   const formula = `${entry}`.replace(/\s*\(\d+\)$/, "");
   (data.attacks || []).forEach((attack, index) => {
     const rolls = attack.data?.damageRolls || [];
-    const damageRolls = rolls.length ? rolls.map((roll, rollIndex) => (rollIndex === 0 ? { ...roll, data: { ...roll.data, formula } } : roll)) : [];
+    const damageRolls = rolls.length ? rolls.map((roll, rollIndex) => ({ ...roll, data: { ...roll.data, formula: rollIndex === 0 ? formula : scaleCreatureDice(roll.data?.formula, getCreatureDiceFactor(from, level)) } })) : [];
     setCreatureAttack(values, attack, index, bonus, damageRolls);
   });
   if (!(data.attacks || []).length) values["data.attacks"] = [getCreatureNewStrike(bonus, formula, ranged)];
@@ -401,6 +404,7 @@ function getCreatureBuildValues(token, level, tiers, ranged = false) {
     values[`data.spells.${index}.data.dc`] = getCreatureColumnValue("spellDc", level, tier);
     values[`data.spells.${index}.data.mod`] = getCreatureColumnValue("spellAttack", level, tier);
   });
+  setCreatureDescriptions(values, data, from, level);
   return values;
 }
 
@@ -444,17 +448,20 @@ function getCreatureHandChecks(token) {
 
 const getCreatureGmLines = (lines) => lines.map((line) => `[gm]${line}[/gm]`).join("\n");
 
+const getCreatureHandCheckLines = (token) => {
+  const checks = getCreatureHandChecks(token);
+  return checks.length ? [`Check by hand, their text has numbers: ${checks.join(", ")}.`] : [];
+};
+
 function getCreatureRescaleMessage(token, from, to, values) {
   const data = token.data || {};
   const name = getCreatureName(token);
-  const checks = getCreatureHandChecks(token);
   return getCreatureGmLines([
     `**${name}: level ${from} to ${to}.**`,
     `AC ${data.ac} to ${values["data.ac"]}, HP ${data.hitpoints} to ${values["data.hitpoints"]}, Perception ${getSignedNumber(getCreatureNumber(data.perceptionMod))} to ${getSignedNumber(values["data.perceptionMod"])}.`,
     `Fortitude ${getSignedNumber(getCreatureNumber(data.fortitudeMod))} to ${getSignedNumber(values["data.fortitudeMod"])}, Reflex ${getSignedNumber(getCreatureNumber(data.reflexMod))} to ${getSignedNumber(values["data.reflexMod"])}, Will ${getSignedNumber(getCreatureNumber(data.willMod))} to ${getSignedNumber(values["data.willMod"])}.`,
     ...(data.spells?.length ? ["Its spell DC and attack changed; its spell list didn't."] : []),
-    ...(checks.length ? [`Check by hand, their text has numbers: ${checks.join(", ")}.`] : []),
-    ...(token.linked === true ? ["This token is linked, so its NPC record changed too and Reset can't undo it."] : []),
+    ...getCreatureHandCheckLines(token),
   ]);
 }
 
@@ -496,13 +503,16 @@ function getCreatureTokens() {
   return tokens;
 }
 
-// Elite and Weak keep their own base numbers, which these writes would leave stale
-function getCreatureUnadjusted(tokens) {
-  const adjusted = tokens.filter((token) => token.data?.adjustment);
-  if (adjusted.length) {
-    api.showNotification(`Remove Elite or Weak first: ${adjusted.map(getCreatureName).join(", ")}.`, "yellow", "Creature Builder");
-  }
-  return tokens.filter((token) => !token.data?.adjustment);
+// The tokens these actions can change. Elite and Weak keep their own base
+// numbers, which these writes would leave stale. A linked token shares its
+// NPC record, and that record has to stay the original.
+function getCreatureEditable(tokens) {
+  const report = (list, message) => {
+    if (list.length) api.showNotification(`${message}: ${list.map(getCreatureName).join(", ")}.`, "yellow", "Creature Builder");
+  };
+  report(tokens.filter((token) => token.data?.adjustment), "Remove Elite or Weak first");
+  report(tokens.filter((token) => token.linked === true), "Linked tokens share their NPC record, so they're left alone");
+  return tokens.filter((token) => !token.data?.adjustment && token.linked !== true);
 }
 
 function askCreatureLevel(prompt, callback) {
@@ -521,7 +531,7 @@ function postCreatureBenchmarks() {
 }
 
 function rescaleSelectedCreatures() {
-  const tokens = getCreatureUnadjusted(getCreatureTokens());
+  const tokens = getCreatureEditable(getCreatureTokens());
   if (!tokens.length) return;
   askCreatureLevel("Rescale to which level?", (to) => {
     tokens.forEach((token) => {
@@ -540,52 +550,42 @@ function applyCreatureBuild(tokens, level, map, tiers) {
     api.sendMessage(getCreatureGmLines([
       `**${getCreatureName(token)}: built as a level ${level} ${map}.**`,
       `AC ${values["data.ac"]}, HP ${values["data.hitpoints"]}, Perception ${getSignedNumber(values["data.perceptionMod"])}.`,
-      "Its abilities, spells and skill list are yours to add. Reset returns it to its NPC record.",
+      ...getCreatureHandCheckLines(token),
+      "Which abilities, spells and skills it has are yours to change. Reset returns it to its NPC record.",
     ]));
   });
 }
 
-// One tier at a time, for the statistics that aren't left at moderate
-function askCreatureTiers(stats, tiers, done) {
-  if (!stats.length) return done(tiers);
-  const [stat, ...rest] = stats;
-  const options = CREATURE_TIER_ORDER
-    .filter((tier) => CREATURE_TABLES[CREATURE_STAT_TABLES[stat]]?.[tier])
-    .map((tier) => ({ label: capitalize(tier), value: tier }));
-  api.showPrompt("Creature Builder", CREATURE_STAT_LABELS[stat], "Select...", options, null, (choice) => {
-    const tier = pick(choice);
-    if (!tier) return;
-    askCreatureTiers(rest, { ...tiers, [stat]: tier }, done);
-  });
-}
-
 function buildSelectedCreatures() {
-  const tokens = getCreatureUnadjusted(getCreatureTokens());
+  const tokens = getCreatureEditable(getCreatureTokens());
   if (!tokens.length) return;
   askCreatureLevel("Build at which level?", (level) => {
-    const options = [...Object.keys(CREATURE_ROAD_MAPS), "Pick Each Statistic"].map((name) => ({ label: name, value: name }));
+    const options = Object.keys(CREATURE_ROAD_MAPS).map((name) => ({ label: name, value: name }));
     api.showPrompt("Creature Builder", "Which road map?", "Select...", options, null, (choice) => {
       const map = pick(choice);
       if (!map) return;
-      if (map !== "Pick Each Statistic") return applyCreatureBuild(tokens, level, map, CREATURE_ROAD_MAPS[map]);
-      askCreatureTiers(Object.keys(CREATURE_STAT_LABELS), {}, (tiers) => applyCreatureBuild(tokens, level, "custom creature", tiers));
+      const attributes = CREATURE_ROAD_MAP_ATTRIBUTES[map];
+      if (!attributes) return applyCreatureBuild(tokens, level, map, CREATURE_ROAD_MAPS[map]);
+      const attributeOptions = attributes.map((attribute) => ({ label: capitalize(attribute), value: attribute }));
+      api.showPrompt("Creature Builder", "Which attribute is high?", "Select...", attributeOptions, null, (attributeChoice) => {
+        const attribute = pick(attributeChoice);
+        if (attribute) applyCreatureBuild(tokens, level, map, { ...CREATURE_ROAD_MAPS[map], [attribute]: "high" });
+      });
     });
   });
 }
 
 function resetSelectedCreatures() {
-  getCreatureUnadjusted(getCreatureTokens()).forEach((token) => {
-    if (token.linked === true || !token.recordId) {
-      api.showNotification(`${getCreatureName(token)} shares its NPC record, so there's no original to return to.`, "yellow", "Creature Builder");
-      return;
-    }
-    api.getRecord("npcs", token.recordId, (source) => {
+  getCreatureEditable(getCreatureTokens()).forEach((token) => {
+    const restore = (source) => {
       if (!source) {
-        api.showNotification(`${getCreatureName(token)}'s NPC record is gone.`, "yellow", "Creature Builder");
+        api.showNotification(`${getCreatureName(token)} has no NPC record to return to.`, "yellow", "Creature Builder");
         return;
       }
       api.setValuesOnTokenById(token._id, token.recordType, getCreatureResetValues(token, source));
       api.sendMessage(getCreatureGmLines([`**${getCreatureName(token)}** is back to its NPC record, level ${source.data?.level}.`]));
-    });
+    };
+    if (!token.recordId) return restore(null);
+    api.getRecord("npcs", token.recordId, restore);
   });
 }

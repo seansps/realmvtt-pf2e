@@ -179,6 +179,17 @@ section("Build");
   const low = ctx.getCreatureBuildValues(troll(), 0, { str: "extreme" });
   assert("no extreme attribute at level 0: the next one down", low["data.str"], 3);
 
+  const will = link("rollSavingThrow('will', 26);", "Will Save (DC 26)");
+  const old = troll({
+    level: 9,
+    attacks: [{ ...attack("Bite", 10, "1d6", "piercing"), data: { ...attack("Bite", 10, "1d6", "piercing").data, damageRolls: [{ data: { formula: "1d6", type: "piercing" } }, { data: { formula: "2d6", type: "fire" } }] } }],
+    actions: [{ _id: "a1", name: "Howl", data: { description: `<p>${will}</p>` } }],
+  });
+  const moved = ctx.getCreatureBuildValues(old, 12, {});
+  assertIncludes("its abilities' buttons move from the old level", moved["data.actions.0.data.description"], "rollSavingThrow('will', 30);");
+  assert("a Strike's other dice move too", moved["data.attacks.0.data.damageRolls.1.data.formula"], "3d6");
+  assertIncludes("... in its label", moved["data.attacks.0.data.damage"], "+ 3d6 fire");
+
   const caster = ctx.getCreatureBuildValues(troll({ spells: [{ _id: "s1", data: { dc: 1, mod: 1 } }] }), 5, CREATURE_ROAD_MAPS.Spellcaster);
   assert("high spell DC", caster["data.spells.0.data.dc"], 22);
   assert("high spell attack", caster["data.spells.0.data.mod"], 14);
@@ -267,36 +278,60 @@ section("The panel's actions");
   assert("one write each", writes.map((write) => write.id), ["token-1", "token-2"]);
   assert("to the token", writes[0].type, "npcs");
   assert("a card each", messages.length, 2);
+  assert("nothing about linked tokens now", messages[0].includes("linked"), false);
   assertIncludes("GM only", messages[0], "[gm]**Forest Troll: level 5 to 10.**[/gm]");
   assertIncludes("what changed", messages[0], "AC 20 to 28, HP 125 to 291");
   assert("every line is GM only", messages[0].split("\n").every((line) => line.startsWith("[gm]") && line.endsWith("[/gm]")), true);
 
   reset();
   selected = [{ token: { ...troll(), linked: true } }];
+  ctx.rescaleSelectedCreatures();
+  assertIncludes("a linked token is refused", notice, "Linked tokens share their NPC record, so they're left alone: Forest Troll");
+  assert("no prompt then", prompted.length, 0);
+
+  reset();
+  ctx.buildSelectedCreatures();
+  assertIncludes("Build refuses it too", notice, "Linked tokens share");
+  assert("... before any prompt", prompted.length, 0);
+
+  reset();
+  selected = [{ token: { ...troll(), linked: true } }, { token: { ...troll(), _id: "token-2" } }];
   prompts = ["7"];
   ctx.rescaleSelectedCreatures();
-  assertIncludes("a linked token's warning", messages[0], "its NPC record changed too");
+  assert("the others still go", writes.map((write) => write.id), ["token-2"]);
 
   reset();
   selected = [{ token: troll() }];
   prompts = ["5", "Brute"];
   ctx.buildSelectedCreatures();
-  assert("road map options", prompted[1].options.map((option) => option.value).includes("Pick Each Statistic"), true);
+  assert("road map options", prompted[1].options.map((option) => option.value), Object.keys(CREATURE_ROAD_MAPS));
   assert("built", writes[0].values["data.perceptionMod"], 9);
   assertIncludes("its card", messages[0], "built as a level 5 Brute");
 
   reset();
-  prompts = ["5", "Pick Each Statistic", "high", "extreme", "low", "low", "low", "moderate", "high", "high", "extreme"];
+  prompts = ["5", "Spellcaster", "wis"];
   ctx.buildSelectedCreatures();
-  assert("one prompt per statistic", prompted.length, 11);
-  assert("the HP prompt has no extreme", prompted[7].options.map((option) => option.value), ["high", "moderate", "low"]);
-  assert("the spell prompt has no low", prompted[10].options.map((option) => option.value), ["extreme", "high", "moderate"]);
-  assert("the picks", [writes[0].values["data.perceptionMod"], writes[0].values["data.ac"], writes[0].values["data.hitpoints"]], [15, 25, 75]);
+  assert("a Spellcaster picks its attribute", prompted[2].options.map((option) => option.value), ["int", "wis", "cha"]);
+  assert("that one is high", writes[0].values["data.wis"], 5);
+  assert("the others stay moderate", writes[0].values["data.cha"], 4);
 
   reset();
-  prompts = ["5", "Pick Each Statistic", null];
+  prompts = ["5", "Skill Paragon", "dex"];
+  ctx.buildSelectedCreatures();
+  assert("a Skill Paragon picks from all six", prompted[2].options.length, 6);
+  assert("its attribute is high", writes[0].values["data.dex"], 5);
+
+  reset();
+  prompts = ["5", "Spellcaster", null];
   ctx.buildSelectedCreatures();
   assert("cancelling writes nothing", writes.length, 0);
+
+  reset();
+  selected = [{ token: troll({ actions: [{ name: "Plain DC", data: { description: "<p>a DC 20 save</p>" } }] }) }];
+  prompts = ["5", "Brute"];
+  ctx.buildSelectedCreatures();
+  assertIncludes("Build names its hand checks", messages[0], "Check by hand, their text has numbers: Plain DC.");
+  selected = [{ token: troll() }];
 
   reset();
   prompts = [null];
@@ -324,13 +359,13 @@ section("The panel's actions");
   reset();
   ctx.api.getRecord = (type, id, callback) => callback(null);
   ctx.resetSelectedCreatures();
-  assertIncludes("the record is gone", notice, "NPC record is gone");
+  assertIncludes("the record is gone", notice, "has no NPC record to return to");
   assert("nothing written", writes.length, 0);
 
   reset();
   selected = [{ token: { ...troll(), linked: true } }];
   ctx.resetSelectedCreatures();
-  assertIncludes("a linked token has no original", notice, "no original to return to");
+  assertIncludes("a linked token has no original", notice, "Linked tokens share");
 }
 
 section("Wiring");
