@@ -1,4 +1,4 @@
-// Creature builder (roadmap B17, GM Core pg. 112-125): the per-level benchmark
+// Creature builder (roadmap B17, GM Core pg. 112 onward): the per-level benchmark
 // tables, a Rescale that moves a token's numbers to another level at the same
 // tier, a Build from a road map, and a Reset back to its NPC record. It writes
 // to the token only, so the NPC record is the original and nothing is stored.
@@ -9,7 +9,7 @@ const CREATURE_MAX_LEVEL = 24;
 const CREATURE_TIER_ORDER = ["extreme", "high", "moderate", "low", "terrible"];
 const CREATURE_ATTRIBUTES = ["str", "dex", "con", "int", "wis", "cha"];
 
-// GM Core Tables 2-1 to 2-11, pg. 114-125
+// GM Core Tables 2-1 to 2-12, without 2-4 (safe items)
 const CREATURE_TABLES = {
   attribute: {
     extreme: [null,null,5,5,5,6,6,7,7,7,7,8,8,8,9,9,9,10,10,10,11,11,11,11,11,13],
@@ -105,7 +105,7 @@ const CREATURE_STAT_TABLES = {
   spell: "spellDc",
 };
 
-// The base road maps (GM Core pg. 115). Where the book gives a choice, this
+// The base road maps (GM Core, Building Creatures). Where the book gives a choice, this
 // is the first one; anything not listed is moderate.
 const CREATURE_ROAD_MAPS = {
   Brute: { perception: "low", str: "high", con: "high", dex: "low", int: "low", wis: "low", cha: "low", fort: "high", ref: "low", hp: "high", strike: "high", damage: "high" },
@@ -202,7 +202,7 @@ function scaleCreatureDice(formula, factor) {
 }
 
 // How much an ability's damage grows between levels, by the area damage
-// column it's closest to (GM Core pg. 125)
+// column it's closest to (GM Core Table 2-12)
 function getCreatureAreaFactor(formula, from, to) {
   const parsed = parseCreatureDamage(formula);
   if (!parsed) return 1;
@@ -471,7 +471,7 @@ function getCreatureBenchmarkMessage(level) {
   const four = ["extreme", "high", "moderate", "low"];
   const five = [...four, "terrible"];
   return getCreatureGmLines([
-    `**Creature benchmarks, level ${level}** (GM Core pg. 114-125)`,
+    `**Creature benchmarks, level ${level}** (GM Core Tables 2-1 to 2-12)`,
     row("Attribute", "attribute", four, signed),
     row("Perception", "perception", five, signed),
     row("Skill", "skill", four, signed),

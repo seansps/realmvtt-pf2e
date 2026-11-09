@@ -1,5 +1,5 @@
 // Tests for the creature builder (creature-builder.js, roadmap B17): the GM
-// Core tables, Rescale, Build, Reset and the panel (GM Core pg. 112-125).
+// Core tables, Rescale, Build, Reset and the panel (GM Core pg. 112 onward).
 
 const fs = require("fs");
 const vm = require("vm");
@@ -56,7 +56,7 @@ const troll = (extra = {}) => ({
   },
 });
 
-section("The tables (GM Core pg. 114-125)");
+section("The tables (GM Core Tables 2-1 to 2-12)");
 {
   const value = ctx.getCreatureTableValue;
   assert("AC 5 moderate", value("ac", 5, "moderate"), 21);
