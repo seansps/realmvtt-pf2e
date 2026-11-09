@@ -254,6 +254,15 @@ Animal companions are characters, as Foundry's PF2e Companion Compendia builds t
 - Misfire (`rollSiegeMisfire`): a DC 5 flat check. `failureNote` is the jam; `criticalFailureNote` is the explosion on a natural 1 (`flatCheck.js`: a critical failure on any flat check), with its save at the standard DC of its level (`getDCForLevel`) and its damage, and the weapon is destroyed.
 - Not enforced: crew size, Loaded, once per round. Not covered: portable siege weapons (a Ram is a Strike by the crew leader), token movement, and the vehicle attack penalty on Launch (a `[gm]` reminder).
 
+### Creature builder (benchmarks, Rescale, Build, Reset)
+
+`rollhandlers/creature-builder.js` (global script `CreatureBuilder`, roadmap B17, GM Core pg. 112-125), a Creature Builder accordion on the GM Tools panel. `CREATURE_TABLES` holds GM Core Tables 2-1 to 2-11, levels -1 to 24. Everything is written to the selected NPC tokens in one `setValuesOnTokenById`, so the NPC record is the original and nothing is stored; a linked token shares its record, so the card says Reset can't undo it. A token with Elite or Weak is turned away, since those keep their own base numbers.
+
+- **Benchmarks:** a GM-only card of a level's numbers (`getCreatureBenchmarkMessage`).
+- **Rescale** (`getCreatureRescaleValues`): each number finds its closest column at the old level (`getCreatureTier`, a tie goes to the higher) and keeps its distance from that column at the new level; HP keeps its proportion instead. A Strike's first damage takes the table's number of dice with the creature's own die (`rescaleCreatureDamage`); other dice grow in proportion. In ability text only `rollSavingThrow` and `executeDamageMacro` buttons change (`rescaleCreatureDescription`), so a flat check keeps its DC; `getCreatureHandChecks` lists abilities with numbers in plain text for the GM.
+- **Build** (`getCreatureBuildValues`): a base road map (`CREATURE_ROAD_MAPS`; where the book offers a choice, the first; anything unlisted is moderate) or one tier per statistic. It sets numbers only, and adds a Strike if there is none.
+- **Reset** (`getCreatureResetValues`): back to the numbers on the token's NPC record, keeping damage taken. Abilities and spells are matched by `_id` and only their rescaled fields return, so limited uses and slots stay.
+
 ### Inventory tools (effects on Use, selling, investiture, handwraps, Bulk)
 
 `rollhandlers/inventory-tools.js`:
