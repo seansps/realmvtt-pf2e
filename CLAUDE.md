@@ -244,6 +244,16 @@ Animal companions are characters, as Foundry's PF2e Companion Compendia builds t
 - Collision (`postVehicleCollision`) posts a crash's save and damage for the selected vehicle.
 - Not covered: moving the token, the uncontrolled vehicle's slowing each round, initiative by piloting skill, and AC and save penalties on the token while broken (the GM's).
 
+### Siege weapons (Aim, Load, Launch, misfire)
+
+`rollhandlers/siege.js` (global script `Siege`, roadmap B10, Guns & Gears pg. 72-73 and 172), a Siege Weapons accordion on the GM Tools panel after Vehicles. A siege weapon is any NPC with Aim and Launch (or Fire) actions (`isSiegeToken`), best typed Vehicle for its Crew, AC, Hardness and Speed fields; the actions' descriptions are the stat block's text, and nothing is added to its sheet. Proficiency is read from the crew text ("2-4; Proficiency martial") or the description, black powder from the description or traits. No module has siege weapon records yet.
+
+- Siege Card (`postSiegeCard`): for the selected token. `getSiegeInfo` reads the actions (`parseSiegeLoad`: times and the check; `parseSiegeLaunch`: range increment, damage, area, DC and save, and what the entry says after that). The card prints the activities without their DCs (`hideSiegeDcs`), with the DCs in a `[gm]` line and buttons for Aim, Load, Launch and, with black powder, Misfire Check. The card shows Move Siege Weapon when the weapon has a Speed.
+- Load counts on the chat cards, with nothing stored: `loadSiege(weapon, done)` posts `getSiegeLoadLines` (n of m with the next Load button, or Loaded with Launch). A Load that requires a check rolls `rollNamedSkill` with `metadata.siege`, and `skill.js` adds `getSiegeResultLines` (a failure doesn't count).
+- Launch (`launchSiege`): the range increment the player picks (`SIEGE_MAX_INCREMENTS`, -2 past the first), then `getSiegeLaunchMessage`. `getSiegeLaunchDc` takes the higher of the printed DC and, trained in the proficiency, the crew member's class DC, with the range penalty and the multiple attack penalty (`getNextAttackNumber`) on the DC. It counts on the attack log (`kind: "siege"`). The save and damage are buttons, basic when there's damage, and the DC only in a `[gm]` line and the button's code. Without a selected token it's the crew at the printed DC.
+- Misfire (`rollSiegeMisfire`): a DC 5 flat check. `failureNote` is the jam; `criticalFailureNote` with `naturalOneCritical` (`flatCheck.js`) is the explosion on a natural 1, with its save and damage.
+- Not enforced: crew size, Loaded, once per round. Not covered: portable siege weapons (a Ram is a Strike by the crew leader), token movement, and the vehicle attack penalty on Launch (a `[gm]` reminder).
+
 ### Inventory tools (effects on Use, selling, investiture, handwraps, Bulk)
 
 `rollhandlers/inventory-tools.js`:

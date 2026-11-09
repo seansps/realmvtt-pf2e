@@ -585,5 +585,24 @@
         ></button>
       </div>
     </accordion>
+
+    <!-- Siege weapons (siege.js): the selected siege weapon token's card,
+         with Aim, Load and Launch as buttons -->
+    <accordion size="xs" field="siegeOpen" label="Siege Weapons">
+      <label
+        label="Select a siege weapon's token first."
+        size="xs"
+        color="dimmed"
+      ></label>
+      <div style="display: flex; gap: 4px; flex-wrap: wrap; margin-top: 10px">
+        <button
+          size="xs"
+          variant="light"
+          icon="IconTarget"
+          label="Siege Card"
+          onclick="postSiegeCard()"
+        ></button>
+      </div>
+    </accordion>
   </div>
 </div>
