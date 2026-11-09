@@ -81,11 +81,17 @@
       "family": "Vollkorn",
       "src": "fonts/Vollkorn-SemiBold.ttf",
       "weight": 600
+    },
+    {
+      "family": "Eczar",
+      "src": "fonts/Eczar-wght.ttf",
+      "weight": 500
     }
   ],
   "fontRoles": {
     "heading": "Vollkorn",
-    "windowTitle": "Vollkorn"
+    "windowTitle": "Vollkorn",
+    "modalTitle": "Eczar"
   },
   "frames": {
     "sheetCorner": {

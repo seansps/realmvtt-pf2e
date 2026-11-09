@@ -5776,6 +5776,9 @@
         },
         "Siege": {
           "file": "rollhandlers/siege.js"
+        },
+        "CreatureBuilder": {
+          "file": "rollhandlers/creature-builder.js"
         }
       },
       "defaultDice": "default",
