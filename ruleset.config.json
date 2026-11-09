@@ -2551,6 +2551,7 @@
     }
   ],
   "settings": {
+    "skin": "pathfinder",
     "unidentifiedImages": {
       "recordTypes": [
         "items"
