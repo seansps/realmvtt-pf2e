@@ -21,7 +21,7 @@ permissions:
 env:
   REALM_RULESET_ID: 67d4f9fbb98576ed3ca8f314
   # Pinned ruleset-compiler commit. Bump deliberately after reviewing changes.
-  RULESET_COMPILER_REF: a60275ff2f23a62993209515b1f772faa613dd2c
+  RULESET_COMPILER_REF: 15ae2dc7a6583b7a5af33f8767251235832780dd
 
 jobs:
   test:

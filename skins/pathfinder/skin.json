@@ -1,0 +1,1098 @@
+{
+  "name": "Pathfinder",
+  "description": "Iron chrome, crimson sheet headers and gray parchment, styled for Pathfinder Second Edition.",
+  "colorScheme": "dark",
+  "palette": {
+    "colors": {
+      "primary": [
+        "#fbeaea",
+        "#f2c9c9",
+        "#e39a9a",
+        "#d06b6b",
+        "#bb4444",
+        "#a52a2a",
+        "#8a1c1c",
+        "#701414",
+        "#5e0000",
+        "#430000"
+      ],
+      "dark": [
+        "#e8e6dc",
+        "#cfccc0",
+        "#a8a59a",
+        "#7d7a71",
+        "#4a4844",
+        "#363532",
+        "#262523",
+        "#1b1a19",
+        "#121211",
+        "#0b0b0a"
+      ],
+      "red": [
+        "#fbeaea",
+        "#f2c9c9",
+        "#e39a9a",
+        "#d06b6b",
+        "#bb4444",
+        "#a52a2a",
+        "#8a1c1c",
+        "#7a1414",
+        "#5e0000",
+        "#430000"
+      ]
+    },
+    "primaryShade": 7,
+    "other": {
+      "windowBgColor": "#141412",
+      "windowHeaderBgColor": "#0f0f0e",
+      "windowHeaderFontColor": "#f0efe6",
+      "windowHeaderButtonHoverBgColor": "rgba(255,255,255,0.1)",
+      "windowBorderColor": "#000000",
+      "windowDividerColor": "rgba(255,255,255,0.08)",
+      "chatCardBgColor": "#dcdace",
+      "chatCardFontColor": "#191813",
+      "chatCardBorderColor": "#6c6964",
+      "chatCardDividerColor": "rgba(0,0,0,0.15)"
+    }
+  },
+  "tokens": {
+    "accent": "#c9a66b",
+    "accent-glow": "rgba(201,166,107,0.35)",
+    "accent-subtle": "rgba(201,166,107,0.12)",
+    "bg": "#0e0e0d",
+    "surface": "#1b1a19",
+    "surface-elev": "#262523",
+    "text": "#e8e6dc",
+    "text-dim": "#a8a59a",
+    "text-muted": "rgba(168,165,154,0.65)",
+    "border": "rgba(255,255,255,0.1)",
+    "border-strong": "rgba(255,255,255,0.2)",
+    "divider": "rgba(255,255,255,0.08)",
+    "danger": "#c0503c",
+    "success": "#7aa35a"
+  },
+  "fonts": [
+    {
+      "family": "Vollkorn",
+      "src": "fonts/Vollkorn-Regular.ttf",
+      "weight": 400
+    },
+    {
+      "family": "Vollkorn",
+      "src": "fonts/Vollkorn-SemiBold.ttf",
+      "weight": 600
+    }
+  ],
+  "fontRoles": {
+    "heading": "Vollkorn",
+    "windowTitle": "Vollkorn"
+  },
+  "frames": {
+    "sheetCorner": {
+      "hidden": true
+    },
+    "attributeCard": {
+      "padding": [
+        5,
+        4,
+        6,
+        4
+      ]
+    },
+    "appBar": {
+      "background": "#0b0b0a",
+      "border": "#000000"
+    },
+    "drawer": {
+      "background": "#0e0e0d",
+      "border": "#45413a",
+      "shadow": "rgba(0,0,0,0.8)"
+    },
+    "drawerTabActive": {
+      "background": "rgba(94,0,0,0.55)",
+      "border": "#c9a66b",
+      "radius": 3,
+      "textColor": "#f6efe2"
+    },
+    "window": {
+      "background": "#141412",
+      "border": "#000000",
+      "radius": 5,
+      "shadow": "rgba(0,0,0,0.9)"
+    },
+    "windowHeader": {
+      "background": "#0f0f0e",
+      "textColor": "#f0efe6"
+    },
+    "recordWindowHeader": {
+      "background": "#0f0f0e",
+      "textColor": "#f0efe6"
+    },
+    "windowContent": {
+      "texture": {
+        "src": "frames/paper-gray.png",
+        "scale": 2
+      },
+      "background": "#dcdace",
+      "textColor": "#191813",
+      "scheme": "light",
+      "tokens": {
+        "accent": "#5e0000",
+        "accent-glow": "rgba(94,0,0,0.25)",
+        "accent-subtle": "rgba(94,0,0,0.08)",
+        "bg": "rgba(0,0,0,0)",
+        "surface": "rgba(0,0,0,0.05)",
+        "surface-elev": "rgba(0,0,0,0.09)",
+        "text": "#191813",
+        "text-dim": "#4b4a44",
+        "text-muted": "rgba(75,74,68,0.75)",
+        "border": "#7a7971",
+        "border-strong": "#4b4a44",
+        "divider": "rgba(0,0,0,0.18)",
+        "danger": "#9e1b1b",
+        "success": "#2f6b3a"
+      },
+      "darkShades": [
+        "#191813",
+        "#2a2925",
+        "#4b4a44",
+        "#6c6964",
+        "#8a877d",
+        "rgba(0,0,0,0.1)",
+        "rgba(0,0,0,0.05)",
+        "rgba(0,0,0,0.03)",
+        "rgba(255,255,255,0.15)",
+        "#111110"
+      ],
+      "grayShades": [
+        "#111110",
+        "#191813",
+        "#2a2925",
+        "#4b4a44",
+        "#6c6964",
+        "rgba(0,0,0,0.5)",
+        "rgba(0,0,0,0.35)",
+        "rgba(0,0,0,0.25)",
+        "rgba(0,0,0,0.18)",
+        "rgba(0,0,0,0.12)"
+      ]
+    },
+    "recordWindowContent": {
+      "padding": [
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    "recordBody": {
+      "texture": {
+        "src": "frames/paper-gray.png",
+        "scale": 2
+      },
+      "background": "#dcdace",
+      "textColor": "#191813",
+      "scheme": "light",
+      "tokens": {
+        "accent": "#5e0000",
+        "accent-glow": "rgba(94,0,0,0.25)",
+        "accent-subtle": "rgba(94,0,0,0.08)",
+        "bg": "rgba(0,0,0,0)",
+        "surface": "rgba(0,0,0,0.05)",
+        "surface-elev": "rgba(0,0,0,0.09)",
+        "text": "#191813",
+        "text-dim": "#4b4a44",
+        "text-muted": "rgba(75,74,68,0.75)",
+        "border": "#7a7971",
+        "border-strong": "#4b4a44",
+        "divider": "rgba(0,0,0,0.18)",
+        "danger": "#9e1b1b",
+        "success": "#2f6b3a"
+      },
+      "darkShades": [
+        "#191813",
+        "#2a2925",
+        "#4b4a44",
+        "#6c6964",
+        "#8a877d",
+        "rgba(0,0,0,0.1)",
+        "rgba(0,0,0,0.05)",
+        "rgba(0,0,0,0.03)",
+        "rgba(255,255,255,0.15)",
+        "#111110"
+      ],
+      "grayShades": [
+        "#111110",
+        "#191813",
+        "#2a2925",
+        "#4b4a44",
+        "#6c6964",
+        "rgba(0,0,0,0.5)",
+        "rgba(0,0,0,0.35)",
+        "rgba(0,0,0,0.25)",
+        "rgba(0,0,0,0.18)",
+        "rgba(0,0,0,0.12)"
+      ],
+      "padding": [
+        6,
+        10,
+        6,
+        10
+      ]
+    },
+    "tabList": {
+      "background": "#0f0f0e"
+    },
+    "tab": {
+      "textColor": "#e8d9c5"
+    },
+    "tabActive": {
+      "texture": {
+        "src": "frames/paper-gray.png",
+        "scale": 2
+      },
+      "background": "#dcdace",
+      "border": "rgba(0,0,0,0)",
+      "borderWidth": 0,
+      "radius": 0,
+      "textColor": "#191813"
+    },
+    "chatCard": {
+      "texture": {
+        "src": "frames/paper-gray.png",
+        "scale": 2
+      },
+      "background": "#dcdace",
+      "textColor": "#191813",
+      "scheme": "light",
+      "tokens": {
+        "accent": "#5e0000",
+        "accent-glow": "rgba(94,0,0,0.25)",
+        "accent-subtle": "rgba(0,0,0,0.07)",
+        "bg": "rgba(0,0,0,0)",
+        "surface": "rgba(0,0,0,0.05)",
+        "surface-elev": "rgba(0,0,0,0.09)",
+        "text": "#191813",
+        "text-dim": "#4b4a44",
+        "text-muted": "rgba(75,74,68,0.75)",
+        "border": "#7a7971",
+        "border-strong": "#4b4a44",
+        "divider": "rgba(0,0,0,0.18)",
+        "danger": "#9e1b1b",
+        "success": "#2f6b3a"
+      },
+      "darkShades": [
+        "#191813",
+        "#2a2925",
+        "#4b4a44",
+        "#6c6964",
+        "#8a877d",
+        "rgba(0,0,0,0.1)",
+        "rgba(0,0,0,0.05)",
+        "rgba(0,0,0,0.03)",
+        "rgba(255,255,255,0.15)",
+        "#111110"
+      ],
+      "grayShades": [
+        "#111110",
+        "#191813",
+        "#2a2925",
+        "#4b4a44",
+        "#6c6964",
+        "rgba(0,0,0,0.5)",
+        "rgba(0,0,0,0.35)",
+        "rgba(0,0,0,0.25)",
+        "rgba(0,0,0,0.18)",
+        "rgba(0,0,0,0.12)"
+      ],
+      "border": "#6c6964",
+      "borderWidth": 2,
+      "radius": 5,
+      "padding": [
+        6,
+        8,
+        6,
+        8
+      ]
+    },
+    "chatCardWhisper": {
+      "texture": {
+        "src": "frames/paper-gray-whisper.png",
+        "scale": 2
+      },
+      "background": "#dcdace",
+      "textColor": "#191813",
+      "scheme": "light",
+      "tokens": {
+        "accent": "#5e0000",
+        "accent-glow": "rgba(94,0,0,0.25)",
+        "accent-subtle": "rgba(0,0,0,0.07)",
+        "bg": "rgba(0,0,0,0)",
+        "surface": "rgba(0,0,0,0.05)",
+        "surface-elev": "rgba(0,0,0,0.09)",
+        "text": "#191813",
+        "text-dim": "#4b4a44",
+        "text-muted": "rgba(75,74,68,0.75)",
+        "border": "#7a7971",
+        "border-strong": "#4b4a44",
+        "divider": "rgba(0,0,0,0.18)",
+        "danger": "#9e1b1b",
+        "success": "#2f6b3a"
+      },
+      "darkShades": [
+        "#191813",
+        "#2a2925",
+        "#4b4a44",
+        "#6c6964",
+        "#8a877d",
+        "rgba(0,0,0,0.1)",
+        "rgba(0,0,0,0.05)",
+        "rgba(0,0,0,0.03)",
+        "rgba(255,255,255,0.15)",
+        "#111110"
+      ],
+      "grayShades": [
+        "#111110",
+        "#191813",
+        "#2a2925",
+        "#4b4a44",
+        "#6c6964",
+        "rgba(0,0,0,0.5)",
+        "rgba(0,0,0,0.35)",
+        "rgba(0,0,0,0.25)",
+        "rgba(0,0,0,0.18)",
+        "rgba(0,0,0,0.12)"
+      ],
+      "border": "#6c6964",
+      "borderWidth": 2,
+      "radius": 5,
+      "padding": [
+        6,
+        8,
+        6,
+        8
+      ]
+    },
+    "chatCardPrivate": {
+      "texture": {
+        "src": "frames/paper-gray-private.png",
+        "scale": 2
+      },
+      "background": "#dcdace",
+      "textColor": "#191813",
+      "scheme": "light",
+      "tokens": {
+        "accent": "#5e0000",
+        "accent-glow": "rgba(94,0,0,0.25)",
+        "accent-subtle": "rgba(0,0,0,0.07)",
+        "bg": "rgba(0,0,0,0)",
+        "surface": "rgba(0,0,0,0.05)",
+        "surface-elev": "rgba(0,0,0,0.09)",
+        "text": "#191813",
+        "text-dim": "#4b4a44",
+        "text-muted": "rgba(75,74,68,0.75)",
+        "border": "#7a7971",
+        "border-strong": "#4b4a44",
+        "divider": "rgba(0,0,0,0.18)",
+        "danger": "#9e1b1b",
+        "success": "#2f6b3a"
+      },
+      "darkShades": [
+        "#191813",
+        "#2a2925",
+        "#4b4a44",
+        "#6c6964",
+        "#8a877d",
+        "rgba(0,0,0,0.1)",
+        "rgba(0,0,0,0.05)",
+        "rgba(0,0,0,0.03)",
+        "rgba(255,255,255,0.15)",
+        "#111110"
+      ],
+      "grayShades": [
+        "#111110",
+        "#191813",
+        "#2a2925",
+        "#4b4a44",
+        "#6c6964",
+        "rgba(0,0,0,0.5)",
+        "rgba(0,0,0,0.35)",
+        "rgba(0,0,0,0.25)",
+        "rgba(0,0,0,0.18)",
+        "rgba(0,0,0,0.12)"
+      ],
+      "border": "#6c6964",
+      "borderWidth": 2,
+      "radius": 5,
+      "padding": [
+        6,
+        8,
+        6,
+        8
+      ]
+    },
+    "chatInput": {
+      "texture": {
+        "src": "frames/paper-gray.png",
+        "scale": 2
+      },
+      "background": "#dcdace",
+      "textColor": "#191813",
+      "scheme": "light",
+      "tokens": {
+        "accent": "#5e0000",
+        "accent-glow": "rgba(94,0,0,0.25)",
+        "accent-subtle": "rgba(94,0,0,0.08)",
+        "bg": "rgba(0,0,0,0)",
+        "surface": "rgba(0,0,0,0.05)",
+        "surface-elev": "rgba(0,0,0,0.09)",
+        "text": "#191813",
+        "text-dim": "#4b4a44",
+        "text-muted": "rgba(75,74,68,0.75)",
+        "border": "#7a7971",
+        "border-strong": "#4b4a44",
+        "divider": "rgba(0,0,0,0.18)",
+        "danger": "#9e1b1b",
+        "success": "#2f6b3a"
+      },
+      "darkShades": [
+        "#191813",
+        "#2a2925",
+        "#4b4a44",
+        "#6c6964",
+        "#8a877d",
+        "rgba(0,0,0,0.1)",
+        "rgba(0,0,0,0.05)",
+        "rgba(0,0,0,0.03)",
+        "rgba(255,255,255,0.15)",
+        "#111110"
+      ],
+      "grayShades": [
+        "#111110",
+        "#191813",
+        "#2a2925",
+        "#4b4a44",
+        "#6c6964",
+        "rgba(0,0,0,0.5)",
+        "rgba(0,0,0,0.35)",
+        "rgba(0,0,0,0.25)",
+        "rgba(0,0,0,0.18)",
+        "rgba(0,0,0,0.12)"
+      ],
+      "border": "#7a7971",
+      "radius": 3
+    },
+    "tooltip": {
+      "background": "#111110",
+      "border": "#3c3a35",
+      "radius": 3,
+      "padding": [
+        4,
+        8,
+        4,
+        8
+      ],
+      "textColor": "#eeece4"
+    },
+    "modal": {
+      "background": "#141412",
+      "border": "#000000",
+      "radius": 5,
+      "shadow": "rgba(0,0,0,0.9)"
+    },
+    "panel": {
+      "background": "#0e0e0d",
+      "border": "#45413a",
+      "radius": 4,
+      "shadow": "rgba(0,0,0,0.6)"
+    },
+    "toolbar": {
+      "background": "#0e0e0d",
+      "border": "#45413a",
+      "radius": 4,
+      "gap": 3,
+      "padding": [
+        3,
+        3,
+        3,
+        3
+      ],
+      "shadow": "rgba(0,0,0,0.6)"
+    },
+    "sceneButton": {
+      "size": 28,
+      "iconSize": 16,
+      "background": "#1b1a19",
+      "border": "#000000",
+      "radius": 3,
+      "textColor": "#d8d6cc",
+      "shadow": "rgba(0,0,0,0.5)",
+      "hover": {
+        "border": "#c9a66b",
+        "textColor": "#ffffff"
+      }
+    },
+    "sceneTab": {
+      "background": "#141412",
+      "border": "#000000",
+      "radius": 3,
+      "textColor": "#d8d6cc",
+      "hover": {
+        "border": "#c9a66b",
+        "textColor": "#ffffff"
+      }
+    },
+    "sceneTabActive": {
+      "background": "#5e0000",
+      "border": "#c9a66b",
+      "radius": 3,
+      "textColor": "#ffffff",
+      "shadow": "rgba(94,0,0,0.6)"
+    },
+    "hotbar": {
+      "background": "rgba(0,0,0,0)",
+      "border": "rgba(0,0,0,0)",
+      "gap": 0
+    },
+    "hotbarSlot": {
+      "background": "#1b1a19",
+      "border": "#3a3833",
+      "radius": 3,
+      "hover": {
+        "border": "#c9a66b"
+      }
+    },
+    "hotbarSlotFilled": {
+      "border": "#7a6a4a"
+    },
+    "ctRowActive": {
+      "background": "rgba(94,0,0,0.35)",
+      "border": "#c9a66b",
+      "radius": 3
+    },
+    "sceneButtonActive": {
+      "background": "#5e0000",
+      "border": "#c9a66b",
+      "textColor": "#ffffff",
+      "shadow": "rgba(160,30,30,0.55)"
+    },
+    "hotbarTabs": {
+      "background": "#0e0e0d",
+      "border": "rgba(0,0,0,0)",
+      "radius": 0,
+      "padding": [
+        3,
+        4,
+        0,
+        4
+      ],
+      "gap": 2
+    },
+    "hotbarTab": {
+      "textColor": "#a8a59a"
+    },
+    "hotbarTabActive": {
+      "background": "#5e0000",
+      "radius": 2,
+      "textColor": "#ffffff"
+    },
+    "hotbarRow": {
+      "background": "#0e0e0d",
+      "border": "#45413a",
+      "radius": 4,
+      "padding": [
+        4,
+        4,
+        4,
+        4
+      ],
+      "gap": 4,
+      "shadow": "rgba(0,0,0,0.6)"
+    },
+    "hotbarDivider": {
+      "hidden": true
+    },
+    "drawerTab": {
+      "border": "rgba(0,0,0,0)",
+      "radius": 3
+    },
+    "loadingCard": {
+      "texture": {
+        "src": "frames/paper-gray.png",
+        "scale": 2
+      },
+      "background": "#dcdace",
+      "textColor": "#191813",
+      "scheme": "light",
+      "tokens": {
+        "accent": "#5e0000",
+        "accent-glow": "rgba(94,0,0,0.25)",
+        "accent-subtle": "rgba(0,0,0,0.07)",
+        "bg": "rgba(0,0,0,0)",
+        "surface": "rgba(0,0,0,0.05)",
+        "surface-elev": "rgba(0,0,0,0.09)",
+        "text": "#191813",
+        "text-dim": "#4b4a44",
+        "text-muted": "rgba(75,74,68,0.75)",
+        "border": "#7a7971",
+        "border-strong": "#4b4a44",
+        "divider": "rgba(0,0,0,0.18)",
+        "danger": "#9e1b1b",
+        "success": "#2f6b3a"
+      },
+      "darkShades": [
+        "#191813",
+        "#2a2925",
+        "#4b4a44",
+        "#6c6964",
+        "#8a877d",
+        "rgba(0,0,0,0.1)",
+        "rgba(0,0,0,0.05)",
+        "rgba(0,0,0,0.03)",
+        "rgba(255,255,255,0.15)",
+        "#111110"
+      ],
+      "grayShades": [
+        "#111110",
+        "#191813",
+        "#2a2925",
+        "#4b4a44",
+        "#6c6964",
+        "rgba(0,0,0,0.5)",
+        "rgba(0,0,0,0.35)",
+        "rgba(0,0,0,0.25)",
+        "rgba(0,0,0,0.18)",
+        "rgba(0,0,0,0.12)"
+      ],
+      "border": "#6c6964",
+      "borderWidth": 2,
+      "radius": 5,
+      "shadow": "rgba(0,0,0,0.6)"
+    },
+    "pauseCard": {
+      "texture": {
+        "src": "frames/paper-gray.png",
+        "scale": 2
+      },
+      "background": "#dcdace",
+      "textColor": "#191813",
+      "scheme": "light",
+      "tokens": {
+        "accent": "#5e0000",
+        "accent-glow": "rgba(94,0,0,0.25)",
+        "accent-subtle": "rgba(0,0,0,0.07)",
+        "bg": "rgba(0,0,0,0)",
+        "surface": "rgba(0,0,0,0.05)",
+        "surface-elev": "rgba(0,0,0,0.09)",
+        "text": "#191813",
+        "text-dim": "#4b4a44",
+        "text-muted": "rgba(75,74,68,0.75)",
+        "border": "#7a7971",
+        "border-strong": "#4b4a44",
+        "divider": "rgba(0,0,0,0.18)",
+        "danger": "#9e1b1b",
+        "success": "#2f6b3a"
+      },
+      "darkShades": [
+        "#191813",
+        "#2a2925",
+        "#4b4a44",
+        "#6c6964",
+        "#8a877d",
+        "rgba(0,0,0,0.1)",
+        "rgba(0,0,0,0.05)",
+        "rgba(0,0,0,0.03)",
+        "rgba(255,255,255,0.15)",
+        "#111110"
+      ],
+      "grayShades": [
+        "#111110",
+        "#191813",
+        "#2a2925",
+        "#4b4a44",
+        "#6c6964",
+        "rgba(0,0,0,0.5)",
+        "rgba(0,0,0,0.35)",
+        "rgba(0,0,0,0.25)",
+        "rgba(0,0,0,0.18)",
+        "rgba(0,0,0,0.12)"
+      ],
+      "border": "#6c6964",
+      "borderWidth": 2,
+      "radius": 5,
+      "shadow": "rgba(0,0,0,0.6)"
+    },
+    "loadingLogo": {
+      "textColor": "#5e0000"
+    },
+    "pauseIcon": {
+      "background": "#5e0000",
+      "border": "#c9a66b",
+      "textColor": "#f4ecd8",
+      "radius": 3
+    },
+    "sceneDecal": {
+      "textColor": "#c9a66b"
+    }
+  },
+  "radius": 3,
+  "recordTypes": {
+    "characters": {
+      "frames": {
+        "window": {
+          "texture": {
+            "src": "frames/crimson.png",
+            "scale": 2
+          },
+          "background": "#5e0000",
+          "border": "#000000",
+          "radius": 5,
+          "shadow": "rgba(0,0,0,0.9)"
+        },
+        "windowHeader": {
+          "background": "rgba(0,0,0,0)",
+          "textColor": "#f4ece0"
+        },
+        "tabList": {
+          "background": "rgba(0,0,0,0)"
+        }
+      }
+    },
+    "npcs": {
+      "frames": {
+        "window": {
+          "texture": {
+            "src": "frames/crimson.png",
+            "scale": 2
+          },
+          "background": "#5e0000",
+          "border": "#000000",
+          "radius": 5,
+          "shadow": "rgba(0,0,0,0.9)"
+        },
+        "windowHeader": {
+          "background": "rgba(0,0,0,0)",
+          "textColor": "#f4ece0"
+        },
+        "tabList": {
+          "background": "rgba(0,0,0,0)"
+        }
+      }
+    }
+  },
+  "scrollbar": {
+    "thumb": "rgba(94,0,0,0.75)",
+    "thumbHover": "#8a1c1c"
+  },
+  "tags": {
+    "base": {
+      "radius": 2,
+      "border": "rgba(0,0,0,0.5)",
+      "textColor": "#ffffff",
+      "fontWeight": 600,
+      "uppercase": true
+    },
+    "variants": {
+      "action": {
+        "background": "#5e0000"
+      },
+      "trait": {
+        "background": "#786452"
+      },
+      "range": {
+        "background": "#171f69"
+      },
+      "material": {
+        "background": "#443730"
+      },
+      "common": {
+        "background": "#323232"
+      },
+      "uncommon": {
+        "background": "#98513d"
+      },
+      "rare": {
+        "background": "#002664"
+      },
+      "unique": {
+        "background": "#54166e"
+      },
+      "outline": {
+        "background": "rgba(0,0,0,0)",
+        "border": "rgba(0,0,0,0.3)",
+        "textColor": "#4b4a44",
+        "uppercase": false,
+        "fontWeight": 500
+      }
+    },
+    "default": "trait",
+    "match": {
+      "action": [
+        "attack",
+        "damage",
+        "persistent damage",
+        "healing",
+        "strike",
+        "spell attack",
+        "counteract",
+        "* saving throw",
+        "* save",
+        "* check",
+        "concentrate",
+        "manipulate",
+        "move",
+        "flourish",
+        "press",
+        "open",
+        "auditory",
+        "visual",
+        "linguistic",
+        "mental",
+        "emotion",
+        "fear",
+        "incapacitation",
+        "secret",
+        "stance",
+        "exploration",
+        "downtime",
+        "skill",
+        "general"
+      ],
+      "range": [
+        "range *",
+        "range increment *"
+      ],
+      "material": [
+        "cold iron",
+        "silver",
+        "adamantine",
+        "mithral",
+        "dawnsilver",
+        "orichalcum",
+        "darkwood",
+        "duskwood",
+        "djezet",
+        "inubrix",
+        "noqual",
+        "siccatite",
+        "sovereign steel",
+        "abysium",
+        "peachwood",
+        "warpglass",
+        "sisterstone"
+      ],
+      "common": [
+        "common"
+      ],
+      "uncommon": [
+        "uncommon"
+      ],
+      "rare": [
+        "rare"
+      ],
+      "unique": [
+        "unique"
+      ],
+      "outline": [
+        "modifier *",
+        "target off-guard"
+      ]
+    }
+  },
+  "macroButtons": {
+    "style": {
+      "background": "#d8d5ca",
+      "border": "#7a7971",
+      "radius": 3,
+      "textColor": "#191813",
+      "hover": {
+        "background": "#ebe8de",
+        "border": "#5e0000",
+        "textColor": "#5e0000",
+        "shadow": "rgba(94,0,0,0.35)"
+      }
+    },
+    "layout": "stacked",
+    "row": true,
+    "kinds": {
+      "effect": {
+        "background": "#5e0000",
+        "border": "#c9a66b",
+        "textColor": "#ffffff",
+        "icon": "IconSparkles",
+        "hover": {
+          "background": "#7a1414",
+          "border": "#e0c48a",
+          "shadow": "rgba(160,30,30,0.5)"
+        }
+      }
+    },
+    "variants": {
+      "effect": {
+        "background": "#5e0000",
+        "border": "#c9a66b",
+        "textColor": "#ffffff",
+        "icon": "IconSparkles",
+        "hover": {
+          "background": "#7a1414",
+          "border": "#e0c48a",
+          "shadow": "rgba(160,30,30,0.5)"
+        }
+      },
+      "plain": {
+        "background": "#d8d5ca",
+        "border": "#7a7971",
+        "textColor": "#191813",
+        "hover": {
+          "background": "#ebe8de",
+          "border": "#5e0000",
+          "textColor": "#5e0000",
+          "shadow": "rgba(94,0,0,0.35)"
+        }
+      },
+      "attack": {
+        "background": "#3a2e26",
+        "border": "#c9a66b",
+        "textColor": "#f4ecd8",
+        "icon": "d20",
+        "hover": {
+          "background": "#4d3d31",
+          "border": "#e0c48a",
+          "shadow": "rgba(201,166,107,0.45)"
+        }
+      },
+      "damage": {
+        "background": "#f1e6cf",
+        "border": "#8a4b3a",
+        "textColor": "#5e0000",
+        "icon": "IconDice5",
+        "hover": {
+          "background": "#f8efdc",
+          "border": "#5e0000",
+          "shadow": "rgba(94,0,0,0.35)"
+        }
+      },
+      "healing": {
+        "background": "#e2ebd6",
+        "border": "#5c7a3a",
+        "textColor": "#2f4a17",
+        "icon": "IconHeartPlus",
+        "hover": {
+          "background": "#ecf3e2",
+          "border": "#3f5a22",
+          "shadow": "rgba(63,90,34,0.35)"
+        }
+      }
+    },
+    "match": {
+      "effect": [
+        "apply_*",
+        "gain_*"
+      ],
+      "damage": [
+        "*_damage",
+        "roll_damage*"
+      ],
+      "healing": [
+        "roll_healing*",
+        "*_healing"
+      ],
+      "attack": [
+        "roll_attack*",
+        "*_strike"
+      ],
+      "plain": [
+        "apply_damage",
+        "apply_half_*",
+        "apply_double_*",
+        "apply_splash_damage",
+        "apply_damage_to_shield",
+        "apply_healing*",
+        "apply_temporary_hp*",
+        "apply_by_saves",
+        "*_persistent_damage"
+      ]
+    },
+    "buttons": {
+      "Apply_Damage": {
+        "icon": "IconHeartBroken",
+        "label": "Damage"
+      },
+      "Apply_Half_Damage": {
+        "icon": "IconHeartMinus",
+        "label": "Half"
+      },
+      "Apply_Double_Damage": {
+        "icon": "IconMultiplier2x",
+        "label": "Double"
+      },
+      "Apply_Splash_Damage": {
+        "icon": "IconDroplets",
+        "label": "Splash"
+      },
+      "Apply_Damage_to_Shield": {
+        "icon": "IconShield",
+        "label": "Block"
+      },
+      "Apply_Healing": {
+        "icon": "IconHeartPlus",
+        "label": "Heal"
+      },
+      "Roll_Damage": {
+        "icon": "IconDice5"
+      },
+      "Roll_Healing": {
+        "icon": "IconDice5"
+      },
+      "Roll_Acid_Damage": {
+        "icon": "acid"
+      },
+      "Roll_Bleed_Damage": {
+        "icon": "bleed"
+      },
+      "Roll_Bludgeoning_Damage": {
+        "icon": "bludgeoning"
+      },
+      "Roll_Cold_Damage": {
+        "icon": "cold"
+      },
+      "Roll_Electricity_Damage": {
+        "icon": "electricity"
+      },
+      "Roll_Fire_Damage": {
+        "icon": "fire"
+      },
+      "Roll_Force_Damage": {
+        "icon": "force"
+      },
+      "Roll_Mental_Damage": {
+        "icon": "mental"
+      },
+      "Roll_Piercing_Damage": {
+        "icon": "piercing"
+      },
+      "Roll_Poison_Damage": {
+        "icon": "poison"
+      },
+      "Roll_Slashing_Damage": {
+        "icon": "slashing"
+      },
+      "Roll_Sonic_Damage": {
+        "icon": "thunder"
+      },
+      "Roll_Spirit_Damage": {
+        "icon": "spirit"
+      },
+      "Roll_Vitality_Damage": {
+        "icon": "vitality"
+      },
+      "Roll_Void_Damage": {
+        "icon": "void"
+      },
+      "Roll_Attack": {
+        "icon": "d20",
+        "label": "Attack"
+      }
+    }
+  }
+}

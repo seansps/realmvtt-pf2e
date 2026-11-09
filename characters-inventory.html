@@ -6,9 +6,17 @@
   // When the tab loads: the total Bulk, and the Sell buttons shown or hidden
   // to match the setting, in one write. No encumbrance card: nothing changed
   function onInventoryLoad() {
+    // Repair a header left visible in grid mode (or hidden in rows) by an
+    // earlier toggle that read the old mode.
+    const grid = record.data?.inventoryViewMode === "grid";
+    const headerFix =
+      !!record.fields?.listHeaderRow?.hidden !== grid
+        ? { "fields.listHeaderRow.hidden": grid }
+        : {};
     api.setValuesOnRecord(record, {
       "data.totalBulk": updateTotalBulk(record, false),
       ...getSellButtonValues(record),
+      ...headerFix,
     });
   }
 
@@ -349,12 +357,11 @@
 
   // Toggle between the row list and the grid of item tiles. The column-header
   // row only makes sense for rows, so hide it in grid mode.
-  function onViewModeChange() {
-    const mode = api.getValue("data.inventoryViewMode") || "rows";
-    const headerFields = api.getValue("fields.listHeaderRow") || {};
-    api.setValues({
-      "fields.listHeaderRow": { ...headerFields, hidden: mode === "grid" },
-    });
+  // Uses the toggled value it is handed rather than reading the record back,
+  // which could still hold the previous mode.
+  function onViewModeChange(value) {
+    const mode = value || api.getValue("data.inventoryViewMode") || "rows";
+    api.setValues({ "fields.listHeaderRow.hidden": mode === "grid" });
   }
 
   // "Use" an inventory item from the grid popover. Delegates to the shared
@@ -461,7 +468,7 @@
           defaultvalue="rows"
           disablediflocked="false"
           options='[{"icon": "IconLayoutList", "label": "List View", "value": "rows"}, {"icon": "IconLayoutGrid", "label": "Grid View", "value": "grid"}]'
-          onchange="onViewModeChange()"
+          onchange="onViewModeChange(value)"
         ></iconbutton>
       </div>
     </div>
