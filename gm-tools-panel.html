@@ -604,5 +604,45 @@
         ></button>
       </div>
     </accordion>
+
+    <!-- Creature builder (creature-builder.js): the GM Core benchmarks, and
+         rescaling or building the selected NPC tokens -->
+    <accordion size="xs" field="creatureBuilderOpen" label="Creature Builder">
+      <label
+        label="Rescale, Build and Reset change the selected NPC tokens, not their NPC records."
+        size="xs"
+        color="dimmed"
+      ></label>
+      <div style="display: flex; gap: 4px; flex-wrap: wrap; margin-top: 10px">
+        <button
+          size="xs"
+          variant="light"
+          icon="IconTable"
+          label="Benchmarks"
+          onclick="postCreatureBenchmarks()"
+        ></button>
+        <button
+          size="xs"
+          variant="light"
+          icon="IconArrowsVertical"
+          label="Rescale"
+          onclick="rescaleSelectedCreatures()"
+        ></button>
+        <button
+          size="xs"
+          variant="light"
+          icon="IconHammer"
+          label="Build"
+          onclick="buildSelectedCreatures()"
+        ></button>
+        <button
+          size="xs"
+          variant="light"
+          icon="IconRestore"
+          label="Reset"
+          onclick="resetSelectedCreatures()"
+        ></button>
+      </div>
+    </accordion>
   </div>
 </div>
