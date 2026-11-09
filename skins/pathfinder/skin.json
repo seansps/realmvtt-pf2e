@@ -1094,5 +1094,33 @@
         "label": "Attack"
       }
     }
+  },
+  "sheetButtons": {
+    "base": {
+      "textColor": "#ffffff",
+      "border": "rgba(0, 0, 0, 0.5)",
+      "radius": 3,
+      "fontWeight": 500
+    },
+    "variants": {
+      "attack": {
+        "background": "#171f69",
+        "hover": {
+          "background": "#242f8f"
+        }
+      },
+      "use": {
+        "background": "#171f69",
+        "hover": {
+          "background": "#242f8f"
+        }
+      },
+      "damage": {
+        "background": "#5e0000",
+        "hover": {
+          "background": "#7a1010"
+        }
+      }
+    }
   }
 }
