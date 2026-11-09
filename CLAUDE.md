@@ -244,6 +244,14 @@ Animal companions are characters, as Foundry's PF2e Companion Compendia builds t
 - Collision (`postVehicleCollision`) posts a crash's save and damage for the selected vehicle.
 - Not covered: moving the token, the uncontrolled vehicle's slowing each round, initiative by piloting skill, and AC and save penalties on the token while broken (the GM's).
 
+### Troops (segments, rout checks, a leader's actions)
+
+`rollhandlers/troops.js` (global script `Troops`, roadmap B15, NPC Core pg. 7, Battlecry! pg. 159-161), a Troops accordion on the GM Tools panel after Vehicles. A troop is an NPC with the Troop trait; its thresholds are read from the HP entry or the troop defenses ability ("60 (3 segments)"). `applyDamage` calls `getTroopSegmentLoss`: below a threshold the troop loses a segment and the threshold becomes `data.hitpoints`, in the same write and on the Undo, so the maximum is the only state and healing can't pass it. A troop with no printed thresholds is left alone.
+
+- **Rout Check** (`promptTroopRout`, a chat button on the loss and on the panel): the GM's call, since rout checks are for skirmishes. It asks the enemy's level and whether there's a leader, then rolls Will against that level's DC; `metadata.troopRout` makes `save.js` add `getTroopRoutLines` (a leader makes it one degree better). Mindless troops and those immune to its traits get no button.
+- **Remove Segment** (`getTroopRemovalValues`): for a non-damaging effect that takes a segment out.
+- **Five Actions** (`postTroopLeaderActions`): the leader's split as a card. Nothing links a leader to a troop, so there's no turn-start prompt.
+
 ### Siege weapons (Aim, Load, Launch, misfire)
 
 `rollhandlers/siege.js` (global script `Siege`, roadmap B10, Guns & Gears pg. 72-73 and 172), a Siege Weapons accordion on the GM Tools panel after Vehicles. A siege weapon is any NPC with Aim and Launch (or Fire) actions (`isSiegeToken`), best typed Vehicle for its Crew, AC, Hardness and Speed fields (`isVehicleToken` is false for one, so the Vehicle Card doesn't take it); the actions' descriptions are the stat block's text, and nothing is added to its sheet. Proficiency is read from the crew text ("2-4; Proficiency martial") or the description, black powder from the description or traits. No module has siege weapon records yet.
