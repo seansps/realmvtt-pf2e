@@ -5769,6 +5769,9 @@
         },
         "Vehicles": {
           "file": "rollhandlers/vehicles.js"
+        },
+        "Siege": {
+          "file": "rollhandlers/siege.js"
         }
       },
       "defaultDice": "default",

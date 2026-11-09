@@ -276,6 +276,8 @@ const downtimeLines = [
   ...getChallengeResultLines(data?.roll?.metadata?.challenge, noteDegree),
   // A piloting check or boarding: what the vehicle does (vehicles.js)
   ...getVehicleResultLines(data?.roll?.metadata?.vehicle, noteDegree),
+  // A siege weapon's Load check: how far along it is (siege.js)
+  ...getSiegeResultLines(data?.roll?.metadata?.siege, noteDegree),
   ...getAfflictionTreatmentLines(data?.roll?.metadata, noteDegree),
 ];
 if (downtimeLines.length > 0) message += `\n\n${downtimeLines.join("\n")}`;
