@@ -73,8 +73,9 @@ function getVehicleInfo(token, terrain = "normal") {
   };
 }
 
+// A siege weapon typed Vehicle for its fields isn't one (siege.js)
 function isVehicleToken(token) {
-  return token?.data?.type === "vehicle";
+  return token?.data?.type === "vehicle" && !isSiegeToken(token);
 }
 
 // "9d10" is bludgeoning (GM Core pg. 213: typically); a type it names stays

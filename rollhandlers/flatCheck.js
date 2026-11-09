@@ -69,8 +69,9 @@ if (dc <= 1) {
       message += `\n\n${data.roll.metadata.failureNote}`;
     }
     // A critical failure's extra (an unstable action's fire damage;
-    // class-extras.js); a natural 1 where it counts (a misfire; siege.js)
-    const criticalFailure = total <= dc - 10 || (naturalRoll === 1 && data?.roll?.metadata?.naturalOneCritical === true);
+    // class-extras.js; a misfire's explosion, siege.js). A natural 1 is a
+    // degree worse on a flat check too, so it's always a critical failure.
+    const criticalFailure = total <= dc - 10 || naturalRoll === 1;
     if (criticalFailure && data?.roll?.metadata?.criticalFailureNote) {
       message += ` ${data.roll.metadata.criticalFailureNote}`;
     }

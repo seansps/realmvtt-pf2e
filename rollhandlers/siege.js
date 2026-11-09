@@ -93,6 +93,7 @@ function getSiegeInfo(token) {
   const vehicle = getVehicleInfo(token);
   return {
     name: vehicle.name,
+    level: parseInt(data.level, 10),
     broken: vehicle.broken,
     crew: `${data.crew || ""}`.replace(/;?\s*proficiency.*$/i, "").trim(),
     proficiency: printed.match(/proficiency\s+(simple|martial|advanced)/i)?.[1]?.toLowerCase() || "",
@@ -278,16 +279,18 @@ function launchSiege(weapon) {
 
 // ---------------------------------------------------------------- Misfire
 
-// A black powder weapon's DC 5 flat check (Guns & Gears pg. 172); a natural
-// 1 is the critical failure, and it explodes
+// A black powder weapon's DC 5 flat check (Guns & Gears pg. 172). A natural
+// 1 is the critical failure: it explodes, with the save at the standard DC
+// of its level, and is destroyed.
 function rollSiegeMisfire(weapon) {
   const launch = weapon.launch;
+  const explosionDc = Number.isFinite(weapon.level) ? getDCForLevel(weapon.level) : 0;
   const interacts = parseInt(weapon.load.cost, 10);
   const explosion = [
     "",
     "",
-    `**The ${weapon.name} explodes!** ${launch.damage ? `${launch.damage} damage` : "Its Launch damage"} to all creatures in a 30-foot emanation, basic Reflex save.`,
-    ...(launch.dc ? [`[gm]DC ${launch.dc}.[/gm]`, getSaveMacro("reflex", launch.dc, false, false, [], true)] : []),
+    `**The ${weapon.name} explodes and is destroyed!** ${launch.damage ? `${launch.damage} damage` : "Its Launch damage"} to all creatures in a 30-foot emanation, basic Reflex save.`,
+    ...(explosionDc ? [`[gm]DC ${explosionDc}.[/gm]`, getSaveMacro("reflex", explosionDc, false, false, [], true)] : []),
     ...(launch.damage ? [getDamageRollButton(launch.damage, `${weapon.name}: explosion`)] : []),
   ].join("\n");
   api.roll(
@@ -298,7 +301,6 @@ function rollSiegeMisfire(weapon) {
       tooltip: `Flat check before Launching ${weapon.name}, not maintained today`,
       failureNote: `**Misfire:** the ${weapon.name} jams and the attack is a critical failure. To clear the jam the crew uses ${interacts ? `${interacts} Interact action${interacts === 1 ? "" : "s"}` : "as many Interact actions as one Load takes"}, then it can be reloaded.`,
       criticalFailureNote: explosion,
-      naturalOneCritical: true,
     },
     "flatCheck",
   );

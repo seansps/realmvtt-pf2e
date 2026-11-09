@@ -13,6 +13,7 @@ const siegeToken = (extra = {}, actions = null) => ({
   recordType: "npcs",
   data: {
     type: "vehicle",
+    level: 7,
     hitpoints: 60,
     curhp: 60,
     brokenThreshold: 30,
@@ -170,10 +171,14 @@ section("Misfire");
   ctx.api.roll = (dice, metadata, type) => rolls.push({ dice, metadata, type });
   ctx.rollSiegeMisfire(ctx.getSiegeInfo(siegeToken({ traits: ["Black Powder"] })));
   const roll = rolls[0];
-  assert("a DC 5 flat check", [roll.dice, roll.metadata.dc, roll.type, roll.metadata.naturalOneCritical], ["1d20", 5, "flatCheck", true]);
+  assert("a DC 5 flat check", [roll.dice, roll.metadata.dc, roll.type], ["1d20", 5, "flatCheck"]);
   assertIncludes("a jam", roll.metadata.failureNote, "jams and the attack is a critical failure. To clear the jam the crew uses 2 Interact actions");
-  assertIncludes("a natural 1 explodes", roll.metadata.criticalFailureNote, "**The Catapult explodes!** 5d10 bludgeoning damage to all creatures in a 30-foot emanation, basic Reflex save.");
-  assertIncludes("... its DC for the GM", roll.metadata.criticalFailureNote, "[gm]DC 22.[/gm]");
+  assertIncludes("a natural 1 explodes", roll.metadata.criticalFailureNote, "**The Catapult explodes and is destroyed!** 5d10 bludgeoning damage to all creatures in a 30-foot emanation, basic Reflex save.");
+  assertIncludes("... the standard DC of its level, for the GM", roll.metadata.criticalFailureNote, "[gm]DC 23.[/gm]");
+  assertIncludes("... on the save", roll.metadata.criticalFailureNote, "rollSave(token, 'reflex', 23");
+  rolls.length = 0;
+  ctx.rollSiegeMisfire(ctx.getSiegeInfo(siegeToken({ traits: ["Black Powder"], level: undefined })));
+  assert("no level: no save button", rolls[0].metadata.criticalFailureNote.includes("Roll_Reflex_Save"), false);
   assertIncludes("... its damage", roll.metadata.criticalFailureNote, 'executeDamageMacro("5d10 bludgeoning", "standard", "Catapult: explosion")');
 }
 
@@ -191,6 +196,11 @@ section("The panel");
   const fs = require("fs");
   assertIncludes("panel", fs.readFileSync(__dirname + "/../gm-tools-panel.html", "utf8"), "postSiegeCard()");
   assertIncludes("skill.js", fs.readFileSync(__dirname + "/../rollhandlers/skill.js", "utf8"), "getSiegeResultLines(");
+  assertIncludes("flatCheck.js: a natural 1 is a critical failure", fs.readFileSync(__dirname + "/../rollhandlers/flatCheck.js", "utf8"), "total <= dc - 10 || naturalRoll === 1");
+  assert("not a vehicle, though typed Vehicle", [ctx.isVehicleToken(siegeToken()), ctx.isVehicleToken({ data: { type: "vehicle", actions: [] } })], [false, true]);
+  notice = null;
+  ctx.postVehicleCard();
+  assertIncludes("the Vehicle Card doesn't take it", notice, "Select a vehicle's token");
 }
 
 summary();
