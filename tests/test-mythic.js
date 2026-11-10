@@ -117,7 +117,8 @@ section("Rewrite Fate");
   const first = prompts[0];
   assert("a skill check carries the button", !!first.metadata.rewriteFate, true);
 
-  const lines = ctx.getRewriteFateLines(first.metadata);
+  const lines = ctx.getRewriteFateLines(first.metadata, {});
+  assert("the call has an id for this roll", JSON.parse(decodeURIComponent(first.metadata.rewriteFate.call)).rollId.length > 0, true);
   assertIncludes("the card's button", lines[0], "Rewrite_Fate");
   assertIncludes("the button's call", lines[0], "rewriteFate(token,");
 
@@ -129,9 +130,36 @@ section("Rewrite Fate");
   assert("no point spent until the result", writes.length, 0);
   assert("no second button", again.metadata.rewriteFate, undefined);
 
-  const spent = ctx.getRewriteFateLines(again.metadata);
-  assert("the result spends it", writes[0], { id: "tok-1", type: "characters", values: { "data.heroPoints": 2 } });
-  assertIncludes("and says so", spent[0], "2 Mythic Points left");
+  // The result reads the character as it is now
+  let stored = hero({ heroPoints: 2 }, { _id: "char-1" });
+  ctx.api.getRecord = (type, id, cb) => cb(id === "char-1" ? stored : null);
+  const spent = ctx.getRewriteFateLines(again.metadata, {});
+  const rollId = again.metadata.rewriteFateSpend.rollId;
+  assert("the result spends one from what's there now", records[0], {
+    id: "char-1",
+    values: { "data.heroPoints": 1, "data.rewriteFateRollId": rollId },
+  });
+  assertIncludes("and says so", spent[0], "spending a Mythic Point");
+
+  // Once per roll: the original button again, and a second prompt's result
+  stored = hero({ heroPoints: 1, rewriteFateRollId: rollId }, { _id: "char-1" });
+  const before = prompts.length;
+  ctx.rewriteFate(hero({ heroPoints: 1, rewriteFateRollId: rollId }), first.metadata.rewriteFate.call);
+  assert("the button again is refused", [prompts.length - before, notes.pop()], [0, "Rewrite Fate was already used on this check."]);
+  records.length = 0;
+  ctx.getRewriteFateLines(again.metadata, {});
+  assert("a second prompt's result spends nothing", records.length, 0);
+  assertIncludes("and says it doesn't count", sent.pop(), "doesn't count and no point is spent");
+  stored = hero({ heroPoints: 0 }, { _id: "char-1" });
+  ctx.getRewriteFateLines(again.metadata, {});
+  assert("nor with no points left", records.length, 0);
+
+  // A result rolled with a fortune effect already has its one
+  const d20 = (kept, dropped) => ({ dice: [{ type: 20, value: kept }, { type: 20, value: dropped, reason: "dropped" }] });
+  assert("no button after keep-higher", ctx.getRewriteFateLines(first.metadata, d20(15, 4)), []);
+  assert("a button after keep-lower (misfortune)", ctx.getRewriteFateLines(first.metadata, d20(4, 15)).length, 1);
+  assert("a tie goes by what was offered", ctx.getRewriteFateLines({ rewriteFate: { ...first.metadata.rewriteFate, fortune: true } }, d20(9, 9)), []);
+  assert("a single die", ctx.getRewriteFateLines(first.metadata, { dice: [{ type: 20, value: 9 }] }).length, 1);
 
   reset();
   ctx.rollSave(hero(), "will", 20, false, true, { troopRout: { level: 3 } });

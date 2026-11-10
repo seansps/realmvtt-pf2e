@@ -5861,7 +5861,7 @@
       {
         "name": "Mythic Rules",
         "key": "mythicRules",
-        "description": "War of Immortals pg. 76-79. A character with a Calling is mythic: the Hero Points counter holds 3 Mythic Points, Rewrite Fate rerolls skill checks and saves, it gains mythic feats at even levels, and it gains doomed instead of dying.",
+        "description": "War of Immortals pg. 76-79. A character with a Calling is mythic: the Hero Points counter holds 3 Mythic Points, Rewrite Fate rerolls skill checks and saves, it gains mythic feats at even levels, and at the dying value that would kill it, it gains doomed instead of dying.",
         "values": [
           {
             "label": "No",

@@ -163,7 +163,7 @@ message += getRollNotesText(data?.roll?.metadata?.notes, noteDegree);
 // An affliction's save: what the degree does, and its Apply button
 // (afflictions.js)
 {
-  const rewriteFateLines = getRewriteFateLines(data?.roll?.metadata);
+  const rewriteFateLines = getRewriteFateLines(data?.roll?.metadata, roll);
   if (rewriteFateLines.length > 0) {
     message += `\n\n${rewriteFateLines.join("\n")}`;
   }

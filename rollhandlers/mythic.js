@@ -82,33 +82,49 @@ function getMythicProficiencyModifier(creature, rank, active = false) {
 // ------------------------------------------------------------- Rewrite Fate
 
 // What a skill check's or save's metadata carries for the Rewrite Fate
-// button: how to make the same roll again. Null when there is no button: not
-// mythic, out of Mythic Points, no token, or already rewritten (it's a
-// fortune effect, so only one applies to a check).
-function getRewriteFateMetadata(creature, call, alreadyRewritten) {
+// button: how to make the same roll again, with an id for this roll. Null
+// when there is no button: not mythic, out of Mythic Points, no linked token,
+// or already rewritten. fortune: the roll is offered with a fortune effect on,
+// for getRewriteFateLines to tell a tie on the two dice.
+function getRewriteFateMetadata(creature, call, alreadyRewritten, modifiers = []) {
   if (alreadyRewritten || !isMythicCreature(creature) || getHeroPoints(creature) < 1) {
     return null;
   }
   const token = creature?.recordId ? creature : api.getToken();
-  if (!token?._id) return null;
+  if (!token?._id || !token.recordId) return null;
   return {
     tokenId: token._id,
     tokenName: getCreatureName(token),
-    call: encodeURIComponent(JSON.stringify(call)),
+    fortune: modifiers.some((mod) => mod?.value === "advantage" && mod.active !== false),
+    call: encodeURIComponent(JSON.stringify({ ...call, rollId: generateUuid() })),
   };
 }
 
+// Whether a result was rolled with a fortune effect: two d20s, keeping the
+// higher. A tie can't tell, so it goes by what the roll was offered.
+function wasRolledWithFortune(roll, offeredFortune) {
+  const d20s = (roll?.dice || []).filter((die) => die.type === 20);
+  const dropped = d20s.find((die) => die.reason === "dropped");
+  const kept = d20s.find((die) => die.reason !== "dropped");
+  if (!dropped || !kept) return false;
+  const keptValue = parseInt(kept.value, 10);
+  const droppedValue = parseInt(dropped.value, 10);
+  return keptValue === droppedValue ? !!offeredFortune : keptValue > droppedValue;
+}
+
 // Rewrite Fate (War of Immortals pg. 78): spend a Mythic Point and reroll
-// with mythic proficiency, taking the new result. The point is spent when the
-// new result comes in, so closing the roll prompt costs nothing.
+// with mythic proficiency, taking the new result. It has the fortune trait,
+// and only one fortune effect alters a roll (Player Core pg. 400), so each
+// roll can be rewritten once: the character keeps the id of the last roll it
+// rewrote (data.rewriteFateRollId). The point is spent when the new result
+// comes in, so closing the roll prompt costs nothing.
 function rewriteFate(token, encodedCall) {
   if (!token?.data) return;
   if (!canChangeToken(token)) {
     api.showNotification("Only the GM or the character's owner can use Rewrite Fate.", "yellow", "Notice");
     return;
   }
-  const points = getHeroPoints(token);
-  if (points < 1) {
+  if (getHeroPoints(token) < 1) {
     api.showNotification(`${getCreatureName(token)} has no Mythic Points.`, "yellow", "Notice");
     return;
   }
@@ -118,40 +134,65 @@ function rewriteFate(token, encodedCall) {
   } catch (e) {
     return;
   }
-  const rewriteFateSpend = { tokenId: token._id, recordType: token.recordType, points: points - 1 };
-  if (call.kind === "skill") {
+  if (call.rollId && token.data.rewriteFateRollId === call.rollId) {
+    api.showNotification("Rewrite Fate was already used on this check.", "yellow", "Rewrite Fate");
+    return;
+  }
+  const rewriteFateSpend = { recordId: token.recordId, rollId: call.rollId, name: getCreatureName(token) };
+  const { rollId: _rollId, ...rest } = call;
+  if (rest.kind === "skill") {
     rollSkill(
       token,
-      call.skillName,
-      call.dc,
-      call.isLore,
-      call.loreSkillMod,
-      call.loreSkillTraining,
-      call.loreSkillStat,
+      rest.skillName,
+      rest.dc,
+      rest.isLore,
+      rest.loreSkillMod,
+      rest.loreSkillTraining,
+      rest.loreSkillStat,
       true,
       false,
       undefined,
-      { ...call.metadata, mythicProficiency: true, rewriteFateSpend },
+      { ...rest.metadata, mythicProficiency: true, rewriteFateSpend },
     );
-  } else if (call.kind === "save") {
-    rollSave(token, call.saveType, call.dc, call.isSpell, true, {
-      ...call.options,
+  } else if (rest.kind === "save") {
+    rollSave(token, rest.saveType, rest.dc, rest.isSpell, true, {
+      ...rest.options,
       mythicProficiency: true,
       rewriteFateSpend,
     });
   }
 }
 
-// The lines a skill check's or save's card gets: the Rewrite Fate button, or
-// on a rewritten roll, the note that the point was spent (which spends it)
-function getRewriteFateLines(metadata) {
+// What spending the point for a rewritten roll writes, read from the
+// character as the result arrives: null when this roll was already rewritten
+// (a second prompt opened by a quick second click) or no points are left
+function getRewriteFateSpendValues(character, spend) {
+  const points = getHeroPoints(character);
+  if (points < 1 || character?.data?.rewriteFateRollId === spend.rollId) return null;
+  return { "data.heroPoints": points - 1, "data.rewriteFateRollId": spend.rollId };
+}
+
+// The lines a skill check's or save's card gets: the Rewrite Fate button
+// (not on a roll that already had a fortune effect), or on a rewritten roll,
+// the note that a point is spent. Spending reads the character first and
+// says so in chat if this result can't count.
+function getRewriteFateLines(metadata, roll) {
   const spend = metadata?.rewriteFateSpend;
   if (spend) {
-    api.setValuesOnTokenById(spend.tokenId, spend.recordType, { "data.heroPoints": spend.points });
-    return [`**Rewrite Fate:** rolled with mythic proficiency, taking this result (${spend.points} Mythic Point${spend.points === 1 ? "" : "s"} left).`];
+    api.getRecord("characters", spend.recordId, (character) => {
+      const values = getRewriteFateSpendValues(character, spend);
+      if (values) {
+        api.setValuesOnRecord(character, values);
+        return;
+      }
+      api.sendMessage(
+        `${spend.name} already used Rewrite Fate on that check, or has no Mythic Points left, so the rewritten result doesn't count and no point is spent.`,
+      );
+    });
+    return ["**Rewrite Fate:** rolled with mythic proficiency, spending a Mythic Point."];
   }
   const button = metadata?.rewriteFate;
-  if (!button) return [];
+  if (!button || wasRolledWithFortune(roll, button.fortune)) return [];
   return [
     getChatButton(
       "Rewrite_Fate",

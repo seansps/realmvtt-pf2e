@@ -9348,6 +9348,7 @@ function rollSave(
     record,
     { kind: "save", saveType, dc, isSpell, options },
     options.rewriteFateSpend,
+    modifiers,
   );
   if (saveRewriteFate) metadata.rewriteFate = saveRewriteFate;
   if (options.basic) {
@@ -9938,6 +9939,7 @@ function rollSkill(
         metadata: additionalMetadata,
       },
       additionalMetadata.rewriteFateSpend,
+      modifiers,
     );
     if (skillRewriteFate) metadata.rewriteFate = skillRewriteFate;
   }
