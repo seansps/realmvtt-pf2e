@@ -1,8 +1,9 @@
 // Relics (GM Core pg. 308-309): an item with the Relic trait. Using it adds
 // what its gifts need to its chat card: the relic's level, which matches its
 // owner's; the gift DC, the higher of the owner's class DC or spell DC; the
-// spell attack and counteract modifiers, 10 lower; how many gifts a relic
-// usually has at that level (Table 2-22); and save buttons at the gift DC.
+// spell attack modifier, 10 lower; the owner's counteract modifier; how many
+// gifts a relic usually has at that level (Table 2-22); and save buttons at
+// the gift DC.
 // Which gifts a relic has is the GM's call, so they stay in the item's
 // description.
 
@@ -27,19 +28,23 @@ function getRelicGiftGuide(level) {
 
 // "The DC for any saving throw called for by a gift is the higher of its
 // owner's class DC or spell DC. The spell attack modifier of a gift is 10
-// lower than that DC." The spell DC is the best of the owner's own
-// spellcasting (not an item's, like a staff). Null without either.
+// lower than that DC. A relic's counteract modifier is equal to its owner's
+// counteract modifier": their spell attack modifier (Player Core pg. 303),
+// the best entry's data.mod, or with no spellcasting their class DC - 10.
+// Only the owner's own spellcasting counts, not an item's (a staff). Null
+// without a class DC or spell DC.
 function getRelicGiftDC(creature) {
   const classDC = parseInt(creature?.data?.classDC || "0", 10) || 0;
-  const spellDC = Math.max(
-    0,
-    ...(Array.isArray(creature?.data?.spells) ? creature.data.spells : [])
-      .filter((entry) => entry?.data?.type !== "item")
-      .map((entry) => parseInt(entry?.data?.dc || "0", 10) || 0),
+  const entries = (Array.isArray(creature?.data?.spells) ? creature.data.spells : []).filter(
+    (entry) => entry?.data?.type !== "item",
   );
+  const spellDC = Math.max(0, ...entries.map((entry) => parseInt(entry?.data?.dc || "0", 10) || 0));
   const dc = Math.max(classDC, spellDC);
   if (dc <= 0) return null;
-  return { dc, source: spellDC > classDC ? "spell DC" : "class DC", attack: dc - 10 };
+  const counteract = entries.length
+    ? Math.max(...entries.map((entry) => parseInt(entry?.data?.mod || "0", 10) || 0))
+    : classDC - 10;
+  return { dc, source: spellDC > classDC ? "spell DC" : "class DC", attack: dc - 10, counteract };
 }
 
 // The text a relic's Use card gets, or "" for anything else
@@ -50,9 +55,8 @@ function getRelicUseText(item, creature) {
   const lines = [`**Relic:** level ${level}, the same as its owner's.`];
   const gift = getRelicGiftDC(creature);
   if (gift) {
-    lines.push(
-      `**Gift DC ${gift.dc}** (${gift.source}), gift spell attack and counteract modifier +${gift.attack}.`,
-    );
+    lines.push(`**Gift DC ${gift.dc}** (${gift.source}), gift spell attack +${gift.attack}.`);
+    lines.push(`**Counteract modifier +${gift.counteract}** (the owner's).`);
   }
   if (guide.count > 0) {
     lines.push(

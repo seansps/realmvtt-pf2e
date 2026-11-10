@@ -34,16 +34,16 @@ section("Table 2-22: gifts by level");
 
 section("the gift DC: the higher of class DC or spell DC");
 {
-  assert("class DC alone", ctx.getRelicGiftDC(owner()), { dc: 25, source: "class DC", attack: 15 });
+  assert("class DC alone, counteract from it", ctx.getRelicGiftDC(owner()), { dc: 25, source: "class DC", attack: 15, counteract: 15 });
   assert(
     "a higher spell DC",
-    ctx.getRelicGiftDC(owner({ spells: [{ data: { dc: 27 } }, { data: { dc: 22 } }] })),
-    { dc: 27, source: "spell DC", attack: 17 },
+    ctx.getRelicGiftDC(owner({ spells: [{ data: { dc: 27, mod: 17 } }, { data: { dc: 22, mod: 12 } }] })),
+    { dc: 27, source: "spell DC", attack: 17, counteract: 17 },
   );
   assert(
-    "a lower spell DC",
-    ctx.getRelicGiftDC(owner({ spells: [{ data: { dc: 23 } }] })),
-    { dc: 25, source: "class DC", attack: 15 },
+    "a lower spell DC: the DC is the class DC's, counteract the spell attack",
+    ctx.getRelicGiftDC(owner({ spells: [{ data: { dc: 23, mod: 13 } }] })),
+    { dc: 25, source: "class DC", attack: 15, counteract: 13 },
   );
   assert(
     "an item's entry (a staff) doesn't count",
@@ -55,10 +55,11 @@ section("the gift DC: the higher of class DC or spell DC");
 
 section("the Use card");
 {
-  const text = ctx.getRelicUseText(relic, owner({ spells: [{ data: { dc: 27 } }] }));
+  const text = ctx.getRelicUseText(relic, owner({ spells: [{ data: { dc: 27, mod: 17 } }] }));
   assertIncludes("the owner's level", text, "level 9, the same as its owner's");
   assertIncludes("the gift DC", text, "**Gift DC 27** (spell DC)");
-  assertIncludes("attack and counteract", text, "counteract modifier +17");
+  assertIncludes("the gift attack", text, "gift spell attack +17.");
+  assertIncludes("counteract on its own line", text, "**Counteract modifier +17** (the owner's)");
   assertIncludes("the gifts table", text, "3 gifts by this level, major at most");
   assertIncludes("a Fortitude button", text, "Fortitude_Save");
   assertIncludes("a Will button at the DC", text, "Roll_Will_Save_DC27");

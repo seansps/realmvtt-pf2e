@@ -263,7 +263,7 @@ Animal companions are characters, as Foundry's PF2e Companion Compendia builds t
 
 ### Relics (gift DC on the Use card)
 
-`rollhandlers/relics.js` (global script `Relics`); GM Core pg. 308-309. Using an item with the Relic trait adds `getRelicUseText` to its card: its level (the owner's), the gift DC (`getRelicGiftDC`, the higher of `data.classDC` or the owner's own spellcasting entries' DC, not item entries), the gift spell attack and counteract modifier (10 lower), the usual number of gifts by that level (`getRelicGiftGuide`, Table 2-22), and save buttons at the DC. Gifts stay in the item's description; set relics aren't counted.
+`rollhandlers/relics.js` (global script `Relics`); GM Core pg. 308-309. Using an item with the Relic trait adds `getRelicUseText` to its card: its level (the owner's), the gift DC (`getRelicGiftDC`, the higher of `data.classDC` or the owner's own spellcasting entries' DC, not item entries), the gift spell attack (10 lower), the owner's counteract modifier (best own entry's `data.mod`, else class DC - 10), the usual number of gifts by that level (`getRelicGiftGuide`, Table 2-22), and save buttons at the DC. Gifts stay in the item's description; set relics aren't counted.
 
 ### Siege weapons (Aim, Load, Launch, misfire)
 
