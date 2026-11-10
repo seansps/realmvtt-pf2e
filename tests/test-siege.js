@@ -203,4 +203,4 @@ section("The panel");
   assertIncludes("the Vehicle Card doesn't take it", notice, "Select a vehicle's token");
 }
 
-summary();
+process.exitCode = summary() > 0 ? 1 : 0;

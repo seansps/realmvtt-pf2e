@@ -289,4 +289,4 @@ section("recovering points");
   assertIncludes("session message, others", sent[0], "start with 1 Hero Point");
 }
 
-summary();
+process.exitCode = summary() > 0 ? 1 : 0;

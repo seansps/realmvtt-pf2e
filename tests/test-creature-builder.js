@@ -377,4 +377,4 @@ section("Wiring");
   assert("nothing on the NPC main tab", fs.readFileSync(__dirname + "/../npcs-main.html", "utf8").includes("rescaleSelectedCreatures"), false);
 }
 
-summary();
+process.exitCode = summary() > 0 ? 1 : 0;

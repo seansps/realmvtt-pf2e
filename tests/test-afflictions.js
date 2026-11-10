@@ -382,4 +382,4 @@ section("An affliction spell: one save");
   assert("another spell: no affliction", plain.includes("affliction"), false);
 }
 
-summary();
+process.exitCode = summary() > 0 ? 1 : 0;

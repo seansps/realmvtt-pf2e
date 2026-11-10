@@ -233,4 +233,4 @@ section("Records: items, NPC abilities, the data to write");
     [true, true, false]);
 }
 
-summary();
+process.exitCode = summary() > 0 ? 1 : 0;

@@ -182,4 +182,4 @@ section("Wiring");
   assert("nothing on the NPC main tab", read("npcs-main.html").includes("Troop"), false);
 }
 
-summary();
+process.exitCode = summary() > 0 ? 1 : 0;

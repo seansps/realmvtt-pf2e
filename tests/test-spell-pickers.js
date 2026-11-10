@@ -397,4 +397,4 @@ section("The sheet and the wizard use them");
   assert("the script is loaded", JSON.stringify(config).includes('"file":"rollhandlers/spell-pickers.js"'), true);
 }
 
-summary();
+process.exitCode = summary() > 0 ? 1 : 0;

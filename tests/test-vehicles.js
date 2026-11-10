@@ -147,4 +147,4 @@ section("The panel");
   ["postVehicleCard()", "postVehicleCollision()"].forEach((call) => assertIncludes(`panel: ${call}`, panel, call));
 }
 
-summary();
+process.exitCode = summary() > 0 ? 1 : 0;

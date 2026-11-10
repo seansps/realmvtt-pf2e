@@ -224,4 +224,4 @@ section("In the roll prompts");
   }
 }
 
-summary();
+process.exitCode = summary() > 0 ? 1 : 0;

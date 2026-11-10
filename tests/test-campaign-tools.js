@@ -220,4 +220,4 @@ section("Downtime: spending and granting days");
   assert("Spend Days: from a fresh read", writes[0][1]["data.downtimeDays"], 4);
 }
 
-summary();
+process.exitCode = summary() > 0 ? 1 : 0;
