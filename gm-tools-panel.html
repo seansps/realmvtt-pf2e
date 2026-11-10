@@ -586,6 +586,32 @@
       </div>
     </accordion>
 
+    <!-- Troops (troops.js): a segment lost to a non-damaging effect, and
+         rout checks -->
+    <accordion size="xs" field="troopsOpen" label="Troops">
+      <label
+        label="A troop loses segments by itself as it takes damage. Select its token for either."
+        size="xs"
+        color="dimmed"
+      ></label>
+      <div style="display: flex; gap: 4px; flex-wrap: wrap; margin-top: 10px">
+        <button
+          size="xs"
+          variant="light"
+          icon="IconMinus"
+          label="Remove Segment"
+          onclick="removeSelectedTroopSegments()"
+        ></button>
+        <button
+          size="xs"
+          variant="light"
+          icon="IconRun"
+          label="Rout Check"
+          onclick="rollSelectedTroopRouts()"
+        ></button>
+      </div>
+    </accordion>
+
     <!-- Siege weapons (siege.js): the selected siege weapon token's card,
          with Aim, Load and Launch as buttons -->
     <accordion size="xs" field="siegeOpen" label="Siege Weapons">

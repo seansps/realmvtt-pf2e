@@ -5771,6 +5771,9 @@
         "Vehicles": {
           "file": "rollhandlers/vehicles.js"
         },
+        "Troops": {
+          "file": "rollhandlers/troops.js"
+        },
         "Siege": {
           "file": "rollhandlers/siege.js"
         },

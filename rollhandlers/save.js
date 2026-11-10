@@ -163,6 +163,11 @@ message += getRollNotesText(data?.roll?.metadata?.notes, noteDegree);
 // An affliction's save: what the degree does, and its Apply button
 // (afflictions.js)
 {
+  const routLines = getTroopRoutLines(data?.roll?.metadata, noteDegree);
+  if (routLines.length) {
+    message += `\n\n${routLines.join("\n")}`;
+  }
+
   const afflictionLines = getAfflictionSaveLines(data?.roll?.metadata, noteDegree);
   if (afflictionLines.length) {
     message += `\n\n${afflictionLines.join("\n")}`;

@@ -9308,6 +9308,8 @@ function rollSave(
     metadata.saverTokenId = saver.id;
     metadata.saverRecordType = saver.recordType;
   }
+  // A troop's rout check, for save.js (troops.js)
+  if (options.troopRout) metadata.troopRout = options.troopRout;
   if (options.basic) {
     metadata.basicSave = true;
   }
@@ -16439,6 +16441,13 @@ function applyDamage(
       }
 
       valuesToSet["data.curhp"] = curhp;
+      // A troop that drops below a threshold loses segments, and the
+      // threshold becomes its maximum Hit Points (troops.js)
+      const troopLoss = damage > 0 ? getTroopSegmentLoss(target, curhp) : null;
+      if (troopLoss) {
+        oldValues["data.hitpoints"] = maxHp;
+        valuesToSet["data.hitpoints"] = troopLoss.max;
+      }
       if (poolKey) {
         sharedPools[poolKey] = {
           name: getCreatureName(target),
@@ -16541,6 +16550,8 @@ function applyDamage(
         message += ` No longer dying (wounded ${valuesToSet["data.wounded"]}).`;
       }
       message += poolNote;
+      const troopLine = damage > 0 ? getTroopDamageLine(target, curhp, troopLoss) : null;
+      if (troopLine) message += `\n${troopLine}`;
 
       // Handle death conditions. Buttons (Heroic Recovery, Orc Ferocity) go
       // after the message, as its Undo button repeats the message's text.
@@ -16666,6 +16677,8 @@ function applyDamage(
       if (wakes) {
         wakeCreature(target);
       }
+
+      if (troopLoss) dyingButtons.push(...getTroopRoutButtons(target));
 
       // Build undo macro with all old values as a single batch operation
       // Include undo for both damage (damage > 0) and healing (damage < 0)
