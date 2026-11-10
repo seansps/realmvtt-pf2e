@@ -5777,6 +5777,9 @@
         "Mythic": {
           "file": "rollhandlers/mythic.js"
         },
+        "Relics": {
+          "file": "rollhandlers/relics.js"
+        },
         "Siege": {
           "file": "rollhandlers/siege.js"
         },

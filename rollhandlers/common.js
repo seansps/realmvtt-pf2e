@@ -4760,6 +4760,8 @@ performDamageRollForSpellOrItem("${record._id}","${record.recordType}", "${itemD
   }
   // A poison's or disease's Expose button (afflictions.js)
   markdownDescription += getAfflictionExposeButton(item);
+  // A relic's level, gift DC and save buttons (relics.js)
+  markdownDescription += getRelicUseText(item, typeof record !== "undefined" ? record : null);
 
   api.sendMessage(markdownDescription, undefined, recordLinks);
 
