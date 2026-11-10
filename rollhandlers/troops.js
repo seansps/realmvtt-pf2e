@@ -1,8 +1,7 @@
 // Troops (roadmap B15; NPC Core pg. 7, Battlecry! pg. 159-161). A troop loses
 // a segment as it drops below a Hit Point threshold, and that threshold
 // becomes its maximum Hit Points, so the maximum is the only state there is.
-// Rout checks and a leader's five actions are the GM's to call for: chat
-// buttons and the GM Tools panel.
+// Rout checks are the GM's to call for: chat buttons and the GM Tools panel.
 
 const TROOP_ROUT_TRAITS = ["emotion", "fear", "mental"];
 
@@ -11,14 +10,21 @@ function isTroop(creature) {
 }
 
 // The printed thresholds, highest first: [{ hp: 60, segments: 3 }, ...]. They
-// are in the HP entry, or in the troop defenses ability.
+// are in the HP entry, or in the troop defenses ability. Most print segment
+// counts ("60 (3 segments), 30 (2 segments)"); some print only the numbers
+// ("Thresholds: 90, 45"), where the highest leaves 3 segments, the next 2.
 function getTroopThresholds(creature) {
   const defenses = (creature?.data?.actions || []).find((action) => `${action.name}`.toLowerCase() === "troop defenses");
-  const read = (text) =>
-    [...`${text ?? ""}`.matchAll(/(\d+)\s*\((\d+)\s+segments?\)/gi)].map((match) => ({
+  const read = (text) => {
+    const counted = [...`${text ?? ""}`.matchAll(/(\d+)\s*\((\d+)\s+segments?\)/gi)].map((match) => ({
       hp: parseInt(match[1], 10),
       segments: parseInt(match[2], 10),
     }));
+    if (counted.length) return counted;
+    const bare = `${text ?? ""}`.replace(/<[^>]+>/g, " ").match(/thresholds?\s*:?\s*(\d+(?:\s*,\s*\d+)*)/i);
+    const values = bare ? bare[1].split(",").map((value) => parseInt(value, 10)).sort((a, b) => b - a) : [];
+    return values.map((hp, index) => ({ hp, segments: values.length + 1 - index }));
+  };
   const printed = read(creature?.data?.hpDetails);
   return (printed.length ? printed : read(defenses?.data?.description)).sort((a, b) => b.hp - a.hp);
 }
@@ -86,12 +92,18 @@ function getTroopRoutLines(metadata, degree) {
   const led = rout.led && result !== degree ? " (one degree better, for its leader)" : "";
   const frightened = (value) => [
     `**Rout:** The troop is frightened ${value}${led}.`,
-    getChatButton(`Apply_Frightened_${value}`, { _id: rout.tokenId, name: rout.name }, `api.addEffects(${JSON.stringify(Array(value).fill("Frightened"))}, token)`),
+    getChatButton(`Apply_Frightened_${value}`, { _id: rout.tokenId, name: rout.name }, `applyTroopFrightened(token, ${value})`),
   ];
   if (result >= 2) return [`**Rout:** The troop is unaffected${led}.`];
   if (result === 1) return frightened(1);
   if (result === 0) return frightened(2);
   return ["**Rout:** The troop breaks formation and runs away, and is removed from the battle."];
+}
+
+// Frightened as one gain: it takes the higher value, after Bravery-type
+// conditionGain modifiers and the immunity question
+function applyTroopFrightened(token, value) {
+  addConditionGain(token, "Frightened", value, (stacks) => api.addEffects(Array(stacks).fill("Frightened"), token));
 }
 
 // ----------------------------------------------------------- The GM panel
@@ -127,26 +139,5 @@ function removeSelectedTroopSegments() {
     api.setValuesOnTokenById(troop._id, troop.recordType, removal.values);
     const buttons = getTroopRoutButtons(troop).map((button) => `\n${button}`).join("");
     api.sendMessage(`${getTroopLossText(troop, { lost: 1, segments: removal.segments })}${buttons}`);
-  });
-}
-
-// A leader's five actions for the round (Battlecry! pg. 159)
-function getTroopActionsMessage(leader, own, troop) {
-  return `**${getCreatureName(leader)} leads their troop:** ${own} actions for themself and ${troop} for the troop. Each regains 1 reaction. Either goes first, but they can't alternate. Slowed and quickened count separately.`;
-}
-
-function postTroopLeaderActions() {
-  const leader = (api.getSelectedTokens() || []).map((selected) => selected?.token || selected)[0];
-  if (!leader) {
-    api.showNotification("Select the leader's token first.", "yellow", "Troops");
-    return;
-  }
-  const options = [
-    { label: "3 for the leader, 2 for the troop", value: "3" },
-    { label: "2 for the leader, 3 for the troop", value: "2" },
-  ];
-  api.showPrompt("Five Actions", "How are they split?", "Select...", options, null, (choice) => {
-    const own = parseInt(pick(choice), 10);
-    if (Number.isFinite(own)) api.sendMessage(getTroopActionsMessage(leader, own, 5 - own));
   });
 }

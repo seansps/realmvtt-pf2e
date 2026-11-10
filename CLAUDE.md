@@ -244,13 +244,12 @@ Animal companions are characters, as Foundry's PF2e Companion Compendia builds t
 - Collision (`postVehicleCollision`) posts a crash's save and damage for the selected vehicle.
 - Not covered: moving the token, the uncontrolled vehicle's slowing each round, initiative by piloting skill, and AC and save penalties on the token while broken (the GM's).
 
-### Troops (segments, rout checks, a leader's actions)
+### Troops (segments, rout checks)
 
-`rollhandlers/troops.js` (global script `Troops`, roadmap B15, NPC Core pg. 7, Battlecry! pg. 159-161), a Troops accordion on the GM Tools panel after Vehicles. A troop is an NPC with the Troop trait; its thresholds are read from the HP entry or the troop defenses ability ("60 (3 segments)"). `applyDamage` calls `getTroopSegmentLoss`: below a threshold the troop loses a segment and the threshold becomes `data.hitpoints`, in the same write and on the Undo, so the maximum is the only state and healing can't pass it. A troop with no printed thresholds is left alone.
+`rollhandlers/troops.js` (global script `Troops`, roadmap B15, NPC Core pg. 7, Battlecry! pg. 159-161), a Troops accordion on the GM Tools panel after Vehicles. A troop is an NPC with the Troop trait; its thresholds are read from the HP entry or the troop defenses ability ("60 (3 segments)", or bare "Thresholds: 90, 45", read as 3 and 2 segments). `applyDamage` calls `getTroopSegmentLoss`: below a threshold the troop loses a segment and the threshold becomes `data.hitpoints`, in the same write and on the Undo, so the maximum is the only state and healing can't pass it. A troop with no printed thresholds is left alone.
 
-- **Rout Check** (`promptTroopRout`, a chat button on the loss and on the panel): the GM's call, since rout checks are for skirmishes. It asks the enemy's level and whether there's a leader, then rolls Will against that level's DC; `metadata.troopRout` makes `save.js` add `getTroopRoutLines` (a leader makes it one degree better). Mindless troops and those immune to its traits get no button.
+- **Rout Check** (`promptTroopRout`, a chat button on the loss and on the panel): the GM's call, since rout checks are for skirmishes. It asks the enemy's level and whether there's a leader, then rolls Will against that level's DC; `metadata.troopRout` makes `save.js` add `getTroopRoutLines` (a leader makes it one degree better). Its Apply Frightened button goes through `addConditionGain` (`applyTroopFrightened`), so it takes the higher value. Mindless troops and those immune to its traits get no button.
 - **Remove Segment** (`getTroopRemovalValues`): for a non-damaging effect that takes a segment out.
-- **Five Actions** (`postTroopLeaderActions`): the leader's split as a card. Nothing links a leader to a troop, so there's no turn-start prompt.
 
 ### Siege weapons (Aim, Load, Launch, misfire)
 

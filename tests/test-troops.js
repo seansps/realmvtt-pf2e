@@ -1,5 +1,5 @@
 // Tests for troops (troops.js, roadmap B15): segments and thresholds, rout
-// checks, removing a segment and a leader's actions (NPC Core pg. 7,
+// checks and removing a segment (NPC Core pg. 7,
 // Battlecry! pg. 159-161).
 
 const fs = require("fs");
@@ -29,6 +29,8 @@ section("Thresholds");
   const fromAbility = troop({ hpDetails: "void healing", actions: [{ name: "Troop Defenses", data: { description: "<p><strong>Thresholds</strong> 40 (3 segments), 20 (2 segments)</p><p>leaving three segments (12 squares)</p>" } }] });
   assert("or from troop defenses", ctx.getTroopThresholds(fromAbility).map((t) => t.hp), [40, 20]);
   assert("none printed", ctx.getTroopThresholds(troop({ hpDetails: "" })).length, 0);
+  assert("bare numbers (Harvest Regiment): 3 then 2 segments", JSON.parse(JSON.stringify(ctx.getTroopThresholds(troop({ hpDetails: "Thresholds: 90, 45" })))), [{ hp: 90, segments: 3 }, { hp: 45, segments: 2 }]);
+  assert("unrelated numbers aren't thresholds", ctx.getTroopThresholds(troop({ hpDetails: "fast healing 10" })).length, 0);
   assert("a troop", ctx.isTroop(troop()), true);
   assert("not a troop", ctx.isTroop({ data: { traits: ["Humanoid"] } }), false);
 }
@@ -65,9 +67,9 @@ section("Rout checks");
   const rout = (led) => ({ troopRout: { tokenId: "troop-1", name: "Battalion", led } });
   assertIncludes("critical success", ctx.getTroopRoutLines(rout(false), 2)[0], "unaffected");
   assertIncludes("success", ctx.getTroopRoutLines(rout(false), 1)[0], "frightened 1");
-  assertIncludes("... its button", ctx.getTroopRoutLines(rout(false), 1)[1], 'api.addEffects(["Frightened"], token)');
+  assertIncludes("... its button", ctx.getTroopRoutLines(rout(false), 1)[1], "applyTroopFrightened(token, 1)");
   assertIncludes("failure", ctx.getTroopRoutLines(rout(false), 0)[0], "frightened 2");
-  assertIncludes("... two stacks", ctx.getTroopRoutLines(rout(false), 0)[1], '["Frightened","Frightened"]');
+  assertIncludes("... at 2", ctx.getTroopRoutLines(rout(false), 0)[1], "applyTroopFrightened(token, 2)");
   assertIncludes("critical failure", ctx.getTroopRoutLines(rout(false), -1)[0], "removed from the battle");
 
   assertIncludes("led: a critical failure is a failure", ctx.getTroopRoutLines(rout(true), -1)[0], "frightened 2");
@@ -76,6 +78,17 @@ section("Rout checks");
   assertIncludes("led: a success is a critical success", ctx.getTroopRoutLines(rout(true), 1)[0], "unaffected");
   assert("led: a critical success has nowhere to go", ctx.getTroopRoutLines(rout(true), 2)[0].includes("for its leader"), false);
   assert("not a rout check", ctx.getTroopRoutLines({}, 1).length, 0);
+
+  const added = [];
+  const realAdd = ctx.api.addEffects;
+  ctx.api.addEffects = (effects) => added.push(effects.length);
+  const frightened = (value) => ({ ...troop(), effects: [{ _id: "f", name: "Frightened" }], effectIds: Array(value).fill("f") });
+  ctx.applyTroopFrightened(troop(), 2);
+  ctx.applyTroopFrightened(frightened(1), 1);
+  ctx.applyTroopFrightened(frightened(1), 2);
+  ctx.applyTroopFrightened(frightened(2), 1);
+  assert("Apply Frightened takes the higher value", added, [2, 1]);
+  ctx.api.addEffects = realAdd;
   assert("no DC", ctx.getTroopRoutLines(rout(false), null).length, 0);
 }
 
@@ -150,17 +163,6 @@ section("The panel's actions");
 
   ctx.rollSave = realRollSave;
 
-  reset();
-  selected = [];
-  ctx.postTroopLeaderActions();
-  assertIncludes("no leader selected", notice, "Select the leader's token");
-
-  reset();
-  selected = [{ token: { _id: "pc", name: "Valeros", data: {} } }];
-  prompts = ["2"];
-  ctx.postTroopLeaderActions();
-  assertIncludes("the split", messages[0], "2 actions for themself and 3 for the troop");
-  assertIncludes("the reactions", messages[0], "Each regains 1 reaction");
 }
 
 section("Wiring");
@@ -175,7 +177,7 @@ section("Wiring");
   assertIncludes("rollSave carries it", common, "metadata.troopRout = options.troopRout");
   assertIncludes("save.js shows it", read("rollhandlers/save.js"), "getTroopRoutLines(data?.roll?.metadata, noteDegree)");
   const panel = read("gm-tools-panel.html");
-  ["removeSelectedTroopSegments()", "rollSelectedTroopRouts()", "postTroopLeaderActions()"].forEach((call) => assertIncludes(call, panel, call));
+  ["removeSelectedTroopSegments()", "rollSelectedTroopRouts()"].forEach((call) => assertIncludes(call, panel, call));
   assertIncludes("the global script", read("ruleset.config.json"), "rollhandlers/troops.js");
   assert("nothing on the NPC main tab", read("npcs-main.html").includes("Troop"), false);
 }
