@@ -118,7 +118,10 @@ api.getRecord("characters", recordId, (record) => {
   // Heroic Recovery: when the dying value would increase
   const token = api.getToken();
   const tokenId = metadata.tokenId || token?._id;
-  if (degreeOfSuccess <= 0 && tokenId && getHeroPoints(record) > 0) {
+  if (result.mythicDeath) {
+    message += `\n\n${getMythicDeathLine(record?.name || "The character", result.mythicDeath)}`;
+  }
+  if (degreeOfSuccess <= 0 && tokenId && canSpendHeroPoint(record)) {
     message += `\n${getChatButton("Heroic_Recovery", { _id: tokenId, name: record?.name }, "heroicRecovery(token)")}`;
   }
 
@@ -127,6 +130,10 @@ api.getRecord("characters", recordId, (record) => {
 
   // Apply the changes
   api.setValuesOnRecord(record, result.values);
+
+  if (result.mythicDeath && token) {
+    api.addEffect("Doomed", token);
+  }
 
   if (result.dead && token) {
     api.addEffect("Dead", token);

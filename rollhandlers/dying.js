@@ -245,6 +245,16 @@ function getZeroHitPointsChanges(target, { critical = false, criticalLabel = "cr
         : `${name} gains Dying ${next}${critical ? ` (${criticalLabel || "critical hit"} increases dying by 2)` : ""}.`,
     );
     dead = threshold <= 0 || next >= threshold;
+    // A mythic character gains doomed and stabilizes instead (mythic.js)
+    const mythicDeath = dead ? getMythicDeathResult(target) : null;
+    if (mythicDeath && !mythicDeath.dead) {
+      dead = false;
+      valuesToSet["data.dying"] = 0;
+      oldValues["data.wounded"] = getWoundedValue(target);
+      valuesToSet["data.wounded"] = mythicDeath.wounded;
+      effects.push("Doomed");
+      lines.push(getMythicDeathLine(name, mythicDeath));
+    }
     if (dead) {
       effects.push("Dead");
       lines.push(`**[center][color=red]DEAD (Dying ${next})[/color][/center]**`);
@@ -258,7 +268,7 @@ function getZeroHitPointsChanges(target, { critical = false, criticalLabel = "cr
   }
 
   // Heroic Recovery: when the dying value would increase
-  if (!(nonlethal && dying === 0) && getHeroPoints(target) > 0) {
+  if (!(nonlethal && dying === 0) && canSpendHeroPoint(target)) {
     buttons.push(getChatButton("Heroic_Recovery", target, "heroicRecovery(token)"));
   }
   // Orc Ferocity: when the creature would be reduced to 0 Hit Points
@@ -550,7 +560,7 @@ function getRecoveryCheckPrompt(token) {
     `**${getCreatureName(token)} is dying** (dying ${dying}, dies at dying ${getDeathThreshold(token)}). Attempt a recovery check: DC ${getRecoveryCheckDC(token, dying)} flat check.`,
     getChatButton("Roll_Recovery_Check", token, "rollRecoveryCheckFor(token)"),
   ];
-  if (getHeroPoints(token) > 0) {
+  if (canSpendHeroPoint(token)) {
     lines.push(getChatButton("Heroic_Recovery", token, "heroicRecovery(token)"));
   }
   return lines.join("\n");
@@ -586,6 +596,17 @@ function getRecoveryCheckResult(creature, degree) {
   const change = { 2: -2, 1: -1, 0: 1, "-1": 2 }[degree] ?? 0;
   const cap = threshold > 0 ? threshold : Infinity;
   const next = Math.max(0, Math.min(dying + change, cap));
+  // A mythic character gains doomed and stabilizes instead (mythic.js)
+  const mythicDeath =
+    threshold <= 0 || (next > 0 && next >= threshold) ? getMythicDeathResult(creature) : null;
+  if (mythicDeath && !mythicDeath.dead) {
+    return {
+      values: { "data.dying": 0, "data.wounded": mythicDeath.wounded },
+      dying: 0,
+      dead: false,
+      mythicDeath,
+    };
+  }
   const values = { "data.dying": next };
   if (dying > 0 && next === 0) {
     values["data.wounded"] = Math.min(getWoundedValue(creature) + 1, getWoundedMax(creature));

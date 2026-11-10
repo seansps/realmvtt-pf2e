@@ -289,6 +289,10 @@ message += getRollNotesText(data?.roll?.metadata?.notes, noteDegree);
 const bravadoLines = getBravadoLines(data?.roll?.metadata?.bravado, noteDegree);
 if (bravadoLines.length > 0) message += `\n\n${bravadoLines.join("\n")}`;
 
+// Rewrite Fate's button, or the Mythic Point it spent (mythic.js)
+const rewriteFateLines = getRewriteFateLines(data?.roll?.metadata);
+if (rewriteFateLines.length > 0) message += `\n\n${rewriteFateLines.join("\n")}`;
+
 // An attack-trait action (Grapple, Trip...) goes in the creature's log for
 // this turn (attack-log.js)
 logTurnAttack(data?.roll?.metadata?.turnAttack, noteDegree);

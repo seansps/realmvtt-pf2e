@@ -7316,10 +7316,11 @@ function getVariantRules() {
     proficiencyWithoutLevel: isOn("proficiencyWithoutLevel"),
     ancestryParagon: isOn("ancestryParagon"),
     gradualBoosts: isOn("gradualAbilityBoosts"),
+    mythic: isOn("mythicRules"),
   };
 }
 
-const FEAT_SLOT_TYPES = ["ancestry", "class", "archetype", "general", "skill"];
+const FEAT_SLOT_TYPES = ["ancestry", "class", "archetype", "general", "skill", "mythic"];
 
 // The levels at which a character gains each kind of feat. A level listed
 // twice grants two slots at that level.
@@ -7332,6 +7333,7 @@ function getFeatSlotLevels(record, variants = getVariantRules()) {
     ancestry: toLevels(classObj?.data?.ancestryFeatLevels),
     class: toLevels(classObj?.data?.classFeatLevels),
     archetype: [],
+    mythic: [],
     general: toLevels(classObj?.data?.generalFeatLevels),
     skill: toLevels(classObj?.data?.skillFeatLevels),
   };
@@ -7347,6 +7349,13 @@ function getFeatSlotLevels(record, variants = getVariantRules()) {
     levels.archetype = [2, 4, 6, 8, 10, 12, 14, 16, 18, 20];
   }
 
+  // Mythic: an extra feat at 2nd level and every even level after, only for
+  // mythic feats (War of Immortals pg. 77). One who gains a Calling later
+  // gets the lower levels' slots at once.
+  if (variants.mythic && hasMythicCalling(record)) {
+    levels.mythic = [2, 4, 6, 8, 10, 12, 14, 16, 18, 20];
+  }
+
   return levels;
 }
 
@@ -7354,6 +7363,7 @@ const FEAT_SLOT_NAMES = {
   ancestry: "Ancestry Feat Slot",
   class: "Class Feat Slot",
   archetype: "Archetype Feat Slot",
+  mythic: "Mythic Feat Slot",
   general: "General Feat Slot",
   skill: "Skill Feat Slot",
 };
@@ -7375,6 +7385,17 @@ function setFeatSlots(record, valuesToSet) {
   const hideArchetypeFeats = !variants.freeArchetype && !hasArchetypeFeats;
   if (record.fields?.archetypeFeatsBox?.hidden !== hideArchetypeFeats) {
     valuesToSet["fields.archetypeFeatsBox.hidden"] = hideArchetypeFeats;
+  }
+
+  // The Mythic Feats section, while the character is mythic or still holds
+  // mythic feats
+  const hideMythicFeats =
+    slotLevels.mythic.length === 0 &&
+    !(record.data?.feats || []).some(
+      (feat) => feat.data?.featSlotType === "mythic" && feat.data?.type !== "slot",
+    );
+  if (record.fields?.mythicFeatsBox?.hidden !== hideMythicFeats) {
+    valuesToSet["fields.mythicFeatsBox.hidden"] = hideMythicFeats;
   }
 
   // Without a class there is nothing to build slots from
@@ -9223,15 +9244,26 @@ function rollSave(
   // Determine the attribute for this save
   const attribute = getSaveAttribute(saveType);
 
-  // Fortune / misfortune on this save
-  modifiers.push(
-    ...getRollTwiceModifiers(
-      record,
-      [saveType, attribute, "saving-throw"],
-      undefined,
-      context,
-    ),
+  // Mythic proficiency, for an ability that says to use it (mythic.js)
+  const mythicSaveModifier = getMythicProficiencyModifier(
+    record,
+    parseInt(record.data?.[saveType] || "0", 10),
+    options.mythicProficiency,
   );
+  if (mythicSaveModifier) modifiers.push(mythicSaveModifier);
+
+  // Fortune / misfortune on this save. Rewrite Fate is a reroll, which
+  // ignores them
+  if (!options.rewriteFateSpend) {
+    modifiers.push(
+      ...getRollTwiceModifiers(
+        record,
+        [saveType, attribute, "saving-throw"],
+        undefined,
+        context,
+      ),
+    );
+  }
 
   // Get all bonuses/penalties that apply to the save's attribute, or to all
   // saving throws (Imperial Blood Magic's saves choice)
@@ -9310,6 +9342,14 @@ function rollSave(
   }
   // A troop's rout check, for save.js (troops.js)
   if (options.troopRout) metadata.troopRout = options.troopRout;
+  // Rewrite Fate's button, or the point it spends (mythic.js)
+  if (options.rewriteFateSpend) metadata.rewriteFateSpend = options.rewriteFateSpend;
+  const saveRewriteFate = getRewriteFateMetadata(
+    record,
+    { kind: "save", saveType, dc, isSpell, options },
+    options.rewriteFateSpend,
+  );
+  if (saveRewriteFate) metadata.rewriteFate = saveRewriteFate;
   if (options.basic) {
     metadata.basicSave = true;
   }
@@ -9807,15 +9847,26 @@ function rollSkill(
     : []
   ).forEach((mod) => modifiers.push(mod));
 
-  // Fortune / misfortune on this check (initiative too)
-  modifiers.push(
-    ...getRollTwiceModifiers(
-      record,
-      [...skillSelectors, attribute, ...(isInitiative ? ["initiative"] : [])].filter(Boolean),
-      undefined,
-      context,
-    ),
+  // Mythic proficiency, for an ability that says to use it (mythic.js)
+  const mythicSkillModifier = getMythicProficiencyModifier(
+    record,
+    isLore ? loreSkillTraining : parseInt(record.data?.[skill] || "0", 10),
+    additionalMetadata.mythicProficiency,
   );
+  if (mythicSkillModifier) modifiers.push(mythicSkillModifier);
+
+  // Fortune / misfortune on this check (initiative too). Rewrite Fate is a
+  // reroll, which ignores them
+  if (!additionalMetadata.rewriteFateSpend) {
+    modifiers.push(
+      ...getRollTwiceModifiers(
+        record,
+        [...skillSelectors, attribute, ...(isInitiative ? ["initiative"] : [])].filter(Boolean),
+        undefined,
+        context,
+      ),
+    );
+  }
 
   // Get degree of success adjustments for both the skill and its attribute
   const degreeOfSuccessAdjustments = getDegreeOfSuccessAdjustments(
@@ -9830,6 +9881,7 @@ function rollSkill(
   const {
     extraModifiers: _extraModifiers,
     targetNotes: _targetNotes,
+    mythicProficiency: _mythicProficiency,
     ...metadataExtras
   } = additionalMetadata;
   // Who gains panache from a bravado check (class-extras.js)
@@ -9870,6 +9922,26 @@ function rollSkill(
     metadata.tooltip = `Perception Check`;
   }
 
+  // Rewrite Fate's button: skill checks only, and not initiative, which a
+  // new roll can't replace (mythic.js)
+  if (!isPerception && !isInitiative) {
+    const skillRewriteFate = getRewriteFateMetadata(
+      record,
+      {
+        kind: "skill",
+        skillName,
+        dc,
+        isLore,
+        loreSkillMod,
+        loreSkillTraining,
+        loreSkillStat,
+        metadata: additionalMetadata,
+      },
+      additionalMetadata.rewriteFateSpend,
+    );
+    if (skillRewriteFate) metadata.rewriteFate = skillRewriteFate;
+  }
+
   // Add DC if provided
   if (dc !== null && dc !== undefined) {
     metadata.dc = dc;
@@ -9901,7 +9973,7 @@ function rollSkill(
     }
   };
   // Assurance: roll, or take 10 + the proficiency bonus (check-tools.js)
-  if (isInitiative || isPerception || isNPC) {
+  if (isInitiative || isPerception || isNPC || additionalMetadata.rewriteFateSpend) {
     roll();
     return;
   }
@@ -13026,6 +13098,10 @@ function performAttackRoll(record, weapon, weaponDataPath, attackNumber) {
         active: true,
       });
     }
+
+    // Mythic proficiency, for an ability that says to use it (mythic.js)
+    const mythicStrikeModifier = getMythicProficiencyModifier(record, weaponProficiency);
+    if (mythicStrikeModifier) modifiers.push(mythicStrikeModifier);
 
     // Get bonuses for potency runes (Automatic Bonus Progression replaces
     // them with attack potency for all weapons and unarmed attacks)
@@ -17736,7 +17812,7 @@ function getLevelUpGains(record, newLevel, variants = getVariantRules()) {
   // One entry per feat slot gained, so a type can appear twice
   const slotLevels = getFeatSlotLevels(record, variants);
   const featTypes = [];
-  for (const featType of ["ancestry", "class", "archetype", "skill", "general"]) {
+  for (const featType of ["ancestry", "class", "archetype", "skill", "general", "mythic"]) {
     for (const level of slotLevels[featType]) {
       if (level === newLevel) {
         featTypes.push(featType);
@@ -17879,7 +17955,9 @@ function getFeatSlotQuery(record, featSlotType, featSlotLevel) {
         { "data.level": { $exists: false } },
         { "data.level": null },
       ],
-      ...(featSlotType === "general"
+      ...(featSlotType === "mythic"
+        ? { "data.traits": { $elemMatch: { $regex: "^Mythic$", $options: "i" } } }
+        : featSlotType === "general"
         ? { "data.type": { $in: ["general", "skill"] } }
         : featSlotType === "archetype"
           ? { "data.type": { $in: ["class", "skill"] } }
@@ -18533,6 +18611,13 @@ function updateVariantRuleFields(record, valuesToSet) {
   const key = getVariantRulesKey(variants);
   if ((record.data?.variantRulesKey || "") !== key) {
     valuesToSet["data.variantRulesKey"] = key;
+  }
+
+  // The Hero Points counter holds Mythic Points for a mythic character
+  // (mythic.js)
+  const heroPointsLabel = getHeroPointsLabel(record);
+  if ((record.data?.heroPtsLabel || "Hero Points") !== heroPointsLabel) {
+    valuesToSet["data.heroPtsLabel"] = heroPointsLabel;
   }
 
   // Show each free boost set the level has reached, or that still holds boosts

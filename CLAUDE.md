@@ -251,6 +251,16 @@ Animal companions are characters, as Foundry's PF2e Companion Compendia builds t
 - **Rout Check** (`promptTroopRout`, a chat button on the loss and on the panel): the GM's call, since rout checks are for skirmishes. It asks the enemy's level and whether there's a leader, then rolls Will against that level's DC; `metadata.troopRout` makes `save.js` add `getTroopRoutLines` (a leader makes it one degree better). Its Apply Frightened button goes through `addConditionGain` (`applyTroopFrightened`), so it takes the higher value. Mindless troops and those immune to its traits get no button.
 - **Remove Segment** (`getTroopRemovalValues`): for a non-damaging effect that takes a segment out.
 
+### Mythic rules (Mythic Points, Rewrite Fate, mythic dying)
+
+`rollhandlers/mythic.js` (global script `Mythic`), for the `mythicRules` setting; War of Immortals pg. 76-79. A character is mythic with the setting on and a Calling (`hasMythicCalling`: a feature of the Calling type or the Calling trait).
+- Mythic Points: `data.heroPoints`, relabeled by `data.heroPtsLabel` (`updateVariantRuleFields`, session start), so there's no new sheet control. `startHeroPointSession` gives 3, `awardHeroPoint` says Mythic Point; the context-menu reroll refuses, and Heroic Recovery isn't offered (`canSpendHeroPoint`).
+- Mythic proficiency: `getMythicProficiencyModifier`, an opt-in worth the difference from the rank's bonus, on skill, Perception, save and Strike prompts.
+- Rewrite Fate: `rollSkill` and `rollSave` put how to repeat the roll in `metadata.rewriteFate` (not Perception or initiative); `skill.js` and `save.js` show the button (`getRewriteFateLines`). `rewriteFate` reruns the roll with mythic proficiency on, without fortune or misfortune or Assurance, and the point is spent when the result arrives, so closing the prompt costs nothing.
+- Mythic dying: `getMythicDeathResult` in `getZeroHitPointsChanges` and `getRecoveryCheckResult`.
+- Mythic feats: `mythic` slots at even levels in `getFeatSlotLevels`, in the Feats tab's `mythicFeatsBox`.
+- GM Tools, Mythic: New Session, Slain Foe, Mythic Deed, +1 Point, Anathema. Monsters' mythic abilities are their printed text.
+
 ### Siege weapons (Aim, Load, Launch, misfire)
 
 `rollhandlers/siege.js` (global script `Siege`, roadmap B10, Guns & Gears pg. 72-73 and 172), a Siege Weapons accordion on the GM Tools panel after Vehicles. A siege weapon is any NPC with Aim and Launch (or Fire) actions (`isSiegeToken`), best typed Vehicle for its Crew, AC, Hardness and Speed fields (`isVehicleToken` is false for one, so the Vehicle Card doesn't take it); the actions' descriptions are the stat block's text, and nothing is added to its sheet. Proficiency is read from the crew text ("2-4; Proficiency martial") or the description, black powder from the description or traits. No module has siege weapon records yet.

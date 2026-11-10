@@ -59,6 +59,17 @@
     const isArchetypeFeat = (feat?.data?.traits || []).some(
       (trait) => `${trait}`.toLowerCase() === "archetype"
     );
+    const isMythicFeat = (feat?.data?.traits || []).some(
+      (trait) => `${trait}`.toLowerCase() === "mythic"
+    );
+    if (featSlotType === "mythic" && !isMythicFeat) {
+      api.showNotification(
+        `This slot only accepts Mythic feats.`,
+        "red",
+        "Feat Type Mismatch"
+      );
+      return;
+    }
     if (featSlotType === "archetype" && !isArchetypeFeat) {
       api.showNotification(
         `This slot only accepts Archetype feats.`,
