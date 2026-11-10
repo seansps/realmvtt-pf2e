@@ -261,6 +261,10 @@ Animal companions are characters, as Foundry's PF2e Companion Compendia builds t
 - Mythic feats: `mythic` slots at even levels in `getFeatSlotLevels`, in the Feats tab's `mythicFeatsBox`.
 - GM Tools, Mythic: New Session, Slain Foe, Mythic Deed, +1 Point, Anathema. Monsters' mythic abilities are their printed text.
 
+### Relics (gift DC on the Use card)
+
+`rollhandlers/relics.js` (global script `Relics`); GM Core pg. 308-309. Using an item with the Relic trait adds `getRelicUseText` to its card: its level (the owner's), the gift DC (`getRelicGiftDC`, the higher of `data.classDC` or the owner's own spellcasting entries' DC, not item entries), the gift spell attack (10 lower), the owner's counteract modifier (best own entry's `data.mod`, else class DC - 10), the usual number of gifts by that level (`getRelicGiftGuide`, Table 2-22), and save buttons at the DC. Gifts stay in the item's description; set relics aren't counted.
+
 ### Siege weapons (Aim, Load, Launch, misfire)
 
 `rollhandlers/siege.js` (global script `Siege`, roadmap B10, Guns & Gears pg. 72-73 and 172), a Siege Weapons accordion on the GM Tools panel after Vehicles. A siege weapon is any NPC with Aim and Launch (or Fire) actions (`isSiegeToken`), best typed Vehicle for its Crew, AC, Hardness and Speed fields (`isVehicleToken` is false for one, so the Vehicle Card doesn't take it); the actions' descriptions are the stat block's text, and nothing is added to its sheet. Proficiency is read from the crew text ("2-4; Proficiency martial") or the description, black powder from the description or traits. No module has siege weapon records yet.

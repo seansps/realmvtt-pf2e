@@ -140,4 +140,4 @@ section("Spell Blending: at daily preparations");
   assert("another thesis: no prompt, straight on", [prompts.length, sets.length, next], [0, 0, 1]);
 }
 
-summary();
+process.exitCode = summary() > 0 ? 1 : 0;

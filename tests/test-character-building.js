@@ -180,4 +180,4 @@ section("Starting wealth");
   assert("level 0: a notice, no prompt", [prompts.length, notifications.length], [0, 1]);
 }
 
-summary();
+process.exitCode = summary() > 0 ? 1 : 0;

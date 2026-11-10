@@ -239,4 +239,4 @@ section("skill.js shows the lines");
   assertIncludes("hooked in", code, "getChallengeResultLines(data?.roll?.metadata?.challenge, noteDegree)");
 }
 
-summary();
+process.exitCode = summary() > 0 ? 1 : 0;

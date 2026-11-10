@@ -172,4 +172,4 @@ section("The panel");
   );
 }
 
-summary();
+process.exitCode = summary() > 0 ? 1 : 0;

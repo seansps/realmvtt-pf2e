@@ -398,4 +398,4 @@ section("Runes: transferring");
   assert("and the rune moves", completion["data.inventory"][1].data.runes.property, ["greaterFlaming"]);
 }
 
-summary();
+process.exitCode = summary() > 0 ? 1 : 0;
