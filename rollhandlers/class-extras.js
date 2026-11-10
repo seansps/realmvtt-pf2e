@@ -56,9 +56,20 @@ function startHeroPointSession() {
       api.showNotification("Open the Party Sheet from the View menu and drag the characters onto it.", "yellow", "Hero Points");
       return;
     }
-    members.forEach((member) => api.setValuesOnRecord(member, { "data.heroPoints": 1 }));
+    // Mythic characters start with 3 Mythic Points instead (mythic.js)
+    members.forEach((member) => api.setValuesOnRecord(member, getSessionStartValues(member)));
+    const names = (list) => list.map((member) => getCreatureName(member)).join(", ");
+    const mythic = members.filter(isMythicCreature);
+    const others = members.filter((member) => !isMythicCreature(member));
     api.sendMessage(
-      `**New session:** ${members.map((member) => getCreatureName(member)).join(", ")} each start with 1 Hero Point. Unspent ones from last session are lost.`,
+      [
+        others.length > 0
+          ? `**New session:** ${names(others)} each start with 1 Hero Point. Unspent ones from last session are lost.`
+          : "",
+        mythic.length > 0 ? `**New session:** ${names(mythic)} each start with 3 Mythic Points.` : "",
+      ]
+        .filter(Boolean)
+        .join("\n\n"),
     );
   });
 }
@@ -82,11 +93,11 @@ function awardHeroPoint() {
     const values = getHeroPointAwardValues(token);
     const name = getCreatureName(token);
     if (!values) {
-      api.sendMessage(`${name} already has ${HERO_POINTS_MAX} Hero Points, the most a character can have.`, undefined, [], [], token);
+      api.sendMessage(`${name} already has ${HERO_POINTS_MAX} ${getMythicPointName(token)}s, the most a character can have.`, undefined, [], [], token);
       return;
     }
     api.setValuesOnTokenById(token._id, token.recordType, values);
-    api.sendMessage(`${name} gains a Hero Point (${values["data.heroPoints"]}).`, undefined, [], [], token);
+    api.sendMessage(`${name} gains a ${getMythicPointName(token)} (${values["data.heroPoints"]}).`, undefined, [], [], token);
   });
 }
 

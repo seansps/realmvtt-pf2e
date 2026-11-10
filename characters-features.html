@@ -159,6 +159,35 @@
         ></list>
       </box>
 
+      <box field="mythicFeatsBox" hidden="true">
+        <div
+          style="
+            display: flex;
+            flex-direction: row;
+            width: 100%;
+            gap: 4px;
+            background-color: rgb(
+              from var(--mantine-color-yellow-filled) r g b / 0.25
+            );
+            border-radius: 4px;
+            margin-bottom: 4px;
+            padding: 0px 4px;
+          "
+        >
+          <label
+            class="rvtt-sheet-label rvtt-sheet-label--accent"
+            label="Mythic Feats"
+          ></label>
+        </div>
+
+        <list
+          listtype="feats_list"
+          field="feats"
+          getfilters="return getSlotFilters('mythic');"
+          emptylisttext="No Mythic Feat Slots"
+        ></list>
+      </box>
+
       <div
         style="
           display: flex;

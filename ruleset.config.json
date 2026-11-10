@@ -5774,6 +5774,9 @@
         "Troops": {
           "file": "rollhandlers/troops.js"
         },
+        "Mythic": {
+          "file": "rollhandlers/mythic.js"
+        },
         "Siege": {
           "file": "rollhandlers/siege.js"
         },
@@ -5844,6 +5847,21 @@
         "name": "Variant: Free Archetype",
         "key": "freeArchetype",
         "description": "GM Core pg. 84. Characters gain an extra class feat at 2nd level and every even level after, usable only for archetype feats.",
+        "values": [
+          {
+            "label": "No",
+            "value": "no"
+          },
+          {
+            "label": "Yes",
+            "value": "yes"
+          }
+        ]
+      },
+      {
+        "name": "Mythic Rules",
+        "key": "mythicRules",
+        "description": "War of Immortals pg. 76-79. A character with a Calling is mythic: the Hero Points counter holds 3 Mythic Points, Rewrite Fate rerolls skill checks and saves, it gains mythic feats at even levels, and at the dying value that would kill it, it gains doomed instead of dying.",
         "values": [
           {
             "label": "No",

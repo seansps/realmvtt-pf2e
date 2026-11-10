@@ -612,6 +612,52 @@
       </div>
     </accordion>
 
+    <!-- Mythic (mythic.js): Mythic Points, for campaigns using the setting -->
+    <accordion size="xs" field="mythicOpen" label="Mythic">
+      <label
+        label="For the Mythic Rules setting. Slain Foe needs the one who defeated it selected; +1 Point and Anathema need the characters selected."
+        size="xs"
+        color="dimmed"
+      ></label>
+      <div style="display: flex; gap: 4px; flex-wrap: wrap; margin-top: 10px">
+        <button
+          size="xs"
+          variant="light"
+          icon="IconCrown"
+          label="New Session"
+          onclick="startHeroPointSession()"
+        ></button>
+        <button
+          size="xs"
+          variant="light"
+          icon="IconSkull"
+          label="Slain Foe"
+          onclick="awardMythicSlaying()"
+        ></button>
+        <button
+          size="xs"
+          variant="light"
+          icon="IconStar"
+          label="Mythic Deed"
+          onclick="awardMythicDeed()"
+        ></button>
+        <button
+          size="xs"
+          variant="light"
+          icon="IconPlus"
+          label="+1 Point"
+          onclick="awardHeroPoint()"
+        ></button>
+        <button
+          size="xs"
+          variant="light"
+          icon="IconBan"
+          label="Anathema"
+          onclick="loseMythicPoints()"
+        ></button>
+      </div>
+    </accordion>
+
     <!-- Siege weapons (siege.js): the selected siege weapon token's card,
          with Aim, Load and Launch as buttons -->
     <accordion size="xs" field="siegeOpen" label="Siege Weapons">
