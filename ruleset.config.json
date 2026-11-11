@@ -5780,6 +5780,9 @@
         "Relics": {
           "file": "rollhandlers/relics.js"
         },
+        "Stamina": {
+          "file": "rollhandlers/stamina.js"
+        },
         "Siege": {
           "file": "rollhandlers/siege.js"
         },
@@ -5865,6 +5868,21 @@
         "name": "Mythic Rules",
         "key": "mythicRules",
         "description": "War of Immortals pg. 76-79. A character with a Calling is mythic: the Hero Points counter holds 3 Mythic Points, Rewrite Fate rerolls skill checks and saves, it gains mythic feats at even levels, and at the dying value that would kill it, it gains doomed instead of dying.",
+        "values": [
+          {
+            "label": "No",
+            "value": "no"
+          },
+          {
+            "label": "Yes",
+            "value": "yes"
+          }
+        ]
+      },
+      {
+        "name": "Variant: Stamina and Resolve",
+        "key": "staminaVariant",
+        "description": "Gamemastery Guide pg. 200. Half of each class's Hit Points become Stamina Points (plus Constitution), which damage takes before Hit Points. Resolve Points (up to the key attribute modifier) pay for Take a Breather, which refills Stamina. A night's rest refills both. Both show on the Notes tab.",
         "values": [
           {
             "label": "No",

@@ -237,6 +237,8 @@ function getLimitedUseRecharges(creature, point) {
       }
     });
   }
+  // A night's rest also brings back all Stamina and Resolve (stamina.js)
+  if (point === "dailyPreparations") Object.assign(values, getRestStaminaValues(creature));
   return values;
 }
 
@@ -271,14 +273,15 @@ function describeLimitedUseRecharges(creature, values) {
       return creature?.data?.[list]?.[index]?.name;
     })
     .filter(Boolean);
+  const staminaText = values["data.stamina"] !== undefined ? " Stamina and Resolve back to full." : "";
   if (names.length === 0) {
-    return "";
+    return staminaText;
   }
   const list =
     names.length === 1
       ? names[0]
       : `${names.slice(0, -1).join(", ")} and ${names[names.length - 1]}`;
-  return ` Uses back: ${list}.`;
+  return ` Uses back: ${list}.${staminaText}`;
 }
 
 // A character's feat by name, and where it is for spending its uses:
