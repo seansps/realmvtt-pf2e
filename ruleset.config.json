@@ -5783,6 +5783,9 @@
         "Stamina": {
           "file": "rollhandlers/stamina.js"
         },
+        "DualClass": {
+          "file": "rollhandlers/dual-class.js"
+        },
         "Siege": {
           "file": "rollhandlers/siege.js"
         },
@@ -5883,6 +5886,21 @@
         "name": "Variant: Stamina and Resolve",
         "key": "staminaVariant",
         "description": "Gamemastery Guide pg. 200. Half of each class's Hit Points become Stamina Points (plus Constitution), which damage takes before Hit Points. Resolve Points (up to the key attribute modifier) pay for Take a Breather, which refills Stamina. A night's rest refills both. Both show on the Notes tab.",
+        "values": [
+          {
+            "label": "No",
+            "value": "no"
+          },
+          {
+            "label": "Yes",
+            "value": "yes"
+          }
+        ]
+      },
+      {
+        "name": "Variant: Dual-Class PCs",
+        "key": "dualClass",
+        "description": "Gamemastery Guide pg. 192. Adds a second class line to the Main tab. A character with two classes uses the higher proficiency and Hit Points, and gains both classes' features, class feats and spellcasting.",
         "values": [
           {
             "label": "No",

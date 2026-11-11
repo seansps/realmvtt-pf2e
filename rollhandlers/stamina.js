@@ -32,7 +32,7 @@ function getStaminaClassSplit(classHp) {
 // level, Resolve from the key attribute modifier (at least 0)
 function getStaminaMaximums(creature, conMod = parseInt(creature?.data?.con || "0", 10) || 0) {
   const level = parseInt(creature?.data?.level || "0", 10) || 0;
-  const split = getStaminaClassSplit(creature?.data?.classes?.[0]?.data?.hp);
+  const split = getStaminaClassSplit(getClassHitPoints(creature));
   const key = creature?.data?.keyAbility;
   const keyMod = ["str", "dex", "con", "int", "wis", "cha"].includes(key)
     ? parseInt(creature?.data?.[key] || "0", 10) || 0

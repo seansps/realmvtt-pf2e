@@ -770,10 +770,12 @@ function getWantedSpellcastingEntries(record, level, valuesToSet = {}) {
   if (record?.recordType !== "characters" || isLevelZeroCharacter(record) || level < 1) {
     return [];
   }
-  const casting = getClassSpellcasting(record.data?.classes?.[0]);
-  const specs = casting ? getClassSpellcastingSpecs(record, casting, level, valuesToSet) : [];
-  specs.push(...getArchetypeSpellcastingSpecs(record, level, valuesToSet, casting?.slug));
-  specs.push(...getFocusSpellcastingSpecs(record));
+  // Each class's own entries, kept separate with a second class (dual-class.js)
+  const classes = record.data?.classes || [];
+  const castings = classes.map(getClassSpellcasting).filter(Boolean);
+  const specs = castings.flatMap((casting) => getClassSpellcastingSpecs(record, casting, level, valuesToSet));
+  specs.push(...getArchetypeSpellcastingSpecs(record, level, valuesToSet, castings[0]?.slug));
+  classes.forEach((classObj) => specs.push(...getFocusSpellcastingSpecs(record, classObj)));
   return specs.map((spec) => ({ ...spec, level }));
 }
 
@@ -999,8 +1001,7 @@ const FOCUS_SPELLCASTING = {
 
 // The focus entry a character's class gives, as a spec with the source
 // "class:cleric:focus" (see getWantedSpellcastingEntries)
-function getFocusSpellcastingSpecs(record) {
-  const classObj = record.data?.classes?.[0];
+function getFocusSpellcastingSpecs(record, classObj = record.data?.classes?.[0]) {
   const slug = toSlug(`${classObj?.name || ""}`.replace(/\s*\([^)]*\)\s*$/, "").trim());
   if (!Object.prototype.hasOwnProperty.call(FOCUS_SPELLCASTING, slug)) {
     return [];

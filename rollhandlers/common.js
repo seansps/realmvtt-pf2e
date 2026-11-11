@@ -5826,8 +5826,8 @@ function updateAttribute({
     // Constitution goes to Stamina instead (stamina.js)
     const stamina = usesStamina(record);
     const classHp = stamina
-      ? getStaminaClassSplit(record.data?.classes?.[0]?.data?.hp).hp
-      : record.data?.classes?.[0]?.data?.hp || 0;
+      ? getStaminaClassSplit(getClassHitPoints(record)).hp
+      : getClassHitPoints(record);
     const hpConMod = stamina ? 0 : conMod;
     const level = record.data?.level || 0;
     // Level 0 Characters (GM Core): ancestry HP + Constitution modifier
@@ -6215,7 +6215,6 @@ function processChoices(record, depth = 0) {
   const characterLevel = record.data?.level || 1;
   const ancestryFeatures = [];
   const heritageFeatures = [];
-  const classFeatures = [];
   // Collect all features from ancestries, heritages, and classes
   const ancestries = record.data?.ancestries || [];
   const heritages = record.data?.heritages || [];
@@ -6225,9 +6224,6 @@ function processChoices(record, depth = 0) {
   }
   for (const heritage of heritages) {
     heritageFeatures.push(...(heritage.data?.features || []));
-  }
-  for (const classObj of classes) {
-    classFeatures.push(...(classObj.data?.features || []));
   }
 
   // Collect all feats
@@ -6247,12 +6243,12 @@ function processChoices(record, depth = 0) {
       dataPath: "data.heritages.0.data.features",
       features: heritageFeatures,
     },
-    {
+    // One group per class: a second class's choices are kept on it
+    ...classes.map((classObj, index) => ({
       name: "Class",
-      // Assume only ever 1 class
-      dataPath: "data.classes.0.data.features",
-      features: classFeatures,
-    },
+      dataPath: `data.classes.${index}.data.features`,
+      features: classObj.data?.features || [],
+    })),
     {
       name: "Feats",
       dataPath: "data.feats",
@@ -6642,10 +6638,10 @@ function promptForChoices(record, choicesToMake, index, depth = 0) {
         currentFeature =
           heritageFeatures.find((f) => f._id === feature._id) || feature;
       }
-    } else if (featureDataPath === "data.classes.0.data.features") {
-      const classList = record.data?.classes || [];
-      if (classList.length > 0) {
-        const classFeatures = classList[0].data?.features || [];
+    } else if (isClassFeaturePath(featureDataPath)) {
+      const classObj = getClassForFeaturePath(record, featureDataPath);
+      if (classObj) {
+        const classFeatures = classObj.data?.features || [];
         currentFeature =
           classFeatures.find((f) => f._id === feature._id) || feature;
       }
@@ -6821,10 +6817,10 @@ function promptForChoices(record, choicesToMake, index, depth = 0) {
 
         valuesToSet["data.heritages.0.data.features"] = heritageFeatures;
       }
-    } else if (featureDataPath === "data.classes.0.data.features") {
-      const classList = record.data?.classes || [];
-      if (classList.length > 0) {
-        let classFeatures = [...(classList[0].data?.features || [])];
+    } else if (isClassFeaturePath(featureDataPath)) {
+      const classObj = getClassForFeaturePath(record, featureDataPath);
+      if (classObj) {
+        let classFeatures = [...(classObj.data?.features || [])];
 
         // Find the feature in the current record by _id
         featureIndex = classFeatures.findIndex((f) => f._id === feature._id);
@@ -6847,7 +6843,7 @@ function promptForChoices(record, choicesToMake, index, depth = 0) {
           classFeatures = [...classFeatures, ...newFeatures];
         }
 
-        valuesToSet["data.classes.0.data.features"] = classFeatures;
+        valuesToSet[featureDataPath] = classFeatures;
       }
     } else if (featureDataPath === "data.feats") {
       let feats = [...(record.data?.feats || [])];
@@ -6992,10 +6988,10 @@ function promptForChoices(record, choicesToMake, index, depth = 0) {
           currentFeature =
             heritageFeatures.find((f) => f._id === feature._id) || feature;
         }
-      } else if (featureDataPath === "data.classes.0.data.features") {
-        const classList = record.data?.classes || [];
-        if (classList.length > 0) {
-          const classFeatures = classList[0].data?.features || [];
+      } else if (isClassFeaturePath(featureDataPath)) {
+        const classObj = getClassForFeaturePath(record, featureDataPath);
+        if (classObj) {
+          const classFeatures = classObj.data?.features || [];
           currentFeature =
             classFeatures.find((f) => f._id === feature._id) || feature;
         }
@@ -7081,10 +7077,10 @@ function promptForChoices(record, choicesToMake, index, depth = 0) {
 
           valuesToSet["data.heritages.0.data.features"] = heritageFeatures;
         }
-      } else if (featureDataPath === "data.classes.0.data.features") {
-        const classList = record.data?.classes || [];
-        if (classList.length > 0) {
-          let classFeatures = [...(classList[0].data?.features || [])];
+      } else if (isClassFeaturePath(featureDataPath)) {
+        const classObj = getClassForFeaturePath(record, featureDataPath);
+        if (classObj) {
+          let classFeatures = [...(classObj.data?.features || [])];
 
           // Find the feature in the current record by _id
           featureIndex = classFeatures.findIndex((f) => f._id === feature._id);
@@ -7097,7 +7093,7 @@ function promptForChoices(record, choicesToMake, index, depth = 0) {
           // Add the new feature
           classFeatures = [...classFeatures, newFeature];
 
-          valuesToSet["data.classes.0.data.features"] = classFeatures;
+          valuesToSet[featureDataPath] = classFeatures;
         }
       } else if (
         featureDataPath === "data.feats" ||
@@ -7328,6 +7324,7 @@ function getVariantRules() {
     gradualBoosts: isOn("gradualAbilityBoosts"),
     mythic: isOn("mythicRules"),
     stamina: isOn("staminaVariant"),
+    dualClass: isOn("dualClass"),
   };
 }
 
@@ -7348,6 +7345,9 @@ function getFeatSlotLevels(record, variants = getVariantRules()) {
     general: toLevels(classObj?.data?.generalFeatLevels),
     skill: toLevels(classObj?.data?.skillFeatLevels),
   };
+
+  // A second class's class feats, and its other feat levels (dual-class.js)
+  addSecondClassFeatLevels(levels, record.data?.classes?.[1], toLevels);
 
   // Ancestry Paragon: two ancestry feats at 1st level, then one at every odd level
   if (variants.ancestryParagon) {
@@ -7649,9 +7649,11 @@ function updateProficiencies(record, valuesToSet) {
       10,
     );
   }
+  // A second class's, where higher (dual-class.js)
+  applySecondClassProficiencies(proficiencies, classes[1]);
   // Class and background skills
   if (classObj?.data?.trainedSkills || backgroundObj?.data?.trainedSkills) {
-    const skills = classObj?.data?.trainedSkills || [];
+    const skills = classes.flatMap((entry) => entry?.data?.trainedSkills || []);
     const backgroundSkills = backgroundObj?.data?.trainedSkills || [];
     const allSkills = [...skills, ...backgroundSkills];
     for (const skill of allSkills) {
@@ -8633,7 +8635,7 @@ function updateTogglesList(record, valuesToSet) {
   [...(record.data?.feats || []), ...(record.data?.bonusFeats || [])].forEach(
     addTogglesFrom,
   );
-  const classFeatures = record.data?.classes?.[0]?.data?.features || [];
+  const classFeatures = (record.data?.classes || []).flatMap((classObj) => classObj?.data?.features || []);
   classFeatures
     .filter((feature) => record.data?.level >= feature.data?.level)
     .forEach(addTogglesFrom);
@@ -17845,11 +17847,13 @@ function getLevelUpGains(record, newLevel, variants = getVariantRules()) {
   }
 
   const conMod = parseInt(record.data?.conMod ?? record.data?.con ?? 0, 10) || 0;
-  const classHp = parseInt(classObj?.data?.hp || 0, 10) || 0;
+  const classHp = getClassHitPoints(record);
   // The stamina variant splits it (stamina.js)
   const staminaSplit = usesStamina(record) ? getStaminaClassSplit(classHp) : null;
 
-  const classFeatures = (classObj?.data?.features || [])
+  const allClasses = record.data?.classes || [];
+  const classFeatures = allClasses
+    .flatMap((entry) => entry?.data?.features || [])
     .filter((feature) => parseInt(feature.data?.level, 10) === newLevel)
     .map((feature) => feature.name)
     .filter((name) => name);
@@ -17868,9 +17872,9 @@ function getLevelUpGains(record, newLevel, variants = getVariantRules()) {
     attributeBoosts: boosts.count > 0,
     boostCount: boosts.count,
     boostSetLevel: boosts.setLevel,
-    skillIncrease: toLevels(classObj?.data?.skillIncreaseLevels).includes(
-      newLevel,
-    ),
+    skillIncrease: allClasses
+      .flatMap((entry) => toLevels(entry?.data?.skillIncreaseLevels))
+      .includes(newLevel),
     featTypes,
     classFeatures,
     spellcasting: getSpellcastingLevelUpChanges(record, newLevel),
@@ -17952,8 +17956,11 @@ function getLevelUpBoostOptions(record) {
 
 // Compendium query for feats that fit a feat slot (mirrors feats-list.html)
 function getFeatSlotQuery(record, featSlotType, featSlotLevel) {
+  // Either class's feats, with a second class (dual-class.js)
   const className =
-    record.data?.classes?.[0]?.name || record.data?.className || "";
+    (record.data?.classes || []).map((entry) => entry?.name).filter(Boolean).join("|") ||
+    record.data?.className ||
+    "";
   const ancestryName =
     record.data?.ancestries?.[0]?.name || record.data?.ancestryName || "";
   const heritageName =
@@ -18642,6 +18649,9 @@ function updateVariantRuleFields(record, valuesToSet) {
   if ((record.data?.variantRulesKey || "") !== key) {
     valuesToSet["data.variantRulesKey"] = key;
   }
+
+  // The Main tab's second class line (dual-class.js)
+  Object.assign(valuesToSet, getDualClassFieldValues(record, variants));
 
   // The Hero Points counter holds Mythic Points for a mythic character
   // (mythic.js)
