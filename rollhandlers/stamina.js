@@ -80,6 +80,15 @@ function getStaminaDamageLine(loss, creature) {
   return `\n**Stamina took ${loss.absorbed}** (${loss.stamina}/${parseInt(creature?.data?.staminaMax || "0", 10) || 0} left).`;
 }
 
+// Massive damage ("double your maximum Hit Points") with the variant: the
+// GMG doesn't say, so it's against Hit Points and Stamina together, which for
+// every class on Table 4-21 is the usual maximum. The threshold stays where
+// it would be without the variant, however much Stamina is left.
+function getMassiveDamageMaximum(creature, maxHp) {
+  if (!usesStamina(creature)) return maxHp;
+  return maxHp + (parseInt(creature?.data?.staminaMax || "0", 10) || 0);
+}
+
 // A night's rest: all Stamina and Resolve back
 function getRestStaminaValues(creature) {
   if (!usesStamina(creature)) return {};

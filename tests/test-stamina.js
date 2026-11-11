@@ -101,6 +101,29 @@ section("damage: temporary Hit Points, Stamina, then Hit Points");
   setting = "yes";
 }
 
+section("massive damage: against Hit Points and Stamina together");
+{
+  // Sean's example: a level 1 elf wizard, 9 HP and 4 Stamina (13 without the variant)
+  const wizard = (extra = {}) =>
+    fighter({ level: 1, con: 1, keyAbility: "int", int: 4, classes: [{ name: "Wizard", data: { hp: 6 } }], ancestries: [{ data: { hp: 6 } }], ...extra });
+  assert("the threshold's maximum is 13, as without the variant", ctx.getMassiveDamageMaximum(wizard({ staminaMax: 4 }), 9), 13);
+  setting = "no";
+  assert("off: just Hit Points", ctx.getMassiveDamageMaximum(wizard({ staminaMax: 4 }), 13), 13);
+  setting = "yes";
+
+  const writes = [];
+  const effects = [];
+  ctx.api.setValuesOnTokenById = (id, type, values) => writes.push(values);
+  ctx.api.addEffects = (list) => effects.push(...list);
+  ctx.api.addEffect = (name) => effects.push(name);
+  ctx.__state.messages = [];
+  ctx.applyDamage(wizard({ curhp: 9, hitpoints: 9, stamina: 4, staminaMax: 4 }), { total: 18, types: [{ type: "slashing", value: 18 }], metadata: { damageType: "slashing" } }, false);
+  assert("18 isn't massive damage", ctx.__state.messages.join(" ").includes("MASSIVE"), false);
+  ctx.__state.messages = [];
+  ctx.applyDamage(wizard({ curhp: 9, hitpoints: 9, stamina: 4, staminaMax: 4 }), { total: 26, types: [{ type: "slashing", value: 26 }], metadata: { damageType: "slashing" } }, false);
+  assertIncludes("26 is, as without the variant", ctx.__state.messages.join(" "), "MASSIVE DAMAGE");
+}
+
 section("Take a Breather and rest");
 {
   assert("1 Resolve for full Stamina", ctx.getBreatherValues(fighter({ stamina: 3, resolve: 2 })), { "data.stamina": 21, "data.resolve": 1 });

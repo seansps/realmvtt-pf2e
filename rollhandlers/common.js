@@ -16459,7 +16459,9 @@ function applyDamage(
       // "You die instantly if you ever take damage equal to or greater than double your maximum Hit Points in one blow."
       // This uses the actual damage taken after all reductions (IWR, half damage, etc.)
       let massiveDamage = false;
-      if (damage >= maxHp * 2) {
+      // With the stamina variant, against Hit Points and Stamina together,
+      // which make the usual maximum (stamina.js)
+      if (damage >= getMassiveDamageMaximum(target, maxHp) * 2) {
         massiveDamage = true;
       }
 
