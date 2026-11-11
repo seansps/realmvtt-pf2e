@@ -5822,16 +5822,24 @@ function updateAttribute({
     const conMod = value;
     // Hit Points in PF2e is Ancestry HP + (Class HP + Con Mod)*Level
     const ancestryHp = record.data?.ancestries?.[0]?.data?.hp || 0;
-    const classHp = record.data?.classes?.[0]?.data?.hp || 0;
+    // The stamina variant keeps half the class's Hit Points, and
+    // Constitution goes to Stamina instead (stamina.js)
+    const stamina = usesStamina(record);
+    const classHp = stamina
+      ? getStaminaClassSplit(record.data?.classes?.[0]?.data?.hp).hp
+      : record.data?.classes?.[0]?.data?.hp || 0;
+    const hpConMod = stamina ? 0 : conMod;
     const level = record.data?.level || 0;
     // Level 0 Characters (GM Core): ancestry HP + Constitution modifier
     // Drained lowers the maximum while it lasts (dying.js)
     const totalHp =
       (isLevelZeroCharacter(record)
         ? extraHitpoints + ancestryHp + conMod
-        : extraHitpoints + ancestryHp + (conMod + classHp) * level) -
+        : extraHitpoints + ancestryHp + (hpConMod + classHp) * level) -
       getDrainedMaxHpReduction(record);
     valuesToSet[`data.hitpoints`] = totalHp;
+    // Stamina and Resolve maximums, and the Notes tab section (stamina.js)
+    Object.assign(valuesToSet, getStaminaValues(record, conMod));
     // If curhp is not set, set it to hitpoints
     if (record.data?.curhp === undefined) {
       valuesToSet[`data.curhp`] = totalHp;
@@ -7319,6 +7327,7 @@ function getVariantRules() {
     ancestryParagon: isOn("ancestryParagon"),
     gradualBoosts: isOn("gradualAbilityBoosts"),
     mythic: isOn("mythicRules"),
+    stamina: isOn("staminaVariant"),
   };
 }
 
@@ -16482,6 +16491,7 @@ function applyDamage(
 
       // Handle temp HP and healing
       let usedTempHp = false;
+      let staminaLoss = null;
 
       if (damage > 0) {
         // Damage: First deduct from Temp HP
@@ -16492,6 +16502,13 @@ function applyDamage(
           // Used up: nothing is left from where they came from (class-extras.js)
           if (newTempHp === 0 && target.data?.tempHpSource) valuesToSet["data.tempHpSource"] = null;
           usedTempHp = true;
+        }
+        // Then Stamina Points, with the stamina variant (stamina.js)
+        staminaLoss = pooled ? null : getStaminaDamage(target, damage);
+        if (staminaLoss) {
+          oldValues["data.stamina"] = staminaLoss.old;
+          valuesToSet["data.stamina"] = staminaLoss.stamina;
+          damage = staminaLoss.damage;
         }
         // Then deduct from Current HP
         curhp -= damage;
@@ -16630,6 +16647,7 @@ function applyDamage(
         message += ` No longer dying (wounded ${valuesToSet["data.wounded"]}).`;
       }
       message += poolNote;
+      message += getStaminaDamageLine(staminaLoss, target);
       const troopLine = damage > 0 ? getTroopDamageLine(target, curhp, troopLoss) : null;
       if (troopLine) message += `\n${troopLine}`;
 
@@ -17826,6 +17844,8 @@ function getLevelUpGains(record, newLevel, variants = getVariantRules()) {
 
   const conMod = parseInt(record.data?.conMod ?? record.data?.con ?? 0, 10) || 0;
   const classHp = parseInt(classObj?.data?.hp || 0, 10) || 0;
+  // The stamina variant splits it (stamina.js)
+  const staminaSplit = usesStamina(record) ? getStaminaClassSplit(classHp) : null;
 
   const classFeatures = (classObj?.data?.features || [])
     .filter((feature) => parseInt(feature.data?.level, 10) === newLevel)
@@ -17841,7 +17861,8 @@ function getLevelUpGains(record, newLevel, variants = getVariantRules()) {
   return {
     level: newLevel,
     className: classObj?.name || record.data?.className || "",
-    hp: classHp + conMod,
+    hp: staminaSplit ? staminaSplit.hp : classHp + conMod,
+    stamina: staminaSplit ? staminaSplit.stamina + conMod : 0,
     attributeBoosts: boosts.count > 0,
     boostCount: boosts.count,
     boostSetLevel: boosts.setLevel,
@@ -17859,6 +17880,9 @@ function getLevelUpSummary(gains) {
   const lines = [];
   if (gains.hp > 0) {
     lines.push(`+${gains.hp} maximum Hit Points`);
+  }
+  if (gains.stamina > 0) {
+    lines.push(`+${gains.stamina} maximum Stamina Points`);
   }
   lines.push("+1 to all proficiency bonuses");
   if (gains.classFeatures.length > 0) {
