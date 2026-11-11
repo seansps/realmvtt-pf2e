@@ -57,8 +57,10 @@ section("maximums and Hit Points");
   ctx.updateAttribute({ record: fighter(), attribute: "con", value: 2, moreValuesToSet: values });
   assert("Hit Points: ancestry 10 + class 5 x 3", values["data.hitpoints"], 25);
   assert("the maximums written, current full", [values["data.staminaMax"], values["data.stamina"], values["data.resolveMax"], values["data.resolve"]], [21, 21, 4, 4]);
-  assert("the labels", [values["data.staminaMaxLabel"], values["data.resolveMaxLabel"]], ["of 21", "of 4"]);
-  assert("the section shows", values["fields.staminaBox.hidden"], false);
+  assert("the row shows", values["fields.staminaBox.hidden"], false);
+  const again = {};
+  ctx.updateAttribute({ record: { ...fighter({ stamina: 21, staminaMax: 21, resolve: 4, resolveMax: 4 }), fields: { staminaBox: { hidden: false } } }, attribute: "con", value: 2, moreValuesToSet: again });
+  assert("already shown and full: no Stamina writes", Object.keys(again).filter((key) => /stamina|resolve/i.test(key)), []);
 
   const lower = {};
   ctx.updateAttribute({ record: fighter({ stamina: 30, resolve: 2 }), attribute: "con", value: 2, moreValuesToSet: lower });
@@ -68,7 +70,13 @@ section("maximums and Hit Points");
   const off = {};
   ctx.updateAttribute({ record: { ...fighter(), fields: { staminaBox: { hidden: false } } }, attribute: "con", value: 2, moreValuesToSet: off });
   assert("off: the usual Hit Points", off["data.hitpoints"], 10 + (10 + 2) * 3);
-  assert("off: the section hides, no Stamina", [off["fields.staminaBox.hidden"], off["data.staminaMax"]], [true, undefined]);
+  assert("off: a shown row hides, no Stamina", [off["fields.staminaBox.hidden"], off["data.staminaMax"]], [true, undefined]);
+  const never = {};
+  ctx.updateAttribute({ record: fighter(), attribute: "con", value: 2, moreValuesToSet: never });
+  assert("off, never shown: no write at all", "fields.staminaBox.hidden" in never, false);
+  const hiddenAlready = {};
+  ctx.updateAttribute({ record: { ...fighter(), fields: { staminaBox: { hidden: true } } }, attribute: "con", value: 2, moreValuesToSet: hiddenAlready });
+  assert("off, already hidden: no write", "fields.staminaBox.hidden" in hiddenAlready, false);
   setting = "yes";
 
   const gains = ctx.getLevelUpGains(fighter(), 4);

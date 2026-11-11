@@ -4,7 +4,8 @@
 // (Table 4-21). Damage takes temporary Hit Points, then Stamina Points, then
 // Hit Points. Resolve Points (up to the key attribute modifier) pay for Take a
 // Breather, which refills Stamina. A night's rest refills both. Stamina and
-// Resolve show on the Notes tab, so nothing is added to the Main tab.
+// Resolve show in the Main tab's Hit Points card, only with the variant
+// (Sean's exception to the no-Main-tab rule, as they're checked on every hit).
 // Not covered: Rally (a skill check the GM runs), the optional Stabilize
 // rule, and monsters (GMG: usually not needed).
 
@@ -43,21 +44,22 @@ function getStaminaMaximums(creature, conMod = parseInt(creature?.data?.con || "
 }
 
 // What updateAttribute writes for the stamina variant: the maximums, the
-// current values kept within them (full when first set), and whether the
-// section shows
+// current values kept within them (full when first set), and whether the HP
+// card's Stamina row shows. The row is hidden unless the field says
+// otherwise, so with the variant off a character that never showed it gets
+// no write at all.
 function getStaminaValues(creature, conMod) {
   const on = usesStamina(creature);
+  const shown = creature?.fields?.staminaBox?.hidden === false;
   const values = {};
-  if (creature?.fields?.staminaBox?.hidden !== !on) {
-    values["fields.staminaBox.hidden"] = !on;
-  }
+  if (on && !shown) values["fields.staminaBox.hidden"] = false;
+  if (!on && shown) values["fields.staminaBox.hidden"] = true;
   if (!on) return values;
   const max = getStaminaMaximums(creature, conMod);
   const keep = (field, maximum) => {
     const current = creature?.data?.[field];
     const next = current === undefined || current === null ? maximum : Math.min(parseInt(current, 10) || 0, maximum);
     if (creature?.data?.[`${field}Max`] !== maximum) values[`data.${field}Max`] = maximum;
-    if (creature?.data?.[`${field}MaxLabel`] !== `of ${maximum}`) values[`data.${field}MaxLabel`] = `of ${maximum}`;
     if (current !== next) values[`data.${field}`] = next;
   };
   keep("stamina", max.stamina);
@@ -105,7 +107,7 @@ function getBreatherValues(creature) {
   return { "data.stamina": getStaminaMaximums(creature).stamina, "data.resolve": resolve - 1 };
 }
 
-// The Notes tab's button
+// The HP card's Take a Breather button
 function takeABreather(creature) {
   const values = getBreatherValues(creature);
   const name = getCreatureName(creature);

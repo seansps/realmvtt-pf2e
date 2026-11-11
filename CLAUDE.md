@@ -268,10 +268,11 @@ Animal companions are characters, as Foundry's PF2e Companion Compendia builds t
 ### Stamina and Resolve (variant)
 
 `rollhandlers/stamina.js` (global script `Stamina`), for the `staminaVariant` setting; Gamemastery Guide pg. 200-201. For characters with a class (not level 0 or eidolons, `usesStamina`):
-- `updateAttribute` keeps half the class Hit Points (`getStaminaClassSplit`, Table 4-21) and writes `getStaminaValues`: `data.staminaMax` ((half + Con) x level), `data.resolveMax` (key attribute modifier), their `MaxLabel` text, current values kept within them, and `fields.staminaBox.hidden`. Level Up's summary shows both.
+- `updateAttribute` keeps half the class Hit Points (`getStaminaClassSplit`, Table 4-21) and writes `getStaminaValues`: `data.staminaMax` ((half + Con) x level), `data.resolveMax` (key attribute modifier), current values kept within them, and `fields.staminaBox.hidden`, written only when it changes (a missing value counts as hidden, so the variant off writes nothing). Level Up's summary shows both.
 - `applyDamage` takes damage from temporary Hit Points, then `data.stamina` (`getStaminaDamage`, in the undo values), then Hit Points.
 - Massive damage compares against Hit Points and Stamina maximums together (`getMassiveDamageMaximum`), the usual maximum, so the variant doesn't move the threshold.
-- A night's rest refills both (`getLimitedUseRecharges` at `dailyPreparations`); the Notes tab's Take a Breather spends 1 Resolve for full Stamina (`takeABreather`). Nothing on the Main tab.
+- A night's rest refills both (`getLimitedUseRecharges` at `dailyPreparations`); Take a Breather spends 1 Resolve for full Stamina (`takeABreather`).
+- Sheet: a Stamina row and bar inside the Main tab's Hit Points card (`staminaBox`), hidden unless the variant is on. Sean's one exception to the no-Main-tab rule, since Stamina is checked on every hit; nothing else from the variant goes on the Main tab.
 - Not covered: Rally, the optional Stabilize rule, monsters.
 
 ### Siege weapons (Aim, Load, Launch, misfire)

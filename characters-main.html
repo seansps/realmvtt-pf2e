@@ -2337,6 +2337,64 @@ ${getLevelUpSummary(gains)}`,
             color="health"
             size="xs"
           ></progressbar>
+          <!-- Stamina and Resolve (stamina.js): only with the stamina variant -->
+          <box field="staminaBox" hidden="true">
+            <div class="rvtt-sheet-hp-row">
+              <span class="rvtt-sheet-hp-temp-label">STA</span>
+              <numberfield
+                class="rvtt-sheet-hp-current"
+                field="stamina"
+                size="xs"
+                hidecontrols="true"
+                width="40px"
+                placeholder="0"
+                inputcolor="cyan"
+              ></numberfield>
+              <span class="rvtt-sheet-hp-divider">/</span>
+              <numberfield
+                class="rvtt-sheet-hp-max"
+                field="staminaMax"
+                size="xs"
+                hidecontrols="true"
+                width="36px"
+                placeholder="0"
+              ></numberfield>
+              <span class="rvtt-sheet-hp-temp-label">RES</span>
+              <numberfield
+                class="rvtt-sheet-hp-temp"
+                field="resolve"
+                size="xs"
+                hidecontrols="true"
+                width="32px"
+                placeholder="0"
+                inputcolor="violet"
+              ></numberfield>
+              <span class="rvtt-sheet-hp-divider">/</span>
+              <numberfield
+                class="rvtt-sheet-hp-max"
+                field="resolveMax"
+                size="xs"
+                hidecontrols="true"
+                width="32px"
+                placeholder="0"
+              ></numberfield>
+              <iconbutton
+                size="xs"
+                variant="subtle"
+                color="cyan"
+                onclick="takeABreather(record)"
+                options='[{"label": "Take a Breather (1 Resolve: all Stamina)", "icon": "IconWind", "value": "breather"}]'
+              ></iconbutton>
+            </div>
+            <progressbar
+              class="rvtt-sheet-hp-bar"
+              field="stamina"
+              currentvaluefield="stamina"
+              maxvaluefield="staminaMax"
+              color="cyan"
+              size="xs"
+            ></progressbar>
+          </box>
         </div>
         <!-- AC card: shield SVG behind the AC number. -->
         <div class="rvtt-sheet-ac-card">
