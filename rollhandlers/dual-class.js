@@ -147,13 +147,21 @@ function pickSecondClass(record) {
 }
 
 // What clearing the second class writes: empty slots go, to be rebuilt for
-// the class that's left. Chosen feats stay for the GM.
+// the class that's left, and so do the class-given ranks, as recalculation
+// only ever raises a stored rank. Chosen feats and trained skills stay for
+// the GM.
 function getClearSecondClassValues(record) {
   const first = record?.data?.classes?.[0];
   return {
     "data.classes": first ? [first] : [],
     "data.secondClassName": "",
     "data.feats": (record?.data?.feats || []).filter((feat) => feat.data?.type !== "slot"),
+    "data.reflex": "0",
+    "data.fortitude": "0",
+    "data.will": "0",
+    "data.perception": "0",
+    "data.defenses": {},
+    "data.attackProficiencies": {},
     "fields.pickSecondClassBtn.hidden": false,
     "fields.clearSecondClassBtn.hidden": true,
   };

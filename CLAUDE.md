@@ -282,6 +282,7 @@ Animal companions are characters, as Foundry's PF2e Companion Compendia builds t
 - Higher of the two: proficiencies (`applySecondClassProficiencies`), Hit Points (`getClassHitPoints`).
 - Both: features and their choices (one choice group per class, `isClassFeaturePath`), fixed skills, spellcasting entries and focus entries, Level Up gains, class feat slots (`addSecondClassFeatLevels`; the picker offers either class's feats).
 - Once per level at either class's levels: general and skill feats, skill increases.
+- Clearing the second class resets saves, Perception, armor and weapon ranks so recalculation rebuilds them (it only ever raises a stored rank). Trained skills stay.
 - First class only: key attribute, class kit, class trait. The extra additional skills are a chat note.
 
 ### Siege weapons (Aim, Load, Launch, misfire)

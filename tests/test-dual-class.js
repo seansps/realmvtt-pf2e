@@ -158,6 +158,7 @@ section("picking and clearing");
   const cleared = ctx.getClearSecondClassValues(pc([cleric, ranger], { feats: [slot, chosen] }));
   assert("clearing keeps the first", cleared["data.classes"].map((c) => c.name), ["Cleric"]);
   assert("and chosen feats, dropping empty slots", cleared["data.feats"], [chosen]);
+  assert("the class-given ranks reset, to be rebuilt", [cleared["data.fortitude"], cleared["data.reflex"], cleared["data.will"], cleared["data.perception"], cleared["data.defenses"], cleared["data.attackProficiencies"]], ["0", "0", "0", "0", {}, {}]);
   assert("the buttons swap back", [cleared["fields.pickSecondClassBtn.hidden"], cleared["fields.clearSecondClassBtn.hidden"]], [false, true]);
 
   const replaced = ctx.getClassesWithFirst(pc(), { name: "Bard", data: {} });
