@@ -5789,6 +5789,9 @@
         "ItemVariants": {
           "file": "rollhandlers/item-variants.js"
         },
+        "PointBuy": {
+          "file": "rollhandlers/point-buy.js"
+        },
         "Siege": {
           "file": "rollhandlers/siege.js"
         },
@@ -5919,6 +5922,15 @@
         "name": "Variant: High-Quality Items",
         "key": "highQualityItems",
         "description": "Gamemastery Guide pg. 197. Fine non-magical weapons and armor give the bonuses of potency runes: set the item's potency for its quality (expert +1, master +2, legendary +3). Armor without the magical trait gives it without being invested. Devastating and resilient quality work like Automatic Bonus Progression's.",
+        "values": [
+          { "label": "No", "value": "no" },
+          { "label": "Yes", "value": "yes" }
+        ]
+      },
+      {
+        "name": "Variant: Point Buy",
+        "key": "pointBuy",
+        "description": "Gamemastery Guide pg. 182. Scores from 8 to 18 bought with Ability Points replace the 1st-level boosts and flaws; each becomes the modifier floor((score - 10) / 2). Boosts at 5th level and later add as usual. The attribute editor shows the points spent against the budget (15 flexible, plus dedicated points for the ancestry, background and class).",
         "values": [
           { "label": "No", "value": "no" },
           { "label": "Yes", "value": "yes" }

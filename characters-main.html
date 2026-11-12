@@ -2019,6 +2019,79 @@ ${getLevelUpSummary(gains)}`,
                 ></dropdown>
               </div>
             </div>
+            <!-- Point Buy (point-buy.js): scores in place of the 1st-level
+                 boosts, only with the setting -->
+            <box field="pointBuyBox" hidden="true">
+              <div style="display: flex; flex-direction: column; margin-top: 4px">
+                <label
+                  class="rvtt-sheet-label rvtt-sheet-label--accent"
+                  label="Point Buy Scores"
+                ></label>
+                <div style="display: flex; flex-direction: row; gap: 4px">
+                <numberfield
+                  size="xs"
+                  field="pointBuy.str"
+                  label="STR"
+                  width="48px"
+                  placeholder="10"
+                  minvalue="8"
+                  maxvalue="18"
+                  onchange="onPointBuyChange('str', value)"
+                ></numberfield>
+                <numberfield
+                  size="xs"
+                  field="pointBuy.dex"
+                  label="DEX"
+                  width="48px"
+                  placeholder="10"
+                  minvalue="8"
+                  maxvalue="18"
+                  onchange="onPointBuyChange('dex', value)"
+                ></numberfield>
+                <numberfield
+                  size="xs"
+                  field="pointBuy.con"
+                  label="CON"
+                  width="48px"
+                  placeholder="10"
+                  minvalue="8"
+                  maxvalue="18"
+                  onchange="onPointBuyChange('con', value)"
+                ></numberfield>
+                <numberfield
+                  size="xs"
+                  field="pointBuy.int"
+                  label="INT"
+                  width="48px"
+                  placeholder="10"
+                  minvalue="8"
+                  maxvalue="18"
+                  onchange="onPointBuyChange('int', value)"
+                ></numberfield>
+                <numberfield
+                  size="xs"
+                  field="pointBuy.wis"
+                  label="WIS"
+                  width="48px"
+                  placeholder="10"
+                  minvalue="8"
+                  maxvalue="18"
+                  onchange="onPointBuyChange('wis', value)"
+                ></numberfield>
+                <numberfield
+                  size="xs"
+                  field="pointBuy.cha"
+                  label="CHA"
+                  width="48px"
+                  placeholder="10"
+                  minvalue="8"
+                  maxvalue="18"
+                  onchange="onPointBuyChange('cha', value)"
+                ></numberfield>
+                </div>
+                <label field="pointBuySummary" size="xs" color="dimmed"></label>
+              </div>
+            </box>
             <div style="display: flex; flex-direction: column; margin-top: 4px">
               <label
                 class="rvtt-sheet-label rvtt-sheet-label--accent"

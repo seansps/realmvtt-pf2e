@@ -7348,6 +7348,7 @@ function getVariantRules() {
     simplifiedAncestriesGeneral: isGeneral("simplifiedAncestries"),
     simplifiedSkillFeats: isOn("simplifiedSkillFeats"),
     voluntaryFlaws: isOn("voluntaryFlaws"),
+    pointBuy: isOn("pointBuy"),
   };
 }
 
@@ -8200,21 +8201,25 @@ function updateProficiencies(record, valuesToSet) {
 function calculateAbilityBoosts(record) {
   // ABP's attribute apex, or else an invested apex item's (item-variants.js)
   const apexAttribute = getAbpBonuses(record)?.apex || getApexItemAttributeForRecord(record);
-  const boosts = {
+  // Point Buy replaces the 1st-level boosts and flaws (point-buy.js)
+  const pointBuy = isPointBuyOn(record);
+  const boosts = pointBuy ? {} : {
     ancestryBoost1: record.data?.ancestryBoost1,
     ancestryBoost2: record.data?.ancestryBoost2,
     backgroundBoost1: record.data?.backgroundBoost1,
     backgroundBoost2: record.data?.backgroundBoost2,
     classBoost: record.data?.keyAbility,
     freeBoosts: record.data?.freeBoosts || [],
+  };
+  Object.assign(boosts, {
     freeBoostsLevel5: record.data?.freeBoostsLevel5 || [],
     freeBoostsLevel10: record.data?.freeBoostsLevel10 || [],
     freeBoostsLevel15: record.data?.freeBoostsLevel15 || [],
     freeBoostsLevel20: record.data?.freeBoostsLevel20 || [],
-  };
+  });
 
   // Count boosts per ability
-  const boostCounts = {
+  const boostCounts = pointBuy ? getPointBuyBoostCounts(record) : {
     str: 0,
     dex: 0,
     con: 0,
@@ -8226,7 +8231,7 @@ function calculateAbilityBoosts(record) {
   // Handle ancestry boosts and flaws if not using alternate ancestry boosts
   const alternateAncestryBoosts = record.data?.alternateAncestryBoosts;
   const ancestries = record.data?.ancestries || [];
-  if (!alternateAncestryBoosts && ancestries.length > 0) {
+  if (!pointBuy && !alternateAncestryBoosts && ancestries.length > 0) {
     const ancestry = ancestries[0];
     const ancestryBoosts = ancestry?.data?.boosts || {};
     const ancestryFlaws = ancestry?.data?.flaws || {};
@@ -8254,7 +8259,7 @@ function calculateAbilityBoosts(record) {
 
   // Voluntary flaws (Player Core pg. 23): one more flaw each, never a second
   // flaw on an attribute the ancestry already flaws (item-variants.js)
-  getVoluntaryFlaws(record).forEach((ability) => {
+  (pointBuy ? [] : getVoluntaryFlaws(record)).forEach((ability) => {
     if (boostCounts.hasOwnProperty(ability)) boostCounts[ability]--;
   });
 
@@ -18710,6 +18715,8 @@ function updateVariantRuleFields(record, valuesToSet) {
   Object.assign(valuesToSet, getDualClassFieldValues(record, variants));
   // The voluntary flaws picker (item-variants.js)
   Object.assign(valuesToSet, getVoluntaryFlawFieldValues(record, variants));
+  // The Point Buy section and its summary (point-buy.js)
+  Object.assign(valuesToSet, getPointBuyFieldValues(record, variants));
 
   // The Hero Points counter holds Mythic Points for a mythic character
   // (mythic.js)
