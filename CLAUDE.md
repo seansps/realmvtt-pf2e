@@ -278,11 +278,12 @@ Animal companions are characters, as Foundry's PF2e Companion Compendia builds t
 ### Dual-Class PCs (variant)
 
 `rollhandlers/dual-class.js` (global script `DualClass`), for the `dualClass` setting; Gamemastery Guide pg. 192-193. The second class is `data.classes[1]`, so loops over a character's classes pick it up (`data.classSlot` tells the two apart for the first line's list filter).
-- Main tab: a second class line (`secondClassBox`, with `data.secondClassName`), shown with the setting on or while a second class remains; `pickSecondClass` and `clearSecondClass` are its buttons, delete only when unlocked.
+- Main tab: a second class line (`secondClassBox`): the name in a field like the first line's, which goes back to the class's name if typed in (`data.secondClassName`, `onSecondClassNameChange`), the class's link (the `classes` list filtered to `classSlot: "second"`, whose delete runs the same clearing), and `pickSecondClass` / `clearSecondClass` buttons, delete only when unlocked. `getDualClassFieldValues` sets all three flags from the setting and whether there's a second class, written only on a change.
+- A choice on a class feature keeps its features on that class (`appendFeatures` skips class paths), so a second class's bloodline or doctrine doesn't land on the first too.
 - Higher of the two: proficiencies (`applySecondClassProficiencies`), Hit Points (`getClassHitPoints`).
 - Both: features and their choices (one choice group per class, `isClassFeaturePath`), fixed skills, spellcasting entries and focus entries, Level Up gains, class feat slots (`addSecondClassFeatLevels`; the picker offers either class's feats).
 - Once per level at either class's levels: general and skill feats, skill increases.
-- Clearing the second class resets saves, Perception, armor and weapon ranks so recalculation rebuilds them (it only ever raises a stored rank). Trained skills stay.
+- Clearing the second class resets saves, Perception, armor, weapon, class DC and spellcasting ranks so recalculation rebuilds them (it only ever raises a stored rank). Trained skills stay.
 - First class only: key attribute, class kit, class trait. The extra additional skills are a chat note.
 
 ### Siege weapons (Aim, Load, Launch, misfire)

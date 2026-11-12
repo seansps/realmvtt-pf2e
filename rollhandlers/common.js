@@ -6895,11 +6895,15 @@ function promptForChoices(record, choicesToMake, index, depth = 0) {
       );
       if (added.length > 0) valuesToSet[path] = [...existing, ...added];
     };
-    appendFeatures(
-      "data.classes.0.data.features",
-      record.data?.classes?.[0],
-      itemsByType.classFeatures,
-    );
+    // A choice on a class feature keeps them on that class (the branch
+    // above), so they don't go on the first class too (dual-class.js)
+    if (!isClassFeaturePath(featureDataPath)) {
+      appendFeatures(
+        "data.classes.0.data.features",
+        record.data?.classes?.[0],
+        itemsByType.classFeatures,
+      );
+    }
     appendFeatures(
       "data.ancestries.0.data.features",
       record.data?.ancestries?.[0],

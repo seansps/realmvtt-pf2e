@@ -135,7 +135,11 @@ section("the second class line");
   setting = "no";
   assert("off, never shown: no write", ctx.getDualClassFieldValues(pc([cleric])), {});
   assert("off, shown: hides", ctx.getDualClassFieldValues(pc([cleric], {}, { fields: { secondClassBox: { hidden: false } } })), { "fields.secondClassBox.hidden": true });
-  assert("off with a second class: stays, to clear it", ctx.getDualClassFieldValues(pc(), ctx.getVariantRules()), { "fields.secondClassBox.hidden": false });
+  assert("off with a second class: stays, with the trash button", ctx.getDualClassFieldValues(pc(), ctx.getVariantRules()), {
+    "fields.secondClassBox.hidden": false,
+    "fields.pickSecondClassBtn.hidden": true,
+    "fields.clearSecondClassBtn.hidden": false,
+  });
   setting = "yes";
 
   assert("the first line's list shows the first class", ctx.getFirstClassFilters(pc()), [{ field: "classSlot", operator: "equals", value: "first" }]);
@@ -148,7 +152,17 @@ section("picking and clearing");
   assert("both classes, tagged", values["data.classes"].map((c) => [c.name, c.data.classSlot]), [["Cleric", "first"], ["Ranger", "second"]]);
   assert("the name on the line", values["data.secondClassName"], "Ranger");
   assert("its traits, without rarity", values["data.traits"], ["Human", "Ranger"]);
-  assert("the buttons swap", [values["fields.pickSecondClassBtn.hidden"], values["fields.clearSecondClassBtn.hidden"]], [true, false]);
+  assert("the pick writes no button flags (they follow the classes)", "fields.pickSecondClassBtn.hidden" in values, false);
+  setting = "yes";
+  assert("with a second class: trash, not +", ctx.getDualClassFieldValues(pc([cleric, ranger], {}, { fields: { secondClassBox: { hidden: false } } })), {
+    "fields.pickSecondClassBtn.hidden": true,
+    "fields.clearSecondClassBtn.hidden": false,
+  });
+  assert("already right: no write", ctx.getDualClassFieldValues(pc([cleric, ranger], {}, { fields: { secondClassBox: { hidden: false }, pickSecondClassBtn: { hidden: true }, clearSecondClassBtn: { hidden: false } } })), {});
+  assert("back to one class: + again", ctx.getDualClassFieldValues(pc([cleric], {}, { fields: { secondClassBox: { hidden: false }, pickSecondClassBtn: { hidden: true }, clearSecondClassBtn: { hidden: false } } })), {
+    "fields.pickSecondClassBtn.hidden": false,
+    "fields.clearSecondClassBtn.hidden": true,
+  });
   assert("no first class: nothing", ctx.getSecondClassValues(pc([]), ranger), null);
   assert("the larger number of additional skills", ctx.getSecondClassExtraSkills(cleric, ranger), 2);
   assert("no extra when the first has more", ctx.getSecondClassExtraSkills(ranger, cleric), 0);
@@ -159,7 +173,7 @@ section("picking and clearing");
   assert("clearing keeps the first", cleared["data.classes"].map((c) => c.name), ["Cleric"]);
   assert("and chosen feats, dropping empty slots", cleared["data.feats"], [chosen]);
   assert("the class-given ranks reset, to be rebuilt", [cleared["data.fortitude"], cleared["data.reflex"], cleared["data.will"], cleared["data.perception"], cleared["data.defenses"], cleared["data.attackProficiencies"]], ["0", "0", "0", "0", {}, {}]);
-  assert("the buttons swap back", [cleared["fields.pickSecondClassBtn.hidden"], cleared["fields.clearSecondClassBtn.hidden"]], [false, true]);
+  assert("class DC and spellcasting ranks reset too", [cleared["data.classDCProficiency"], cleared["data.spellcasting"]], [0, 0]);
 
   const replaced = ctx.getClassesWithFirst(pc(), { name: "Bard", data: {} });
   assert("dropping a first class keeps the second", replaced.map((c) => c.name), ["Bard", "Ranger"]);
@@ -168,6 +182,48 @@ section("picking and clearing");
   const left = { ...ranger, data: { ...ranger.data, classSlot: "second" } };
   assert("deleting the first takes the second too", ctx.getDeleteFirstClassValues(pc([left]))["data.classes"], []);
   assert("a single class: nothing extra", ctx.getDeleteFirstClassValues(pc([])), {});
+}
+
+section("the second line's name");
+{
+  assert("typing puts the class's name back", ctx.getSecondClassNameValues(pc(), "Druid"), { "data.secondClassName": "Ranger" });
+  assert("the class's name: no write", ctx.getSecondClassNameValues(pc(), "Ranger"), null);
+  assert("no second class: empty", ctx.getSecondClassNameValues(pc([cleric]), "x"), { "data.secondClassName": "" });
+}
+
+section("the second line's class link");
+{
+  assert("its list shows the second class", ctx.getSecondClassFilters(pc()), [{ field: "classSlot", operator: "equals", value: "second" }]);
+  const cleared = [];
+  const saved = ctx.clearSecondClass;
+  ctx.clearSecondClass = (record) => cleared.push(record._id);
+  ctx.onSecondClassListChange(pc([cleric], { secondClassName: "Ranger" }));
+  assert("deleting it there clears the same way", cleared, ["char-1"]);
+  ctx.onSecondClassListChange(pc([cleric, ranger], { secondClassName: "Ranger" }));
+  ctx.onSecondClassListChange(pc([cleric], { secondClassName: "" }));
+  assert("anything else changes nothing", cleared, ["char-1"]);
+  ctx.clearSecondClass = saved;
+}
+
+section("a second class's choice stays on it");
+{
+  const option = { _id: "opt-aberrant", name: "Aberrant", data: { value: [{ _id: "f-aberrant", name: "Bloodline: Aberrant", recordType: "features", data: { level: 1, type: "classfeature" } }] } };
+  const choice = { _id: "ch1", name: "Bloodline", data: { options: [option], choices: [] } };
+  const bloodline = { _id: "f-bl", name: "Bloodline", recordType: "features", data: { level: 1, choices: [choice] } };
+  const sorcerer = { name: "Sorcerer", data: { hp: 6, features: [bloodline], classSlot: "second" } };
+  const fighter = { name: "Fighter", data: { hp: 10, features: [{ _id: "f-rs", name: "Reactive Strike", data: { level: 1 } }], classSlot: "first" } };
+  const record = pc([fighter, sorcerer]);
+  let written = null;
+  const saved = { showPrompt: ctx.api.showPrompt, setValues: ctx.api.setValues };
+  ctx.api.showPrompt = (title, description, placeholder, options, query, callback) => callback(["opt-aberrant"]);
+  ctx.api.setValues = (values) => {
+    written = values;
+  };
+  ctx.promptForChoices(record, [{ feature: bloodline, group: { name: "Class", dataPath: "data.classes.1.data.features" }, choiceObj: choice }], 0);
+  Object.assign(ctx.api, saved);
+  const names = (path) => (written?.[path] || []).map((f) => f.name);
+  assert("the granted feature goes on the second class", names("data.classes.1.data.features").includes("Bloodline: Aberrant"), true);
+  assert("and not on the first", "data.classes.0.data.features" in (written || {}), false);
 }
 
 process.exitCode = summary() > 0 ? 1 : 0;

@@ -1815,12 +1815,23 @@ ${getLevelUpSummary(gains)}`,
           <!-- Second class (dual-class.js): only with the Dual-Class setting -->
           <box field="secondClassBox" hidden="true">
             <div style="display: flex; gap: 4px; align-items: center">
+              <!-- The name is set by picking: typing in it goes back to the
+                   class's name -->
               <stringfield
                 field="secondClassName"
                 placeholder="Second Class"
                 class="rvtt-sheet-class-line"
                 width="100%"
+                onchange="onSecondClassNameChange(record, value)"
               ></stringfield>
+              <list
+                width="fit-content"
+                height="32px"
+                listtype="record_link_list"
+                field="classes"
+                getfilters="return getSecondClassFilters(record);"
+                onchange="onSecondClassListChange(record)"
+              ></list>
               <iconbutton
                 field="pickSecondClassBtn"
                 size="sm"

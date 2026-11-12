@@ -63,6 +63,11 @@ function getFirstClassFilters(record) {
   return getSecondClass(record) ? [{ field: "classSlot", operator: "equals", value: "first" }] : [];
 }
 
+// The second line's list shows only the second class (nothing without one)
+function getSecondClassFilters(record) {
+  return [{ field: "classSlot", operator: "equals", value: "second" }];
+}
+
 const withClassSlot = (classObj, slot) => ({ ...classObj, data: { ...(classObj?.data || {}), classSlot: slot } });
 
 // A class dropped on the first line replaces only the first class
@@ -71,15 +76,46 @@ function getClassesWithFirst(record, classObj) {
   return second ? [withClassSlot(classObj, "first"), second] : [classObj];
 }
 
-// The Main tab's second class line: shown with the setting on, or while a
-// second class is still there so it can be cleared. Written only on a change,
-// with a missing value counting as hidden.
+// The Main tab's second class line, all in one place: the line shows with
+// the setting on, or while a second class is still there so it can be
+// cleared; the + until a class is picked, then the trash button. Each flag is
+// written only when it changes, with a missing value read as the HTML's
+// default (the line and the trash button start hidden, the + shown), so a
+// character with the setting off and no second class gets no write.
 function getDualClassFieldValues(record, variants = getVariantRules()) {
-  const show = !!variants.dualClass || !!getSecondClass(record);
-  const shown = record?.fields?.secondClassBox?.hidden === false;
-  if (show && !shown) return { "fields.secondClassBox.hidden": false };
-  if (!show && shown) return { "fields.secondClassBox.hidden": true };
-  return {};
+  const second = !!getSecondClass(record);
+  const wanted = {
+    secondClassBox: !(variants.dualClass || second),
+    pickSecondClassBtn: second,
+    clearSecondClassBtn: !second,
+  };
+  const defaults = { secondClassBox: true, pickSecondClassBtn: false, clearSecondClassBtn: true };
+  const values = {};
+  for (const [field, hidden] of Object.entries(wanted)) {
+    const current = record?.fields?.[field]?.hidden ?? defaults[field];
+    if (current !== hidden) values[`fields.${field}.hidden`] = hidden;
+  }
+  return values;
+}
+
+// The second line's name follows the class: typing in it puts the class's
+// name back (empty without a second class)
+function getSecondClassNameValues(record, value) {
+  const name = getSecondClass(record)?.name || "";
+  return `${value ?? ""}` === name ? null : { "data.secondClassName": name };
+}
+
+function onSecondClassNameChange(record, value) {
+  const values = getSecondClassNameValues(record, value);
+  if (values) api.setValues(values);
+}
+
+// The second line's class link: deleting it there clears the second class the
+// same way as the trash button
+function onSecondClassListChange(record) {
+  if (!getSecondClass(record) && record?.data?.secondClassName) {
+    clearSecondClass(record);
+  }
 }
 
 // What picking a second class writes. Null without a first class.
@@ -100,8 +136,6 @@ function getSecondClassValues(record, classObj) {
       ...(record.data?.traitsList || []),
       ...added.map((name) => ({ _id: generateUuid(), name, identified: true, data: {} })),
     ],
-    "fields.pickSecondClassBtn.hidden": true,
-    "fields.clearSecondClassBtn.hidden": false,
   };
 }
 
@@ -147,9 +181,9 @@ function pickSecondClass(record) {
 }
 
 // What clearing the second class writes: empty slots go, to be rebuilt for
-// the class that's left, and so do the class-given ranks, as recalculation
-// only ever raises a stored rank. Chosen feats and trained skills stay for
-// the GM.
+// the class that's left, and so do the class-given ranks (saves, Perception,
+// armor, weapons, class DC, spellcasting), as recalculation only ever raises a
+// stored rank. Chosen feats and trained skills stay for the GM.
 function getClearSecondClassValues(record) {
   const first = record?.data?.classes?.[0];
   return {
@@ -162,8 +196,8 @@ function getClearSecondClassValues(record) {
     "data.perception": "0",
     "data.defenses": {},
     "data.attackProficiencies": {},
-    "fields.pickSecondClassBtn.hidden": false,
-    "fields.clearSecondClassBtn.hidden": true,
+    "data.classDCProficiency": 0,
+    "data.spellcasting": 0,
   };
 }
 
@@ -182,7 +216,5 @@ function getDeleteFirstClassValues(record) {
   return {
     "data.classes": [],
     "data.secondClassName": "",
-    "fields.pickSecondClassBtn.hidden": false,
-    "fields.clearSecondClassBtn.hidden": true,
   };
 }
