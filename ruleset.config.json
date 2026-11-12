@@ -5798,6 +5798,9 @@
         "GmSubsystems": {
           "file": "rollhandlers/gm-subsystems.js"
         },
+        "CreatureTemplates": {
+          "file": "rollhandlers/creature-templates.js"
+        },
         "Siege": {
           "file": "rollhandlers/siege.js"
         },
