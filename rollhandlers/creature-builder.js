@@ -278,6 +278,9 @@ function setCreatureHp(values, data, newMax) {
   const current = data.curhp === undefined || data.curhp === null || data.curhp === "" ? oldMax : getCreatureNumber(data.curhp);
   values["data.hitpoints"] = newMax;
   values["data.curhp"] = Math.min(newMax, Math.max(0, current - oldMax + newMax));
+  // A troop's segment thresholds scale with it (troops.js)
+  const details = getRescaledTroopHpDetails(data, oldMax, newMax);
+  if (details !== null) values["data.hpDetails"] = details;
 }
 
 // Initiative follows the Perception or skill it's rolled with

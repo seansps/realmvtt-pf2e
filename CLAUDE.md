@@ -286,6 +286,19 @@ Animal companions are characters, as Foundry's PF2e Companion Compendia builds t
 - Clearing the second class resets saves, Perception, armor, weapon, class DC and spellcasting ranks so recalculation rebuilds them (it only ever raises a stored rank). Trained skills stay.
 - First class only: key attribute, class kit, class trait. The extra additional skills are a chat note.
 
+### Item and character-building variants (shoddy, apex, cursed, High-Quality, doubling rings, flaws, simplified feats)
+
+`rollhandlers/item-variants.js` (global script `ItemVariants`).
+- Shoddy (Player Core pg. 270; the Shoddy trait or "shoddy" in the name, `isShoddyItem`): -2 item penalty on the weapon's attacks (`getShoddyModifier`) and the armor's AC (`getACForArmor`), armor check penalty 2 worse (`getShoddyCheckPenalty` in `getBestEquippedArmor`). Half Hit Points and Broken Threshold are left to the item's own numbers.
+- Dawnsilver and legacy mithral add `silver` to `getWeaponMaterials` (`addSilverMaterial`).
+- Apex (GM Core pg. 270): the first invested item with the Apex trait raises the attribute in its `data.apexAttribute` or its "increase your X modifier" text, +1 or to +4 (`getApexItemAttributeForRecord`, after ABP's apex in `calculateAbilityBoosts`).
+- Cursed: a GM-only line on the Use card (`getCursedUseText`); Identify Magic's DC already treats cursed items as unique.
+- High-Quality variant (`highQualityItems`): armor potency on armor without the magical trait works uninvested (`isHighQualityArmor`); the GM sets the potency for the quality.
+- Doubling rings: worn (and invested), a wielded melee weapon uses the better wielded melee weapon's potency and striking (`getDoublingRingRunes`, in the attack and `getStrikingRuneForRecord`). Which hand wears which ring isn't tracked; property runes (greater) aren't copied.
+- Voluntary flaws (`voluntaryFlaws`): a picker in the attribute boosts (`data.voluntaryFlaws`, `getVoluntaryFlawFieldValues`), applied in `calculateAbilityBoosts`, never a second flaw on an ancestry-flawed attribute.
+- Simplified Ancestries (`simplifiedAncestries`: yes, or general feats instead of later ancestry feats) and Simplified Skill Feats (`simplifiedSkillFeats`; rogues keep even levels) in `getFeatSlotLevels`. Background skill feats still come with the background.
+- Troops rescaled by the creature builder scale their thresholds too (`getRescaledTroopHpDetails`, troops.js).
+
 ### Siege weapons (Aim, Load, Launch, misfire)
 
 `rollhandlers/siege.js` (global script `Siege`, roadmap B10, Guns & Gears pg. 72-73 and 172), a Siege Weapons accordion on the GM Tools panel after Vehicles. A siege weapon is any NPC with Aim and Launch (or Fire) actions (`isSiegeToken`), best typed Vehicle for its Crew, AC, Hardness and Speed fields (`isVehicleToken` is false for one, so the Vehicle Card doesn't take it); the actions' descriptions are the stat block's text, and nothing is added to its sheet. Proficiency is read from the crew text ("2-4; Proficiency martial") or the description, black powder from the description or traits. No module has siege weapon records yet.

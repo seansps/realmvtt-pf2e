@@ -29,6 +29,29 @@ function getTroopThresholds(creature) {
   return (printed.length ? printed : read(defenses?.data?.description)).sort((a, b) => b.hp - a.hp);
 }
 
+// A rescaled troop's HP details with its thresholds scaled by the same ratio
+// as its Hit Points (creature-builder.js), or null when it isn't a troop or
+// has no thresholds. Thresholds only in the troop defenses ability are
+// written into the HP details, which are read first.
+function getRescaledTroopHpDetails(data, oldMax, newMax) {
+  const creature = { data };
+  if (!isTroop(creature) || !(oldMax > 0) || newMax === oldMax) return null;
+  const thresholds = getTroopThresholds(creature);
+  if (!thresholds.length) return null;
+  const scale = (hp) => Math.max(1, Math.round((hp * newMax) / oldMax));
+  const details = `${data.hpDetails ?? ""}`;
+  const counted = /(\d+)(\s*\(\d+\s+segments?\))/gi;
+  if (counted.test(details)) {
+    return details.replace(counted, (all, hp, rest) => `${scale(parseInt(hp, 10))}${rest}`);
+  }
+  const bare = /(thresholds?\s*:?\s*)(\d+(?:\s*,\s*\d+)*)/i;
+  if (bare.test(details)) {
+    return details.replace(bare, (all, label, list) => `${label}${list.split(",").map((hp) => scale(parseInt(hp, 10))).join(", ")}`);
+  }
+  const written = thresholds.map((threshold) => `${scale(threshold.hp)} (${threshold.segments} segments)`).join(", ");
+  return `${details ? `${details}; ` : ""}thresholds ${written}`;
+}
+
 // What a troop now at this many Hit Points has lost: { lost, segments, max },
 // or null. At 0 it disperses instead, so there's nothing left to count.
 function getTroopSegmentLoss(creature, curhp) {

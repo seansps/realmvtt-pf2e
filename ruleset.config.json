@@ -5786,6 +5786,9 @@
         "DualClass": {
           "file": "rollhandlers/dual-class.js"
         },
+        "ItemVariants": {
+          "file": "rollhandlers/item-variants.js"
+        },
         "Siege": {
           "file": "rollhandlers/siege.js"
         },
@@ -5910,6 +5913,43 @@
             "label": "Yes",
             "value": "yes"
           }
+        ]
+      },
+      {
+        "name": "Variant: High-Quality Items",
+        "key": "highQualityItems",
+        "description": "Gamemastery Guide pg. 197. Fine non-magical weapons and armor give the bonuses of potency runes: set the item's potency for its quality (expert +1, master +2, legendary +3). Armor without the magical trait gives it without being invested. Devastating and resilient quality work like Automatic Bonus Progression's.",
+        "values": [
+          { "label": "No", "value": "no" },
+          { "label": "Yes", "value": "yes" }
+        ]
+      },
+      {
+        "name": "Variant: Voluntary Flaws",
+        "key": "voluntaryFlaws",
+        "description": "Player Core pg. 23. Adds a Voluntary Flaws picker to the attribute boosts, for roleplaying a flawed character. Each lowers an attribute by 1, never twice on an attribute the ancestry already flaws.",
+        "values": [
+          { "label": "No", "value": "no" },
+          { "label": "Yes", "value": "yes" }
+        ]
+      },
+      {
+        "name": "Variant: Simplified Ancestries",
+        "key": "simplifiedAncestries",
+        "description": "Gamemastery Guide pg. 194. Characters take only the 1st-level ancestry feat (the ancestry's lore feat). With the general feats option, the later ancestry feat levels give general feats instead.",
+        "values": [
+          { "label": "No", "value": "no" },
+          { "label": "Yes", "value": "yes" },
+          { "label": "Yes, general feats instead", "value": "general" }
+        ]
+      },
+      {
+        "name": "Variant: Simplified Skill Feats",
+        "key": "simplifiedSkillFeats",
+        "description": "Gamemastery Guide pg. 194. Characters get no skill feat slots; they can still take skill feats with general feats. Rogues keep skill feats at the usual even levels.",
+        "values": [
+          { "label": "No", "value": "no" },
+          { "label": "Yes", "value": "yes" }
         ]
       },
       {

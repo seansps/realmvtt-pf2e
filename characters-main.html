@@ -2078,6 +2078,18 @@ ${getLevelUpSummary(gains)}`,
                 multiselect="4"
                 onchange="updateAbilityBoosts(value, 'freeBoostsLevel20')"
               ></dropdown>
+              <!-- Voluntary flaws (item-variants.js): only with the setting -->
+              <dropdown
+                size="xs"
+                field="voluntaryFlaws"
+                label="Voluntary Flaws"
+                hidden="true"
+                placeholder="Roleplaying flaws"
+                icon="IconCircleMinus"
+                options='[{"label": "Strength", "value": "str"}, {"label": "Dexterity", "value": "dex"}, {"label": "Constitution", "value": "con"}, {"label": "Intelligence", "value": "int"}, {"label": "Wisdom", "value": "wis"}, {"label": "Charisma", "value": "cha"}]'
+                multiselect="6"
+                onchange="onVoluntaryFlawsChange(value)"
+              ></dropdown>
             </div>
           </popover.dropdown>
         </popover>
