@@ -7352,6 +7352,7 @@ function getVariantRules() {
     simplifiedSkillFeats: isOn("simplifiedSkillFeats"),
     voluntaryFlaws: isOn("voluntaryFlaws"),
     pointBuy: isOn("pointBuy"),
+    skillPoints: isOn("skillPoints"),
   };
 }
 
@@ -17936,9 +17937,11 @@ function getLevelUpGains(record, newLevel, variants = getVariantRules()) {
     attributeBoosts: boosts.count > 0,
     boostCount: boosts.count,
     boostSetLevel: boosts.setLevel,
-    skillIncrease: allClasses
+    // Skill Points replace skill increases (skill-points.js)
+    skillIncrease: !isSkillPointsOn(record) && allClasses
       .flatMap((entry) => toLevels(entry?.data?.skillIncreaseLevels))
       .includes(newLevel),
+    skillPoints: isSkillPointsOn(record) ? getSkillPointsForLevel(newLevel, isRogueCharacter(record)) : 0,
     featTypes,
     classFeatures,
     spellcasting: getSpellcastingLevelUpChanges(record, newLevel),
@@ -17953,6 +17956,9 @@ function getLevelUpSummary(gains) {
   }
   if (gains.stamina > 0) {
     lines.push(`+${gains.stamina} maximum Stamina Points`);
+  }
+  if (gains.skillPoints > 0) {
+    lines.push(`+${gains.skillPoints} Skill Point${gains.skillPoints === 1 ? "" : "s"} to spend on the Skills tab`);
   }
   lines.push("+1 to all proficiency bonuses");
   if (gains.classFeatures.length > 0) {
@@ -18722,6 +18728,8 @@ function updateVariantRuleFields(record, valuesToSet) {
   Object.assign(valuesToSet, getVoluntaryFlawFieldValues(record, variants));
   // The Point Buy section and its summary (point-buy.js)
   Object.assign(valuesToSet, getPointBuyFieldValues(record, variants));
+  // The Skill Points section and its line (skill-points.js)
+  Object.assign(valuesToSet, getSkillPointFieldValues(record, variants));
 
   // The Hero Points counter holds Mythic Points for a mythic character
   // (mythic.js)

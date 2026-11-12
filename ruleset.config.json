@@ -5801,6 +5801,9 @@
         "CreatureTemplates": {
           "file": "rollhandlers/creature-templates.js"
         },
+        "SkillPoints": {
+          "file": "rollhandlers/skill-points.js"
+        },
         "Siege": {
           "file": "rollhandlers/siege.js"
         },
@@ -5931,6 +5934,15 @@
         "name": "Variant: High-Quality Items",
         "key": "highQualityItems",
         "description": "Gamemastery Guide pg. 197. Fine non-magical weapons and armor give the bonuses of potency runes: set the item's potency for its quality (expert +1, master +2, legendary +3). Armor without the magical trait gives it without being invested. Devastating and resilient quality work like Automatic Bonus Progression's.",
+        "values": [
+          { "label": "No", "value": "no" },
+          { "label": "Yes", "value": "yes" }
+        ]
+      },
+      {
+        "name": "Variant: Skill Points",
+        "key": "skillPoints",
+        "description": "Gamemastery Guide pg. 199. From 2nd level, skill increases are replaced by Skill Points (1 a level to 5th, 2 to 13th, 4 after; double for rogues), spent on the Skills tab to raise a skill: trained 1 point, expert 2 (level 3), master 4 (level 7), legendary 8 (level 15). Unspent points are kept.",
         "values": [
           { "label": "No", "value": "no" },
           { "label": "Yes", "value": "yes" }
