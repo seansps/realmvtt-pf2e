@@ -309,6 +309,13 @@ Animal companions are characters, as Foundry's PF2e Companion Compendia builds t
 - Snares (item-variants.js, `getSnareUseText`): the Use card gives the Stealth DC to find it, the creator's Crafting DC, and that only active searching finds an expert's.
 - Spellguns (`getSpellgunUseText`): the Use card gives the spell attack and simple-firearm attack modifiers and the range increment.
 
+### Duels, leadership and naval chases
+
+`rollhandlers/gm-subsystems.js` (global script `GmSubsystems`).
+- Duels (GM Core pg. 202-203), GM Tools "Duels": `postDuelInitiative(kind)` posts a card per selected duelist with a button per initiative skill (combat: Deception, Intimidation, Perception; spellcasting: Arcana, Nature, Occultism, Religion). `rollDuelInitiative` rolls it as initiative with `metadata.duel`; `skill.js` adds the dueling reaction or tradition focus, or that it's not trained (`getDuelResultLines`). A combat duel presses it each round.
+- Leadership (GM Core pg. 204-205), GM Tools "Leadership": followers in the campaign variable `leadershipFollowers` (Followers takes a number or +n/-n), `leadershipMeter` shows the organization level, max follower level and lieutenants (Table 3-3, `getOrganizationStats`); a level change posts a line. Leadership Event rolls opportunity, trouble or windfall for the GM.
+- Naval chase (High Seas pg. 37): the challenge sheet's Add Naval Obstacles picks rows from `NAVAL_CHASE_OBSTACLES` (each with both versions' checks) into `data.obstacles`; the GM sets goals. Boarding and sailing combat use the vehicle and siege weapon tools.
+
 ### Siege weapons (Aim, Load, Launch, misfire)
 
 `rollhandlers/siege.js` (global script `Siege`, roadmap B10, Guns & Gears pg. 72-73 and 172), a Siege Weapons accordion on the GM Tools panel after Vehicles. A siege weapon is any NPC with Aim and Launch (or Fire) actions (`isSiegeToken`), best typed Vehicle for its Crew, AC, Hardness and Speed fields (`isVehicleToken` is false for one, so the Vehicle Card doesn't take it); the actions' descriptions are the stat block's text, and nothing is added to its sheet. Proficiency is read from the crew text ("2-4; Proficiency martial") or the description, black powder from the description or traits. No module has siege weapon records yet.

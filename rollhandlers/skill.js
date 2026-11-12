@@ -289,6 +289,11 @@ message += getRollNotesText(data?.roll?.metadata?.notes, noteDegree);
 const bravadoLines = getBravadoLines(data?.roll?.metadata?.bravado, noteDegree);
 if (bravadoLines.length > 0) message += `\n\n${bravadoLines.join("\n")}`;
 
+// A duel's initiative: the dueling reaction or tradition focus it gives
+// (gm-subsystems.js)
+const duelLines = getDuelResultLines(data?.roll?.metadata);
+if (duelLines.length > 0) message += `\n\n${duelLines.join("\n")}`;
+
 // A ritual's secondary check: what it does to the primary check (rituals.js)
 const ritualLines = getRitualResultLines(data?.roll?.metadata, noteDegree);
 if (ritualLines.length > 0) message += `\n\n${ritualLines.join("\n")}`;

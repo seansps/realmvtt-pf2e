@@ -262,6 +262,17 @@
     field="obstacles"
     variant="outline-striped"
   ></list>
+  <!-- Naval chase obstacles (High Seas pg. 37; gm-subsystems.js) -->
+  <div style="display: flex; gap: 4px; margin-top: 4px">
+    <button
+      size="xs"
+      variant="light"
+      icon="IconSailboat"
+      label="Add Naval Obstacles"
+      hideonlocked="true"
+      onclick="addNavalChaseObstacles(record)"
+    ></button>
+  </div>
 
   <label
     label="Thresholds"

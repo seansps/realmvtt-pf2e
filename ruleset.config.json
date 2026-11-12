@@ -5795,6 +5795,9 @@
         "Rituals": {
           "file": "rollhandlers/rituals.js"
         },
+        "GmSubsystems": {
+          "file": "rollhandlers/gm-subsystems.js"
+        },
         "Siege": {
           "file": "rollhandlers/siege.js"
         },
