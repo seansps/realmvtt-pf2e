@@ -5786,6 +5786,24 @@
         "DualClass": {
           "file": "rollhandlers/dual-class.js"
         },
+        "ItemVariants": {
+          "file": "rollhandlers/item-variants.js"
+        },
+        "PointBuy": {
+          "file": "rollhandlers/point-buy.js"
+        },
+        "Rituals": {
+          "file": "rollhandlers/rituals.js"
+        },
+        "GmSubsystems": {
+          "file": "rollhandlers/gm-subsystems.js"
+        },
+        "CreatureTemplates": {
+          "file": "rollhandlers/creature-templates.js"
+        },
+        "SkillPoints": {
+          "file": "rollhandlers/skill-points.js"
+        },
         "Siege": {
           "file": "rollhandlers/siege.js"
         },
@@ -5910,6 +5928,61 @@
             "label": "Yes",
             "value": "yes"
           }
+        ]
+      },
+      {
+        "name": "Variant: High-Quality Items",
+        "key": "highQualityItems",
+        "description": "Gamemastery Guide pg. 197. Fine non-magical weapons and armor give the bonuses of potency runes: put High-Quality in the item's name and set its potency, striking or resilient for its quality. Such armor gives its bonus without being invested.",
+        "values": [
+          { "label": "No", "value": "no" },
+          { "label": "Yes", "value": "yes" }
+        ]
+      },
+      {
+        "name": "Variant: Skill Points",
+        "key": "skillPoints",
+        "description": "Gamemastery Guide pg. 199. From 2nd level, skill increases are replaced by Skill Points (1 a level to 5th, 2 to 13th, 4 after; double for rogues), spent on the Skills tab to raise a skill: trained 1 point, expert 2 (level 3), master 4 (level 7), legendary 8 (level 15). Unspent points are kept.",
+        "values": [
+          { "label": "No", "value": "no" },
+          { "label": "Yes", "value": "yes" }
+        ]
+      },
+      {
+        "name": "Variant: Point Buy",
+        "key": "pointBuy",
+        "description": "Gamemastery Guide pg. 182. Ability Points replace all attribute boosts. At 1st level, scores from 8 to 18 replace the boosts and flaws (15 flexible points, plus dedicated points for the ancestry, background and class). Each later level gives more points to raise a score by 1 at a time, up to 22. Each score becomes the modifier floor((score - 10) / 2). The attribute editor shows the points.",
+        "values": [
+          { "label": "No", "value": "no" },
+          { "label": "Yes", "value": "yes" }
+        ]
+      },
+      {
+        "name": "Variant: Voluntary Flaws",
+        "key": "voluntaryFlaws",
+        "description": "Player Core pg. 23. Adds a Voluntary Flaws picker to the attribute boosts, for roleplaying a flawed character. Each lowers an attribute by 1, never twice on an attribute the ancestry already flaws.",
+        "values": [
+          { "label": "No", "value": "no" },
+          { "label": "Yes", "value": "yes" }
+        ]
+      },
+      {
+        "name": "Variant: Simplified Ancestries",
+        "key": "simplifiedAncestries",
+        "description": "Gamemastery Guide pg. 194. Characters take only the 1st-level ancestry feat (the ancestry's lore feat). With the general feats option, the later ancestry feat levels give general feats instead.",
+        "values": [
+          { "label": "No", "value": "no" },
+          { "label": "Yes", "value": "yes" },
+          { "label": "Yes, general feats instead", "value": "general" }
+        ]
+      },
+      {
+        "name": "Variant: Simplified Skill Feats",
+        "key": "simplifiedSkillFeats",
+        "description": "Gamemastery Guide pg. 194. Characters get no skill feats, not even from their backgrounds; they can still take skill feats with general feats. Rogues keep skill feats at the usual even levels.",
+        "values": [
+          { "label": "No", "value": "no" },
+          { "label": "Yes", "value": "yes" }
         ]
       },
       {

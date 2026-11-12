@@ -4762,6 +4762,11 @@ performDamageRollForSpellOrItem("${record._id}","${record.recordType}", "${itemD
   markdownDescription += getAfflictionExposeButton(item);
   // A relic's level, gift DC and save buttons (relics.js)
   markdownDescription += getRelicUseText(item, typeof record !== "undefined" ? record : null);
+  // A cursed item's GM-only note, a snare's DC and a spellgun's attack
+  // modifiers (item-variants.js)
+  markdownDescription += getCursedUseText(item);
+  markdownDescription += getSnareUseText(item, typeof record !== "undefined" ? record : null);
+  markdownDescription += getSpellgunUseText(item, typeof record !== "undefined" ? record : null);
 
   api.sendMessage(markdownDescription, undefined, recordLinks);
 
@@ -5241,11 +5246,14 @@ function getACForArmor(item, record) {
     const potencyRune = parseInt(item?.data?.runes?.potency || 0, 10);
     if (
       record?.recordType !== "characters" ||
-      item?.data?.invested === "true"
+      item?.data?.invested === "true" ||
+      isHighQualityArmor(item)
     ) {
       ac += potencyRune;
     }
   }
+  // Shoddy armor: -2 item penalty to the AC it gives (item-variants.js)
+  if (isShoddyItem(item)) ac -= 2;
   // An animal companion's item bonus to AC is at most +3 (Player Core pg. 206)
   if (companion) ac = Math.min(ac, ANIMAL_COMPANION_MAX_ARMOR_AC);
   return ac;
@@ -5305,7 +5313,8 @@ function getBestEquippedArmor(record) {
       if (ac > bestEquippedArmor.armor.acBonus) {
         bestEquippedArmor.armor.acBonus = ac;
         bestEquippedArmor.armor.dexCap = dexCap;
-        bestEquippedArmor.armor.checkPenalty = item?.data?.checkPenalty;
+        // Shoddy armor's is 2 worse (item-variants.js)
+        bestEquippedArmor.armor.checkPenalty = getShoddyCheckPenalty(item, item?.data?.checkPenalty);
         bestEquippedArmor.armor.speedPenalty = item?.data?.speedPenalty;
         bestEquippedArmor.armor.strength = item?.data?.strength;
         bestEquippedArmor.armor.armorId = item?._id;
@@ -7319,6 +7328,13 @@ function getVariantRules() {
       return false;
     }
   };
+  const isGeneral = (key) => {
+    try {
+      return typeof api?.getSetting === "function" && api.getSetting(key) === "general";
+    } catch (e) {
+      return false;
+    }
+  };
   return {
     automaticBonusProgression: isOn("automaticBonusProgression"),
     freeArchetype: isOn("freeArchetype"),
@@ -7329,6 +7345,13 @@ function getVariantRules() {
     mythic: isOn("mythicRules"),
     stamina: isOn("staminaVariant"),
     dualClass: isOn("dualClass"),
+    highQuality: isOn("highQualityItems"),
+    simplifiedAncestries: isOn("simplifiedAncestries") || isGeneral("simplifiedAncestries"),
+    simplifiedAncestriesGeneral: isGeneral("simplifiedAncestries"),
+    simplifiedSkillFeats: isOn("simplifiedSkillFeats"),
+    voluntaryFlaws: isOn("voluntaryFlaws"),
+    pointBuy: isOn("pointBuy"),
+    skillPoints: isOn("skillPoints"),
   };
 }
 
@@ -7352,6 +7375,23 @@ function getFeatSlotLevels(record, variants = getVariantRules()) {
 
   // A second class's class feats, and its other feat levels (dual-class.js)
   addSecondClassFeatLevels(levels, record.data?.classes?.[1], toLevels);
+
+  // Simplified Ancestries (Gamemastery Guide pg. 194): only the 1st-level
+  // ancestry feat (the ancestry's lore feat), and optionally general feats
+  // in place of the rest
+  if (variants.simplifiedAncestries) {
+    const later = levels.ancestry.filter((level) => level > 1);
+    levels.ancestry = levels.ancestry.filter((level) => level <= 1).slice(0, 1);
+    if (variants.simplifiedAncestriesGeneral) {
+      levels.general = [...levels.general, ...later].sort((a, b) => a - b);
+    }
+  }
+  // Simplified Skill Feats: none, except a rogue keeps the usual even-level
+  // ones instead of its double advancement
+  if (variants.simplifiedSkillFeats) {
+    const isRogue = (record.data?.classes || []).some((entry) => /^rogue\b/i.test(entry?.name || ""));
+    levels.skill = isRogue ? levels.skill.filter((level) => level % 2 === 0) : [];
+  }
 
   // Ancestry Paragon: two ancestry feats at 1st level, then one at every odd level
   if (variants.ancestryParagon) {
@@ -8162,22 +8202,28 @@ function updateProficiencies(record, valuesToSet) {
 
 // Calculate Pathfinder 2e ability boosts
 function calculateAbilityBoosts(record) {
-  const apexAttribute = getAbpBonuses(record)?.apex || "";
-  const boosts = {
+  // ABP's attribute apex, or else an invested apex item's (item-variants.js)
+  const apexAttribute = getAbpBonuses(record)?.apex || getApexItemAttributeForRecord(record);
+  // Point Buy replaces the 1st-level boosts and flaws (point-buy.js)
+  const pointBuy = isPointBuyOn(record);
+  const boosts = pointBuy ? {} : {
     ancestryBoost1: record.data?.ancestryBoost1,
     ancestryBoost2: record.data?.ancestryBoost2,
     backgroundBoost1: record.data?.backgroundBoost1,
     backgroundBoost2: record.data?.backgroundBoost2,
     classBoost: record.data?.keyAbility,
     freeBoosts: record.data?.freeBoosts || [],
+  };
+  // Point Buy replaces the later boosts too, with raised scores
+  if (!pointBuy) Object.assign(boosts, {
     freeBoostsLevel5: record.data?.freeBoostsLevel5 || [],
     freeBoostsLevel10: record.data?.freeBoostsLevel10 || [],
     freeBoostsLevel15: record.data?.freeBoostsLevel15 || [],
     freeBoostsLevel20: record.data?.freeBoostsLevel20 || [],
-  };
+  });
 
   // Count boosts per ability
-  const boostCounts = {
+  const boostCounts = pointBuy ? getPointBuyBoostCounts(record) : {
     str: 0,
     dex: 0,
     con: 0,
@@ -8189,7 +8235,7 @@ function calculateAbilityBoosts(record) {
   // Handle ancestry boosts and flaws if not using alternate ancestry boosts
   const alternateAncestryBoosts = record.data?.alternateAncestryBoosts;
   const ancestries = record.data?.ancestries || [];
-  if (!alternateAncestryBoosts && ancestries.length > 0) {
+  if (!pointBuy && !alternateAncestryBoosts && ancestries.length > 0) {
     const ancestry = ancestries[0];
     const ancestryBoosts = ancestry?.data?.boosts || {};
     const ancestryFlaws = ancestry?.data?.flaws || {};
@@ -8214,6 +8260,12 @@ function calculateAbilityBoosts(record) {
       }
     }
   }
+
+  // Voluntary flaws (Player Core pg. 23): one more flaw each, never a second
+  // flaw on an attribute the ancestry already flaws (item-variants.js)
+  (pointBuy ? [] : getVoluntaryFlaws(record)).forEach((ability) => {
+    if (boostCounts.hasOwnProperty(ability)) boostCounts[ability]--;
+  });
 
   // Helper function to add a boost
   const addBoost = (ability) => {
@@ -8342,11 +8394,16 @@ function setProvidedItems(record, callback = undefined) {
 
   // Second pass: Collect all provided items from valid sources
   const providedItems = [];
+  const simplifiedSkillFeats = !!getVariantRules().simplifiedSkillFeats;
   for (const source of validSources) {
     // Add items from providesItems
     if (source.data?.providesItems && source.data.providesItems.length > 0) {
       // Filter items by predicate if set
       for (const item of source.data.providesItems) {
+        // Simplified Skill Feats: no skill feat from a background (item-variants.js)
+        if (simplifiedSkillFeats && backgrounds.includes(source) && isSkillFeatItem(item)) {
+          continue;
+        }
         if (item.data?.predicate) {
           const parsedPredicate = parseModifierPredicate(item.data.predicate);
           const predicatePassed = evaluateEffectPredicate(
@@ -9875,7 +9932,9 @@ function rollSkill(
 
   // Fortune / misfortune on this check (initiative too). Rewrite Fate is a
   // reroll, which ignores them
-  if (!additionalMetadata.rewriteFateSpend) {
+  // A ritual's checks are downtime checks, which they don't modify either
+  // (rituals.js)
+  if (!additionalMetadata.rewriteFateSpend && !additionalMetadata.noFortune) {
     modifiers.push(
       ...getRollTwiceModifiers(
         record,
@@ -13125,9 +13184,13 @@ function performAttackRoll(record, weapon, weaponDataPath, attackNumber) {
     // Get bonuses for potency runes (Automatic Bonus Progression replaces
     // them with attack potency for all weapons and unarmed attacks)
     const abp = getAbpBonuses(record);
+    // Doubling rings copy the other weapon's runes (item-variants.js)
+    const doubled = getDoublingRingRunes(record, weapon);
     const potencyRune = abp
       ? abp.attack
-      : parseInt(weapon.data?.runes?.potency || "0", 10);
+      : doubled
+        ? doubled.potency
+        : parseInt(weapon.data?.runes?.potency || "0", 10);
     // The potency rune is an item bonus, so it doesn't stack with other item
     // bonuses to attack; ABP's attack potency stacks with them
     if (potencyRune > 0) {
@@ -13142,6 +13205,9 @@ function performAttackRoll(record, weapon, weaponDataPath, attackNumber) {
         valueType: "number",
       });
     }
+    // A shoddy weapon: -2 item penalty (item-variants.js)
+    const shoddyAttack = getShoddyModifier(weapon);
+    if (shoddyAttack) modifiers.push(shoddyAttack);
   }
 
   // Get other bonuses and penalties
@@ -16225,7 +16291,8 @@ function applyDamage(
             IWR.weaknesses[lowerType],
             IWR.weaknesses["all damage"] || IWR.weaknesses["all-damage"],
           ];
-          (roll?.metadata?.damageCategories || []).forEach((category) => {
+          // Dawnsilver counts as silver against weaknesses only (item-variants.js)
+          addSilverMaterial(roll?.metadata?.damageCategories || []).forEach((category) => {
             const key = Object.keys(IWR.weaknesses).find(
               (weaknessKey) => normalizeKey(weaknessKey) === normalizeKey(category),
             );
@@ -17864,7 +17931,8 @@ function getLevelUpGains(record, newLevel, variants = getVariantRules()) {
 
   // An animal companion gains no attribute boosts; its attributes come from
   // its type and its stage feats (animal-companions.js)
-  const boosts = isAnimalCompanionCharacter(record)
+  // Point Buy gives Ability Points instead (point-buy.js)
+  const boosts = isAnimalCompanionCharacter(record) || isPointBuyOn(record)
     ? { count: 0, setLevel: null }
     : getAttributeBoostGain(newLevel, variants);
 
@@ -17876,9 +17944,12 @@ function getLevelUpGains(record, newLevel, variants = getVariantRules()) {
     attributeBoosts: boosts.count > 0,
     boostCount: boosts.count,
     boostSetLevel: boosts.setLevel,
-    skillIncrease: allClasses
+    // Skill Points replace skill increases (skill-points.js)
+    skillIncrease: !isSkillPointsOn(record) && allClasses
       .flatMap((entry) => toLevels(entry?.data?.skillIncreaseLevels))
       .includes(newLevel),
+    skillPoints: isSkillPointsOn(record) ? getSkillPointsForLevel(newLevel, isRogueCharacter(record)) : 0,
+    abilityPoints: isPointBuyOn(record) ? getPointBuyLevelPoints(newLevel) : 0,
     featTypes,
     classFeatures,
     spellcasting: getSpellcastingLevelUpChanges(record, newLevel),
@@ -17893,6 +17964,12 @@ function getLevelUpSummary(gains) {
   }
   if (gains.stamina > 0) {
     lines.push(`+${gains.stamina} maximum Stamina Points`);
+  }
+  if (gains.abilityPoints > 0) {
+    lines.push(`+${gains.abilityPoints} Ability Points to raise scores in the attribute editor (Point Buy)`);
+  }
+  if (gains.skillPoints > 0) {
+    lines.push(`+${gains.skillPoints} Skill Point${gains.skillPoints === 1 ? "" : "s"} to spend on the Skills tab`);
   }
   lines.push("+1 to all proficiency bonuses");
   if (gains.classFeatures.length > 0) {
@@ -18392,8 +18469,9 @@ function getDedicationWarning(record, feat) {
 // Ability Boosts it holds one per level reached within the set.
 function getFreeBoostFieldsForLevel(record, level, variants = getVariantRules()) {
   const valuesToSet = {};
-  // An animal companion gains no attribute boosts (animal-companions.js)
-  if (isAnimalCompanionCharacter(record)) {
+  // An animal companion gains no attribute boosts (animal-companions.js), and
+  // Point Buy raises scores instead (point-buy.js); its sets stay as they are
+  if (isAnimalCompanionCharacter(record) || isPointBuyOn(record)) {
     LEVEL_UP_BOOST_LEVELS.forEach((setLevel) => {
       valuesToSet[`fields.freeBoostsLevel${setLevel}.hidden`] = true;
     });
@@ -18504,7 +18582,9 @@ function getAbpModifiers(record) {
 // the weapon the higher count wins. Bombs scale with item level, so they don't
 // get devastating attacks.
 function getStrikingRuneForRecord(record, weapon) {
-  const rune = parseInt(weapon?.data?.runes?.striking || "0", 10) || 0;
+  // Doubling rings copy the other weapon's runes (item-variants.js)
+  const doubled = getDoublingRingRunes(record, weapon);
+  const rune = doubled ? doubled.striking : parseInt(weapon?.data?.runes?.striking || "0", 10) || 0;
   const abp = getAbpBonuses(record);
   const isBomb = `${weapon?.data?.group || ""}`.toLowerCase() === "bomb";
   if (abp && !isBomb) {
@@ -18656,6 +18736,12 @@ function updateVariantRuleFields(record, valuesToSet) {
 
   // The Main tab's second class line (dual-class.js)
   Object.assign(valuesToSet, getDualClassFieldValues(record, variants));
+  // The voluntary flaws picker (item-variants.js)
+  Object.assign(valuesToSet, getVoluntaryFlawFieldValues(record, variants));
+  // The Point Buy section and its summary (point-buy.js)
+  Object.assign(valuesToSet, getPointBuyFieldValues(record, variants));
+  // The Skill Points section and its line (skill-points.js)
+  Object.assign(valuesToSet, getSkillPointFieldValues(record, variants));
 
   // The Hero Points counter holds Mythic Points for a mythic character
   // (mythic.js)
@@ -18671,7 +18757,8 @@ function updateVariantRuleFields(record, valuesToSet) {
     const current = record.data?.[`freeBoostsLevel${setLevel}`];
     const hasBoosts = Array.isArray(current) ? current.length > 0 : !!current;
     const hidden =
-      boostFields[`fields.freeBoostsLevel${setLevel}.hidden`] && !hasBoosts;
+      isPointBuyOn(record) ||
+      (boostFields[`fields.freeBoostsLevel${setLevel}.hidden`] && !hasBoosts);
     if (record.fields?.[`freeBoostsLevel${setLevel}`]?.hidden !== hidden) {
       valuesToSet[`fields.freeBoostsLevel${setLevel}.hidden`] = hidden;
     }

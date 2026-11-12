@@ -658,6 +658,49 @@
       </div>
     </accordion>
 
+    <!-- Duels (gm-subsystems.js): an initiative card per selected duelist -->
+    <accordion size="xs" field="duelsOpen" label="Duels">
+      <label
+        label="Select the duelists. A combat duel rolls initiative every round."
+        size="xs"
+        color="dimmed"
+      ></label>
+      <div style="display: flex; gap: 4px; flex-wrap: wrap; margin-top: 10px">
+        <button
+          size="xs"
+          variant="light"
+          icon="IconSwords"
+          label="Combat Duel Round"
+          onclick="postDuelInitiative('combat')"
+        ></button>
+        <button
+          size="xs"
+          variant="light"
+          icon="IconWand"
+          label="Spellcasting Duel"
+          onclick="postDuelInitiative('spellcasting')"
+        ></button>
+      </div>
+    </accordion>
+
+    <!-- Leadership (gm-subsystems.js): the organization's level from its
+         followers -->
+    <accordion size="xs" field="leadershipOpen" label="Leadership">
+      <box onload="loadLeadershipMeter()">
+        <label field="leadershipMeter.label" size="sm" variant="bold" hideifempty="true"></label>
+        <label field="leadershipMeter.details" size="xs" color="dimmed" hideifempty="true"></label>
+      </box>
+      <div style="display: flex; gap: 4px; flex-wrap: wrap; margin-top: 10px">
+        <button
+          size="xs"
+          variant="light"
+          icon="IconUsersPlus"
+          label="Followers"
+          onclick="setLeadershipFollowers()"
+        ></button>
+      </div>
+    </accordion>
+
     <!-- Siege weapons (siege.js): the selected siege weapon token's card,
          with Aim, Load and Launch as buttons -->
     <accordion size="xs" field="siegeOpen" label="Siege Weapons">
@@ -713,6 +756,13 @@
           icon="IconRestore"
           label="Reset"
           onclick="resetSelectedCreatures()"
+        ></button>
+        <button
+          size="xs"
+          variant="light"
+          icon="IconSkull"
+          label="Undead Template"
+          onclick="applySelectedCreatureTemplate()"
         ></button>
       </div>
     </accordion>

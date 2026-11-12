@@ -10,6 +10,7 @@
       pointsBox: type === "chase",
       infiltrationBox: type !== "infiltration",
       influenceBox: type !== "influence",
+      navalBox: type !== "chase",
     };
     const values = {};
     Object.entries(hidden).forEach(([field, value]) => {
@@ -262,6 +263,19 @@
     field="obstacles"
     variant="outline-striped"
   ></list>
+  <!-- Naval chase obstacles (High Seas pg. 37; gm-subsystems.js), chases only -->
+  <box field="navalBox">
+  <div style="display: flex; gap: 4px; margin-top: 4px">
+    <button
+      size="xs"
+      variant="light"
+      icon="IconSailboat"
+      label="Add Naval Obstacles"
+      hideonlocked="true"
+      onclick="addNavalChaseObstacles(record)"
+    ></button>
+  </div>
+  </box>
 
   <label
     label="Thresholds"

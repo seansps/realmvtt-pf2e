@@ -1921,7 +1921,7 @@ api.getRecord('${record.recordType}', '${record._id}', (updatedRecord) => {
   #### ${portrait}${spellName}${actionIcon ? "&nbsp;" : ""}${actionIcon}
 
   ---
-  ${itemSpellCast?.lines.length ? `${itemSpellCast.lines.join("\n")}\n\n` : ""}${spellDescription}
+  ${itemSpellCast?.lines.length ? `${itemSpellCast.lines.join("\n")}\n\n` : ""}${spellDescription}${isOverlay ? "" : getRitualCastText(spell)}
   ${macros && macros.length > 0 ? `${macros.join("\n")}\n` : ""}${isOverlay ? "" : applyCursebound(spell)}
   ${overlayMacros.length > 0 ? `\n---\n${overlayMacros.join("\n")}\n` : ""}
   `;

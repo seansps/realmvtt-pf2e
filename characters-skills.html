@@ -63,6 +63,40 @@
 <!-- Skills tab. Container query on the host collapses the 2-col grid to
      1 column under ~480px so the sheet works on mobile. -->
 <div class="rvtt-skills-tab sheet--spread">
+  <!-- Skill Points (skill-points.js): only with the setting -->
+  <box field="skillPointsBox" hidden="true">
+    <div
+      class="rvtt-sheet-section rvtt-sheet-corners"
+      style="background: var(--bg, transparent)"
+    >
+      <span class="rvtt-sheet-corner rvtt-sheet-corner--tl"></span>
+      <span class="rvtt-sheet-corner rvtt-sheet-corner--tr"></span>
+      <span class="rvtt-sheet-corner rvtt-sheet-corner--bl"></span>
+      <span class="rvtt-sheet-corner rvtt-sheet-corner--br"></span>
+      <div class="rvtt-sheet-divider">
+        <span class="rvtt-sheet-divider__label">&#10022; Skill Points &#10022;</span>
+      </div>
+      <div style="display: flex; align-items: center; gap: 4px; flex-wrap: wrap">
+        <label field="skillPointsLabel" size="sm"></label>
+        <button
+          size="xs"
+          variant="light"
+          icon="IconTrendingUp"
+          label="Spend"
+          hideonlocked="true"
+          onclick="spendSkillPoints(record)"
+        ></button>
+        <button
+          size="xs"
+          variant="light"
+          icon="IconArrowBackUp"
+          label="Retrain"
+          hideonlocked="true"
+          onclick="retrainSkillPoint(record)"
+        ></button>
+      </div>
+    </div>
+  </box>
   <div
     class="rvtt-sheet-section rvtt-sheet-corners"
     style="background: var(--bg, transparent)"

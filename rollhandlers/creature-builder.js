@@ -278,6 +278,9 @@ function setCreatureHp(values, data, newMax) {
   const current = data.curhp === undefined || data.curhp === null || data.curhp === "" ? oldMax : getCreatureNumber(data.curhp);
   values["data.hitpoints"] = newMax;
   values["data.curhp"] = Math.min(newMax, Math.max(0, current - oldMax + newMax));
+  // A troop's segment thresholds scale with it (troops.js)
+  const details = getRescaledTroopHpDetails(data, oldMax, newMax);
+  if (details !== null) values["data.hpDetails"] = details;
 }
 
 // Initiative follows the Perception or skill it's rolled with
@@ -422,6 +425,17 @@ function getCreatureResetValues(token, source) {
   ["skills", "attacks", "weaknesses", "resistances"].forEach((field) => {
     if (original[field] || data[field]) values[`data.${field}`] = JSON.parse(JSON.stringify(original[field] || []));
   });
+  // What an undead template adds goes back too (creature-templates.js)
+  ["traits", "traitsList", "immunities", "languages", "languagesList", "speeds"].forEach((field) => {
+    if (original[field] || data[field]) values[`data.${field}`] = JSON.parse(JSON.stringify(original[field] || []));
+  });
+  ["senses", "immunitiesLabel", "weaknessesLabel", "resistancesLabel"].forEach((field) => {
+    if (original[field] !== undefined || data[field] !== undefined) values[`data.${field}`] = original[field] ?? "";
+  });
+  const templateAbilities = Object.values(UNDEAD_ABILITIES).map(([name]) => name);
+  if ((data.actions || []).some((action) => templateAbilities.includes(action.name) && !(original.actions || []).some((o) => o._id === action._id))) {
+    values["data.actions"] = JSON.parse(JSON.stringify(original.actions || []));
+  }
   const findRow = (rows, row) => (rows || []).find((candidate) => candidate._id === row._id);
   (data.spells || []).forEach((entry, index) => {
     const match = findRow(original.spells, entry);
