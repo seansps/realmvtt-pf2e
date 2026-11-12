@@ -5792,6 +5792,9 @@
         "PointBuy": {
           "file": "rollhandlers/point-buy.js"
         },
+        "Rituals": {
+          "file": "rollhandlers/rituals.js"
+        },
         "Siege": {
           "file": "rollhandlers/siege.js"
         },

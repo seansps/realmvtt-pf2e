@@ -289,6 +289,10 @@ message += getRollNotesText(data?.roll?.metadata?.notes, noteDegree);
 const bravadoLines = getBravadoLines(data?.roll?.metadata?.bravado, noteDegree);
 if (bravadoLines.length > 0) message += `\n\n${bravadoLines.join("\n")}`;
 
+// A ritual's secondary check: what it does to the primary check (rituals.js)
+const ritualLines = getRitualResultLines(data?.roll?.metadata, noteDegree);
+if (ritualLines.length > 0) message += `\n\n${ritualLines.join("\n")}`;
+
 // Rewrite Fate's button, or the Mythic Point it spent (mythic.js)
 const rewriteFateLines = getRewriteFateLines(data?.roll?.metadata, roll);
 if (rewriteFateLines.length > 0) message += `\n\n${rewriteFateLines.join("\n")}`;

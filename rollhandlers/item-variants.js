@@ -75,6 +75,39 @@ function getCursedUseText(item) {
   return "\n\n[gm]**Cursed item:** only a critical success to Identify Magic reveals the curse, and many can't be discarded (GM Core pg. 306).[/gm]";
 }
 
+// ------------------------------------------------------------------ Snares
+
+// Player Core 2 pg. 297: "Creatures can detect snares ... using the creator's
+// Crafting DC as the snare's Stealth DC. If your proficiency rank is expert or
+// better in Crafting, only creatures actively searching can find your snares."
+function getSnareUseText(item, creature) {
+  if (!itemHasTrait(item, "snare") || !creature) return "";
+  const dc = 10 + (parseInt(creature.data?.craftingMod || "0", 10) || 0);
+  const expert = (parseInt(creature.data?.crafting || "0", 10) || 0) >= 2;
+  return `\n\n**Snare:** Stealth DC ${dc} to find (the creator's Crafting DC)${
+    expert ? ", and only by creatures actively searching" : ""
+  }.`;
+}
+
+// --------------------------------------------------------------- Spellguns
+
+// Treasure Vault pg. 96: "You can make either a spell attack roll with a
+// spellgun or a ranged attack roll using your proficiency with simple
+// firearms." The card gives both numbers; it isn't a firearm otherwise.
+function getSpellgunUseText(item, creature) {
+  if (!itemHasTrait(item, "spellgun") || !creature) return "";
+  const entries = (creature.data?.spells || []).filter((entry) => entry?.data?.type !== "item");
+  const spellAttack = entries.length ? Math.max(...entries.map((entry) => parseInt(entry?.data?.mod || "0", 10) || 0)) : null;
+  const dex = parseInt(creature.data?.dex || "0", 10) || 0;
+  const rank = parseInt(creature.data?.attackProficiencies?.simple || "0", 10) || 0;
+  const firearm = dex + getProficiencyBonusForRank(rank, creature.data?.level || 0);
+  const sign = (value) => (value >= 0 ? `+${value}` : `${value}`);
+  const options = [spellAttack !== null ? `spell attack ${sign(spellAttack)}` : null, `simple firearms ${sign(firearm)}`].filter(Boolean);
+  return `\n\n**Spellgun:** attack with ${options.join(" or ")}${
+    item.data?.range ? `, range increment ${item.data.range}` : ""
+  }. It isn't a firearm: no firearm damage, critical specialization, reloading or attachments.`;
+}
+
 // ------------------------------------------------------------ High-Quality
 
 // With the High-Quality variant, a potency bonus on armor without the magical

@@ -303,6 +303,12 @@ Animal companions are characters, as Foundry's PF2e Companion Compendia builds t
 
 `rollhandlers/point-buy.js` (global script `PointBuy`), for the `pointBuy` setting; Gamemastery Guide pg. 182. Scores 8 to 18 (`data.pointBuy.<attr>`, edited in the attribute editor's `pointBuyBox`) replace the 1st-level boosts and flaws in `calculateAbilityBoosts`: each is worth floor((score - 10) / 2) as a boost count (`getPointBuyBoostCounts`), and boosts from 5th level on add as usual. Unset scores start at 10, or 8 for an ancestry flaw. `data.pointBuySummary` shows points spent (Table 4-1, +2 from a flaw's 8) against the budget (15 + 2 per fixed ancestry boost, or 2 for two free + background 2 + class 2); dedicated points aren't enforced.
 
+### Rituals, snares and spellguns
+
+- `rollhandlers/rituals.js` (global script `Rituals`), Player Core pg. 389: a ritual's Cast card (`getRitualCastText`, in `castSpell`) gives the primary check DC (very hard for twice the rank) and secondary DC (standard), the secondary casters, and a button per skill named in `data.ritual.primary.check` / `secondary.check`. The checks pass `noFortune` (no roll-twice modifiers in `rollSkill`); the primary's prompt has the secondary results as opt-ins, and `skill.js` adds a secondary check's effect on the primary (`getRitualResultLines`). Cost and effect stay the GM's.
+- Snares (item-variants.js, `getSnareUseText`): the Use card gives the Stealth DC to find it, the creator's Crafting DC, and that only active searching finds an expert's.
+- Spellguns (`getSpellgunUseText`): the Use card gives the spell attack and simple-firearm attack modifiers and the range increment.
+
 ### Siege weapons (Aim, Load, Launch, misfire)
 
 `rollhandlers/siege.js` (global script `Siege`, roadmap B10, Guns & Gears pg. 72-73 and 172), a Siege Weapons accordion on the GM Tools panel after Vehicles. A siege weapon is any NPC with Aim and Launch (or Fire) actions (`isSiegeToken`), best typed Vehicle for its Crew, AC, Hardness and Speed fields (`isVehicleToken` is false for one, so the Vehicle Card doesn't take it); the actions' descriptions are the stat block's text, and nothing is added to its sheet. Proficiency is read from the crew text ("2-4; Proficiency martial") or the description, black powder from the description or traits. No module has siege weapon records yet.

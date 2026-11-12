@@ -4763,8 +4763,11 @@ performDamageRollForSpellOrItem("${record._id}","${record.recordType}", "${itemD
   markdownDescription += getAfflictionExposeButton(item);
   // A relic's level, gift DC and save buttons (relics.js)
   markdownDescription += getRelicUseText(item, typeof record !== "undefined" ? record : null);
-  // A cursed item's GM-only note (item-variants.js)
+  // A cursed item's GM-only note, a snare's DC and a spellgun's attack
+  // modifiers (item-variants.js)
   markdownDescription += getCursedUseText(item);
+  markdownDescription += getSnareUseText(item, typeof record !== "undefined" ? record : null);
+  markdownDescription += getSpellgunUseText(item, typeof record !== "undefined" ? record : null);
 
   api.sendMessage(markdownDescription, undefined, recordLinks);
 
@@ -9923,7 +9926,9 @@ function rollSkill(
 
   // Fortune / misfortune on this check (initiative too). Rewrite Fate is a
   // reroll, which ignores them
-  if (!additionalMetadata.rewriteFateSpend) {
+  // A ritual's checks are downtime checks, which they don't modify either
+  // (rituals.js)
+  if (!additionalMetadata.rewriteFateSpend && !additionalMetadata.noFortune) {
     modifiers.push(
       ...getRollTwiceModifiers(
         record,
