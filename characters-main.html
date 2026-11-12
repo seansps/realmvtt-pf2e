@@ -198,7 +198,8 @@
     api.setValues(
       {
         "data.level": record.data?.level || 1, // Set level to 1 if not set
-        "data.classes": [classObj],
+        // Replaces only the first class, with a second one (dual-class.js)
+        "data.classes": getClassesWithFirst(record, classObj),
         "data.className": className,
         "data.traitsList": newTraitsList,
         "data.traits": newTraits,
@@ -310,6 +311,8 @@
     api.setValues(
       {
         "data.feats": remainingFeats,
+        // A second class goes with the first (dual-class.js)
+        ...getDeleteFirstClassValues(record),
       },
       (updatedRecord) => {
         // Recalculate ability scores for bonuses and such
@@ -1805,9 +1808,50 @@ ${getLevelUpSummary(gains)}`,
               hidden="true"
               listtype="record_link_list"
               field="classes"
+              getfilters="return getFirstClassFilters(record);"
               onchange="onDeleteClass()"
             ></list>
           </div>
+          <!-- Second class (dual-class.js): only with the Dual-Class setting -->
+          <box field="secondClassBox" hidden="true">
+            <div style="display: flex; gap: 4px; align-items: center">
+              <!-- The name is set by picking: typing in it goes back to the
+                   class's name -->
+              <stringfield
+                field="secondClassName"
+                placeholder="Second Class"
+                class="rvtt-sheet-class-line"
+                width="100%"
+                onchange="onSecondClassNameChange(record, value)"
+              ></stringfield>
+              <list
+                width="fit-content"
+                height="32px"
+                listtype="record_link_list"
+                field="classes"
+                getfilters="return getSecondClassFilters(record);"
+                onchange="onSecondClassListChange(record)"
+              ></list>
+              <iconbutton
+                field="pickSecondClassBtn"
+                size="sm"
+                variant="default"
+                hideonlocked="true"
+                onclick="pickSecondClass(record)"
+                options='[{"label": "Pick a Second Class", "icon": "IconPlus", "value": "pick"}]'
+              ></iconbutton>
+              <iconbutton
+                field="clearSecondClassBtn"
+                size="sm"
+                variant="default"
+                color="red"
+                hidden="true"
+                hideonlocked="true"
+                onclick="clearSecondClass(record)"
+                options='[{"label": "Remove the Second Class", "icon": "IconTrash", "value": "clear"}]'
+              ></iconbutton>
+            </div>
+          </box>
           <div
             style="
               display: flex;

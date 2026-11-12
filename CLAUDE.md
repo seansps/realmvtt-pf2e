@@ -275,6 +275,17 @@ Animal companions are characters, as Foundry's PF2e Companion Compendia builds t
 - Sheet: a Stamina row and bar inside the Main tab's Hit Points card (`staminaBox`), hidden unless the variant is on. Sean's one exception to the no-Main-tab rule, since Stamina is checked on every hit; nothing else from the variant goes on the Main tab.
 - Not covered: Rally, the optional Stabilize rule, monsters.
 
+### Dual-Class PCs (variant)
+
+`rollhandlers/dual-class.js` (global script `DualClass`), for the `dualClass` setting; Gamemastery Guide pg. 192-193. The second class is `data.classes[1]`, so loops over a character's classes pick it up (`data.classSlot` tells the two apart for the first line's list filter).
+- Main tab: a second class line (`secondClassBox`): the name in a field like the first line's, which goes back to the class's name if typed in (`data.secondClassName`, `onSecondClassNameChange`), the class's link (the `classes` list filtered to `classSlot: "second"`, whose delete runs the same clearing), and `pickSecondClass` / `clearSecondClass` buttons, delete only when unlocked. `getDualClassFieldValues` sets all three flags from the setting and whether there's a second class, written only on a change.
+- A choice on a class feature keeps its features on that class (`appendFeatures` skips class paths), so a second class's bloodline or doctrine doesn't land on the first too.
+- Higher of the two: proficiencies (`applySecondClassProficiencies`), Hit Points (`getClassHitPoints`).
+- Both: features and their choices (one choice group per class, `isClassFeaturePath`), fixed skills, spellcasting entries and focus entries, Level Up gains, class feat slots (`addSecondClassFeatLevels`; the picker offers either class's feats).
+- Once per level at either class's levels: general and skill feats, skill increases.
+- Clearing the second class resets saves, Perception, armor, weapon, class DC and spellcasting ranks so recalculation rebuilds them (it only ever raises a stored rank). Trained skills stay.
+- First class only: key attribute, class kit, class trait. The extra additional skills are a chat note.
+
 ### Siege weapons (Aim, Load, Launch, misfire)
 
 `rollhandlers/siege.js` (global script `Siege`, roadmap B10, Guns & Gears pg. 72-73 and 172), a Siege Weapons accordion on the GM Tools panel after Vehicles. A siege weapon is any NPC with Aim and Launch (or Fire) actions (`isSiegeToken`), best typed Vehicle for its Crew, AC, Hardness and Speed fields (`isVehicleToken` is false for one, so the Vehicle Card doesn't take it); the actions' descriptions are the stat block's text, and nothing is added to its sheet. Proficiency is read from the crew text ("2-4; Proficiency martial") or the description, black powder from the description or traits. No module has siege weapon records yet.
