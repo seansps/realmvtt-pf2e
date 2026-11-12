@@ -1748,8 +1748,7 @@ function getWeaponMaterials(item) {
   };
   add(item?.data?.material?.type);
   (Array.isArray(item?.data?.materials) ? item.data.materials : []).forEach(add);
-  // Dawnsilver counts as silver (item-variants.js)
-  return addSilverMaterial(materials);
+  return materials;
 }
 
 /**
@@ -8215,7 +8214,8 @@ function calculateAbilityBoosts(record) {
     classBoost: record.data?.keyAbility,
     freeBoosts: record.data?.freeBoosts || [],
   };
-  Object.assign(boosts, {
+  // Point Buy replaces the later boosts too, with raised scores
+  if (!pointBuy) Object.assign(boosts, {
     freeBoostsLevel5: record.data?.freeBoostsLevel5 || [],
     freeBoostsLevel10: record.data?.freeBoostsLevel10 || [],
     freeBoostsLevel15: record.data?.freeBoostsLevel15 || [],
@@ -8394,11 +8394,16 @@ function setProvidedItems(record, callback = undefined) {
 
   // Second pass: Collect all provided items from valid sources
   const providedItems = [];
+  const simplifiedSkillFeats = !!getVariantRules().simplifiedSkillFeats;
   for (const source of validSources) {
     // Add items from providesItems
     if (source.data?.providesItems && source.data.providesItems.length > 0) {
       // Filter items by predicate if set
       for (const item of source.data.providesItems) {
+        // Simplified Skill Feats: no skill feat from a background (item-variants.js)
+        if (simplifiedSkillFeats && backgrounds.includes(source) && isSkillFeatItem(item)) {
+          continue;
+        }
         if (item.data?.predicate) {
           const parsedPredicate = parseModifierPredicate(item.data.predicate);
           const predicatePassed = evaluateEffectPredicate(
@@ -16286,7 +16291,8 @@ function applyDamage(
             IWR.weaknesses[lowerType],
             IWR.weaknesses["all damage"] || IWR.weaknesses["all-damage"],
           ];
-          (roll?.metadata?.damageCategories || []).forEach((category) => {
+          // Dawnsilver counts as silver against weaknesses only (item-variants.js)
+          addSilverMaterial(roll?.metadata?.damageCategories || []).forEach((category) => {
             const key = Object.keys(IWR.weaknesses).find(
               (weaknessKey) => normalizeKey(weaknessKey) === normalizeKey(category),
             );
@@ -17925,7 +17931,8 @@ function getLevelUpGains(record, newLevel, variants = getVariantRules()) {
 
   // An animal companion gains no attribute boosts; its attributes come from
   // its type and its stage feats (animal-companions.js)
-  const boosts = isAnimalCompanionCharacter(record)
+  // Point Buy gives Ability Points instead (point-buy.js)
+  const boosts = isAnimalCompanionCharacter(record) || isPointBuyOn(record)
     ? { count: 0, setLevel: null }
     : getAttributeBoostGain(newLevel, variants);
 
@@ -17942,6 +17949,7 @@ function getLevelUpGains(record, newLevel, variants = getVariantRules()) {
       .flatMap((entry) => toLevels(entry?.data?.skillIncreaseLevels))
       .includes(newLevel),
     skillPoints: isSkillPointsOn(record) ? getSkillPointsForLevel(newLevel, isRogueCharacter(record)) : 0,
+    abilityPoints: isPointBuyOn(record) ? getPointBuyLevelPoints(newLevel) : 0,
     featTypes,
     classFeatures,
     spellcasting: getSpellcastingLevelUpChanges(record, newLevel),
@@ -17956,6 +17964,9 @@ function getLevelUpSummary(gains) {
   }
   if (gains.stamina > 0) {
     lines.push(`+${gains.stamina} maximum Stamina Points`);
+  }
+  if (gains.abilityPoints > 0) {
+    lines.push(`+${gains.abilityPoints} Ability Points to raise scores in the attribute editor (Point Buy)`);
   }
   if (gains.skillPoints > 0) {
     lines.push(`+${gains.skillPoints} Skill Point${gains.skillPoints === 1 ? "" : "s"} to spend on the Skills tab`);
@@ -18458,8 +18469,9 @@ function getDedicationWarning(record, feat) {
 // Ability Boosts it holds one per level reached within the set.
 function getFreeBoostFieldsForLevel(record, level, variants = getVariantRules()) {
   const valuesToSet = {};
-  // An animal companion gains no attribute boosts (animal-companions.js)
-  if (isAnimalCompanionCharacter(record)) {
+  // An animal companion gains no attribute boosts (animal-companions.js), and
+  // Point Buy raises scores instead (point-buy.js); its sets stay as they are
+  if (isAnimalCompanionCharacter(record) || isPointBuyOn(record)) {
     LEVEL_UP_BOOST_LEVELS.forEach((setLevel) => {
       valuesToSet[`fields.freeBoostsLevel${setLevel}.hidden`] = true;
     });
@@ -18745,7 +18757,8 @@ function updateVariantRuleFields(record, valuesToSet) {
     const current = record.data?.[`freeBoostsLevel${setLevel}`];
     const hasBoosts = Array.isArray(current) ? current.length > 0 : !!current;
     const hidden =
-      boostFields[`fields.freeBoostsLevel${setLevel}.hidden`] && !hasBoosts;
+      isPointBuyOn(record) ||
+      (boostFields[`fields.freeBoostsLevel${setLevel}.hidden`] && !hasBoosts);
     if (record.fields?.[`freeBoostsLevel${setLevel}`]?.hidden !== hidden) {
       valuesToSet[`fields.freeBoostsLevel${setLevel}.hidden`] = hidden;
     }

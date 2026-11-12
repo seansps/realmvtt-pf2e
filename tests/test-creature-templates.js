@@ -77,6 +77,21 @@ section("a ghoul, a shadow, a vampire");
   assert("an unknown template", ctx.getCreatureTemplateValues(troll(), "lich"), null);
 }
 
+section("only once");
+{
+  assert("a living creature", ctx.isAlreadyUndead(troll()), false);
+  assert("one with the Undead trait", ctx.isAlreadyUndead(troll({ traits: ["Large", "Undead"] })), true);
+  const sent = [];
+  const written = [];
+  ctx.api.sendMessage = (text) => sent.push(text);
+  ctx.api.setValuesOnTokenById = (id, type, values) => written.push(values);
+  ctx.api.getSelectedTokens = () => [{ token: troll({ traits: ["Large", "Giant", "Skeleton", "Undead"], hitpoints: 115, curhp: 115 }) }];
+  ctx.api.showPrompt = (title, label, placeholder, options, query, callback) => callback("skeleton");
+  ctx.applySelectedCreatureTemplate();
+  assert("a second template writes nothing (no second HP decrease)", written, []);
+  assertIncludes("and says why", sent.join(" "), "already undead");
+}
+
 section("Reset undoes it");
 {
   const original = troll();

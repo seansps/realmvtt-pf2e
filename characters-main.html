@@ -1929,6 +1929,8 @@ ${getLevelUpSummary(gains)}`,
             ></iconbutton>
           </popover.target>
           <popover.dropdown>
+            <!-- Ancestry and background boosts: hidden under Point Buy -->
+            <box field="standardBoostsBox">
             <div style="display: flex; flex-direction: column; gap: 4px">
               <label
                 class="rvtt-sheet-label rvtt-sheet-label--accent"
@@ -2003,6 +2005,7 @@ ${getLevelUpSummary(gains)}`,
                 ></dropdown>
               </div>
             </div>
+            </box>
             <div style="display: flex; flex-direction: column; margin-top: 4px">
               <label
                 class="rvtt-sheet-label rvtt-sheet-label--accent"
@@ -2090,6 +2093,25 @@ ${getLevelUpSummary(gains)}`,
                 ></numberfield>
                 </div>
                 <label field="pointBuySummary" size="xs" color="dimmed"></label>
+                <div style="display: flex; align-items: center; gap: 4px; flex-wrap: wrap">
+                  <label field="pointBuyRaiseSummary" size="xs" color="dimmed"></label>
+                  <button
+                    size="xs"
+                    variant="light"
+                    icon="IconTrendingUp"
+                    label="Raise"
+                    hideonlocked="true"
+                    onclick="raisePointBuyScore(record)"
+                  ></button>
+                  <button
+                    size="xs"
+                    variant="light"
+                    icon="IconArrowBackUp"
+                    label="Undo"
+                    hideonlocked="true"
+                    onclick="undoPointBuyRaise(record)"
+                  ></button>
+                </div>
               </div>
             </box>
             <div style="display: flex; flex-direction: column; margin-top: 4px">

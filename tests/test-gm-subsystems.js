@@ -20,6 +20,7 @@ section("duels");
   assertIncludes("untrained: no reaction", ctx.getDuelResultLines(ctx.getDuelMetadata(pc, "deception", "combat"))[0], "not trained in Deception");
   assertIncludes("a spellcasting duel's focus", ctx.getDuelResultLines(ctx.getDuelMetadata(pc, "arcana", "spellcasting"))[0], "tradition focus arcane, with Dueling Counter");
   assert("other rolls: nothing", ctx.getDuelResultLines({}), []);
+  assertIncludes("a spellcasting duel can still roll Perception", ctx.getDuelResultLines(ctx.getDuelMetadata(pc, "perception", "spellcasting"))[0], "rolled Perception, so no tradition focus");
 
   const prompts = [];
   ctx.api.promptRollForToken = (record, title, formula, modifiers, metadata, type) => prompts.push({ metadata, type });
@@ -32,6 +33,9 @@ section("duels");
   ctx.postDuelInitiative("combat");
   assert("a card per duelist", sent.length, 2);
   assertIncludes("with a button per skill", sent[0], 'rollDuelInitiative(token, "deception", "combat")');
+  sent.length = 0;
+  ctx.postDuelInitiative("spellcasting");
+  assertIncludes("spellcasting: Perception is on the card", sent[0], 'rollDuelInitiative(token, "perception", "spellcasting")');
 }
 
 section("leadership");

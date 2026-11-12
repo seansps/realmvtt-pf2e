@@ -36,6 +36,13 @@ section("Table 4-20");
   assert("spending writes rank and points", ctx.getSkillPointSpendValues(pc({ skillPointsSpent: 1 }), "athletics"), { "data.athletics": "2", "data.skillPointsSpent": 3 });
   assert("retraining gives the step back", ctx.getSkillPointRetrainValues(pc({ athletics: "2", skillPointsSpent: 3 }), "athletics"), { "data.athletics": "1", "data.skillPointsSpent": 1 });
   assert("legendary can't go higher", ctx.getSkillPointSpendValues(pc({ athletics: "4" }), "athletics"), null);
+
+  const scholar = pc({ loreSkills: [{ _id: "l1", name: "Sailing Lore", data: { rank: "1" } }] });
+  const lore = ctx.getSkillPointOptions(scholar).find((o) => o.value === "lore:0");
+  assert("a Lore can go up too", lore.label, "Sailing Lore: Expert (2 points)");
+  assert("its rank on its entry", ctx.getSkillPointSpendValues(scholar, "lore:0"), { "data.loreSkills.0.data.rank": "2", "data.skillPointsSpent": 2 });
+  assert("and back", ctx.getSkillPointRetrainValues(pc({ skillPointsSpent: 2, loreSkills: [{ name: "Sailing Lore", data: { rank: "2" } }] }), "lore:0"), { "data.loreSkills.0.data.rank": "1", "data.skillPointsSpent": 0 });
+  assert("a Lore that isn't there", ctx.getSkillPointSpendValues(scholar, "lore:3"), null);
 }
 
 section("Level Up");

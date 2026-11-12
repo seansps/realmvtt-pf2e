@@ -5933,7 +5933,7 @@
       {
         "name": "Variant: High-Quality Items",
         "key": "highQualityItems",
-        "description": "Gamemastery Guide pg. 197. Fine non-magical weapons and armor give the bonuses of potency runes: set the item's potency for its quality (expert +1, master +2, legendary +3). Armor without the magical trait gives it without being invested. Devastating and resilient quality work like Automatic Bonus Progression's.",
+        "description": "Gamemastery Guide pg. 197. Fine non-magical weapons and armor give the bonuses of potency runes: put High-Quality in the item's name and set its potency, striking or resilient for its quality. Such armor gives its bonus without being invested.",
         "values": [
           { "label": "No", "value": "no" },
           { "label": "Yes", "value": "yes" }
@@ -5951,7 +5951,7 @@
       {
         "name": "Variant: Point Buy",
         "key": "pointBuy",
-        "description": "Gamemastery Guide pg. 182. Scores from 8 to 18 bought with Ability Points replace the 1st-level boosts and flaws; each becomes the modifier floor((score - 10) / 2). Boosts at 5th level and later add as usual. The attribute editor shows the points spent against the budget (15 flexible, plus dedicated points for the ancestry, background and class).",
+        "description": "Gamemastery Guide pg. 182. Ability Points replace all attribute boosts. At 1st level, scores from 8 to 18 replace the boosts and flaws (15 flexible points, plus dedicated points for the ancestry, background and class). Each later level gives more points to raise a score by 1 at a time, up to 22. Each score becomes the modifier floor((score - 10) / 2). The attribute editor shows the points.",
         "values": [
           { "label": "No", "value": "no" },
           { "label": "Yes", "value": "yes" }
@@ -5979,7 +5979,7 @@
       {
         "name": "Variant: Simplified Skill Feats",
         "key": "simplifiedSkillFeats",
-        "description": "Gamemastery Guide pg. 194. Characters get no skill feat slots; they can still take skill feats with general feats. Rogues keep skill feats at the usual even levels.",
+        "description": "Gamemastery Guide pg. 194. Characters get no skill feats, not even from their backgrounds; they can still take skill feats with general feats. Rogues keep skill feats at the usual even levels.",
         "values": [
           { "label": "No", "value": "no" },
           { "label": "Yes", "value": "yes" }

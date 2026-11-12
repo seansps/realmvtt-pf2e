@@ -205,6 +205,13 @@ function getCreatureTemplateValues(token, key) {
   return { values, lines, label: template.label };
 }
 
+// Every template adds the Undead trait, so a creature that has it already
+// (a template applied before, or one undead to begin with) isn't adjusted
+// again: a second HP decrease or physical resistance would stack
+function isAlreadyUndead(token) {
+  return (token?.data?.traits || []).some((trait) => `${trait?.name ?? trait ?? ""}`.toLowerCase() === "undead");
+}
+
 // GM Tools: Template, for the selected unlinked NPC tokens
 function applySelectedCreatureTemplate() {
   const tokens = getCreatureEditable(getCreatureTokens());
@@ -218,6 +225,10 @@ function applySelectedCreatureTemplate() {
     (choice) => {
       const key = pick(choice);
       tokens.forEach((token) => {
+        if (isAlreadyUndead(token)) {
+          api.sendMessage(getCreatureGmLines([`**${getCreatureName(token)}** is already undead, so it's left as it is. Reset it first to apply a different adjustment.`]));
+          return;
+        }
         const result = getCreatureTemplateValues(token, key);
         if (!result) return;
         api.setValuesOnTokenById(token._id, token.recordType, result.values);

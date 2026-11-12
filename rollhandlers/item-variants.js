@@ -30,6 +30,15 @@ function getShoddyCheckPenalty(armorItem, checkPenalty) {
 // purpose of damaging creatures with weakness to silver"
 const SILVER_MATERIALS = ["dawnsilver", "mithral"];
 
+// Simplified Skill Feats (Gamemastery Guide pg. 194): characters "don't
+// receive any skill feats, even from their backgrounds"
+function isSkillFeatItem(item) {
+  return item?.recordType === "feats" && itemHasTrait(item, "skill");
+}
+
+// GM Core pg. 253: dawnsilver is treated as silver "for the purpose of
+// damaging creatures with weakness to silver", so this is used only where
+// weaknesses are matched, never for resistance exceptions or predicates
 function addSilverMaterial(materials) {
   return materials.some((material) => SILVER_MATERIALS.includes(material)) && !materials.includes("silver")
     ? [...materials, "silver"]
@@ -110,10 +119,12 @@ function getSpellgunUseText(item, creature) {
 
 // ------------------------------------------------------------ High-Quality
 
-// With the High-Quality variant, a potency bonus on armor without the magical
-// trait is quality, not a rune, so it works without investing
+// With the High-Quality variant, the potency on armor the GM marks as
+// high-quality ("High-Quality" in its name, and not magical) is its quality,
+// not a rune, so it works without investing. Unmarked runed armor still needs
+// investing, since the variant allows runes alongside quality.
 function isHighQualityArmor(item) {
-  return !!getVariantRules().highQuality && !itemHasTrait(item, "magical");
+  return !!getVariantRules().highQuality && /\bhigh[- ]quality\b/i.test(item?.name || "") && !itemHasTrait(item, "magical");
 }
 
 // --------------------------------------------------------- Voluntary flaws

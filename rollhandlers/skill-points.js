@@ -36,36 +36,67 @@ function getSkillPointsAvailable(record) {
   return getSkillPointsEarned(record) - (parseInt(record?.data?.skillPointsSpent || "0", 10) || 0);
 }
 
+// The skills points can go to: the core skills by name, and each Lore as
+// "lore:<index>" (its rank is on its data.loreSkills entry)
+function getSkillPointSkills(record) {
+  const lores = (Array.isArray(record?.data?.loreSkills) ? record.data.loreSkills : [])
+    .map((lore, index) => (lore?.name ? `lore:${index}` : null))
+    .filter(Boolean);
+  return [...Object.keys(getPathfinderSkills()), ...lores];
+}
+
+function getSkillPointLore(record, key) {
+  const match = /^lore:(\d+)$/.exec(key || "");
+  return match ? { index: parseInt(match[1], 10), lore: record?.data?.loreSkills?.[parseInt(match[1], 10)] } : null;
+}
+
+function getSkillPointRank(record, key) {
+  const entry = getSkillPointLore(record, key);
+  return parseInt((entry ? entry.lore?.data?.rank : record?.data?.[key]) || "0", 10) || 0;
+}
+
+function getSkillPointRankPath(record, key) {
+  const entry = getSkillPointLore(record, key);
+  return entry ? `data.loreSkills.${entry.index}.data.rank` : `data.${key}`;
+}
+
+function getSkillPointSkillName(record, key) {
+  const entry = getSkillPointLore(record, key);
+  return entry ? entry.lore?.name || "Lore" : capitalize(key);
+}
+
 // Skills that can go up a rank now, with what it costs
 function getSkillPointOptions(record) {
   const level = parseInt(record?.data?.level || "0", 10) || 0;
   const available = getSkillPointsAvailable(record);
-  return Object.keys(getPathfinderSkills())
-    .map((skill) => {
-      const rank = parseInt(record?.data?.[skill] || "0", 10) || 0;
+  return getSkillPointSkills(record)
+    .map((key) => {
+      const rank = getSkillPointRank(record, key);
       const step = SKILL_POINT_STEPS[rank + 1];
       if (!step || step.level > level || step.cost > available) return null;
-      return { label: `${capitalize(skill)}: ${SKILL_RANK_NAMES[rank + 1]} (${step.cost} point${step.cost === 1 ? "" : "s"})`, value: skill };
+      return { label: `${getSkillPointSkillName(record, key)}: ${SKILL_RANK_NAMES[rank + 1]} (${step.cost} point${step.cost === 1 ? "" : "s"})`, value: key };
     })
     .filter(Boolean);
 }
 
-function getSkillPointSpendValues(record, skill) {
-  const rank = parseInt(record?.data?.[skill] || "0", 10) || 0;
+function getSkillPointSpendValues(record, key) {
+  if (!getSkillPointSkills(record).includes(key)) return null;
+  const rank = getSkillPointRank(record, key);
   const step = SKILL_POINT_STEPS[rank + 1];
   if (!step) return null;
   return {
-    [`data.${skill}`]: `${rank + 1}`,
+    [getSkillPointRankPath(record, key)]: `${rank + 1}`,
     "data.skillPointsSpent": (parseInt(record?.data?.skillPointsSpent || "0", 10) || 0) + step.cost,
   };
 }
 
-function getSkillPointRetrainValues(record, skill) {
-  const rank = parseInt(record?.data?.[skill] || "0", 10) || 0;
+function getSkillPointRetrainValues(record, key) {
+  if (!getSkillPointSkills(record).includes(key)) return null;
+  const rank = getSkillPointRank(record, key);
   const step = SKILL_POINT_STEPS[rank];
   if (!step) return null;
   return {
-    [`data.${skill}`]: `${rank - 1}`,
+    [getSkillPointRankPath(record, key)]: `${rank - 1}`,
     "data.skillPointsSpent": Math.max(0, (parseInt(record?.data?.skillPointsSpent || "0", 10) || 0) - step.cost),
   };
 }
@@ -97,11 +128,11 @@ function spendSkillPoints(record) {
 }
 
 function retrainSkillPoint(record) {
-  const options = Object.keys(getPathfinderSkills())
-    .filter((skill) => (parseInt(record?.data?.[skill] || "0", 10) || 0) >= 1)
-    .map((skill) => {
-      const rank = parseInt(record.data[skill], 10);
-      return { label: `${capitalize(skill)}: back to ${SKILL_RANK_NAMES[rank - 1]} (${SKILL_POINT_STEPS[rank].cost} back)`, value: skill };
+  const options = getSkillPointSkills(record)
+    .filter((key) => SKILL_POINT_STEPS[getSkillPointRank(record, key)])
+    .map((key) => {
+      const rank = getSkillPointRank(record, key);
+      return { label: `${getSkillPointSkillName(record, key)}: back to ${SKILL_RANK_NAMES[rank - 1]} (${SKILL_POINT_STEPS[rank].cost} back)`, value: key };
     });
   if (!options.length) return;
   api.showPrompt("Retrain Skill Points", "A week of downtime lowers one rank (only ranks bought with points)", "Select...", options, null, (choice) => {

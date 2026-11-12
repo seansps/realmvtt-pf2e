@@ -7,10 +7,11 @@
 // Perception; trained in it, the duelist gets that round's dueling reaction.
 // A spellcasting duel rolls Arcana, Nature, Occultism or Religion (once, or
 // every round when mixed with a combat duel); trained, it sets the tradition
-// focus and gives Dueling Counter and Change Tradition Focus.
+// focus and gives Dueling Counter and Change Tradition Focus. Those skills are
+// rolled "instead of Perception", so Perception stays an option (no focus).
 const DUEL_SKILLS = {
   combat: { deception: "Deceptive Sidestep", intimidation: "Bullying Press", perception: "Sense Weakness" },
-  spellcasting: { arcana: "arcane", nature: "primal", occultism: "occult", religion: "divine" },
+  spellcasting: { arcana: "arcane", nature: "primal", occultism: "occult", religion: "divine", perception: null },
 };
 
 function isTrainedForDuel(creature, skill) {
@@ -56,6 +57,7 @@ function getDuelResultLines(metadata) {
   if (!duel) return [];
   if (!duel.trained) return [`**Duel:** not trained in ${capitalize(duel.skill)}, so no dueling reaction this round.`];
   if (duel.kind === "combat") return [`**Duel:** ${duel.gained} is this round's dueling reaction.`];
+  if (!duel.gained) return ["**Duel:** rolled Perception, so no tradition focus or Dueling Counter."];
   return [`**Duel:** tradition focus ${duel.gained}, with Dueling Counter and Change Tradition Focus.`];
 }
 
@@ -118,18 +120,6 @@ function setLeadershipFollowers() {
       api.sendMessage(`**The organization is now level ${after.level}** (${followers} followers). ${getLeadershipMeter(followers).details}`);
     }
   });
-}
-
-// A leadership event for the GM: opportunity, trouble or windfall
-function rollLeadershipEvent() {
-  const kinds = [
-    ["Opportunity", "a consequential decision that shapes the organization"],
-    ["Trouble", "something's gone wrong and needs the PCs"],
-    ["Windfall", "an unexpected benefit, often access to something uncommon"],
-  ];
-  const roll = parseInt(api.rollInstant("1d3")?.total, 10) || 1;
-  const [name, text] = kinds[roll - 1] || kinds[0];
-  api.sendMessage(`[gm]**Leadership event:** ${name}, ${text} (GM Core pg. 205).[/gm]`);
 }
 
 // ------------------------------------------------------------ Naval chase

@@ -36,9 +36,21 @@ section("shoddy");
 
 section("precious materials");
 {
-  assert("dawnsilver counts as silver", ctx.getWeaponMaterials({ data: { material: { type: "dawnsilver" } } }), ["dawnsilver", "silver"]);
-  assert("so does legacy mithral", ctx.getWeaponMaterials({ data: { material: { type: "Mithral" } } }).includes("silver"), true);
-  assert("cold iron doesn't", ctx.getWeaponMaterials({ data: { material: { type: "cold-iron" } } }), ["cold-iron"]);
+  // GM Core pg. 253: silver only "for the purpose of damaging creatures with
+  // weakness to silver"
+  assert("not a silver material for predicates", ctx.getWeaponMaterials({ data: { material: { type: "dawnsilver" } } }), ["dawnsilver"]);
+  assert("silver where weaknesses are matched", ctx.addSilverMaterial(["dawnsilver"]), ["dawnsilver", "silver"]);
+  assert("so is legacy mithral", ctx.addSilverMaterial(["mithral"]).includes("silver"), true);
+  assert("cold iron isn't", ctx.addSilverMaterial(["cold-iron"]), ["cold-iron"]);
+  const target = (data) => ({ _id: "target", recordType: "npcs", name: "Target", record: { name: "Target" }, identified: true, effects: [], data: { curhp: 1000, hitpoints: 1000, ...data } });
+  const hit = { types: [{ die: 6, value: 10, type: "slashing" }], dice: [{ type: 6, value: 10 }], total: 10, metadata: { traits: [], damageCategories: ["dawnsilver"], damageType: "slashing", damageSource: { type: "weapon", materials: ctx.getWeaponMaterials({ data: { material: { type: "dawnsilver" } } }) } } };
+  const dealt = (creature) => {
+    ctx.__state.lastSet = null;
+    ctx.applyDamage(creature, hit, false, null, false);
+    return 1000 - ((ctx.__state.lastSet || {})["data.curhp"] ?? 1000);
+  };
+  assert("a dawnsilver blade hits a silver weakness (10 -> 15)", dealt(target({ weaknesses: [{ data: { type: "silver", value: 5 } }] })), 15);
+  assert("but not past physical 5 except silver (10 -> 5)", dealt(target({ resistances: [{ data: { type: "physical", value: 5, exceptions: ["silver"] } }] })), 5);
 }
 
 section("apex items");
@@ -62,11 +74,12 @@ section("cursed items");
 
 section("High-Quality armor");
 {
-  const armor = { name: "Expert Chain Mail", data: { type: "armor", acBonus: 4, traits: [], runes: { potency: 1 }, invested: "false" } };
+  const armor = { name: "High-Quality Chain Mail", data: { type: "armor", acBonus: 4, traits: [], runes: { potency: 1 }, invested: "false" } };
   settings.highQualityItems = "no";
   assert("off: a potency rune needs investing", ctx.getACForArmor(armor, pc()), 4);
   settings.highQualityItems = "yes";
-  assert("on: quality works uninvested", ctx.getACForArmor(armor, pc()), 5);
+  assert("on: marked quality works uninvested", ctx.getACForArmor(armor, pc()), 5);
+  assert("unmarked runed armor still needs investing", ctx.getACForArmor({ ...armor, name: "Chain Mail" }, pc()), 4);
   assert("a magical rune still needs it", ctx.getACForArmor({ ...armor, data: { ...armor.data, traits: ["Magical"] } }, pc()), 4);
   settings.highQualityItems = "no";
 }
@@ -113,7 +126,22 @@ section("Simplified Ancestries and Skill Feats");
   assert("no skill feats", ctx.getFeatSlotLevels(fighter).skill, []);
   const rogue = pc({ classes: [{ name: "Rogue", data: { skillFeatLevels: [1, 2, 3, 4, 5, 6] } }] });
   assert("a rogue keeps the even levels", ctx.getFeatSlotLevels(rogue).skill, [2, 4, 6]);
+
+  // "don't receive any skill feats, even from their backgrounds"
+  const assurance = { _id: "f-assurance", name: "Assurance", recordType: "feats", data: { traits: ["General", "Skill"] } };
+  const dagger = { _id: "i-dagger", name: "Dagger", recordType: "items", data: { type: "weapon" } };
+  const scholar = pc({ level: 1, feats: [], bonusFeats: [], backgrounds: [{ _id: "b1", name: "Scholar", data: { providesItems: [assurance, dagger] } }] });
+  const granted = () => {
+    let written = null;
+    const saved = ctx.api.setValuesOnRecord;
+    ctx.api.setValuesOnRecord = (record, values) => { written = values; };
+    ctx.setProvidedItems(scholar);
+    ctx.api.setValuesOnRecord = saved;
+    return [...(written?.["data.bonusFeats"] || []), ...(written?.["data.inventory"] || [])].map((entry) => entry.name);
+  };
+  assert("on: the background's skill feat isn't granted, its item is", granted(), ["Dagger"]);
   settings.simplifiedSkillFeats = "no";
+  assert("off: both", granted(), ["Assurance", "Dagger"]);
 }
 
 section("a rescaled troop's thresholds");
